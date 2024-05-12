@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/user_auth_and_profile/login.dart';
 import 'package:flutter/material.dart';
 
 const TextStyle appName = TextStyle(
@@ -8,7 +9,7 @@ const TextStyle appName = TextStyle(
 );
 
 const TextStyle textName = TextStyle(
-  color: Color(0xFFEC8696),
+  color: Color(0xFF58B9A1),
   fontSize: 16.0,
   fontFamily: 'MontserratRegular',
 );
@@ -26,7 +27,7 @@ class DrawerContent extends StatelessWidget {
             height: 150.0,
             child: DrawerHeader(
               decoration: BoxDecoration(
-                color: Color(0xFFEC8696)
+                color: Color(0xFF58B9A1)
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +47,11 @@ class DrawerContent extends StatelessWidget {
               style: textName,
             ),
             onTap: () {
-              // go to Profile page
+              // go to Profile page (navigate to login page first for now)
+              Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) =>
+              const LoginPage()),
+              );
             },
           ),
           ListTile(
@@ -69,7 +74,7 @@ class DrawerContent extends StatelessWidget {
           ),
           const Divider(
             height: 16.0,
-            color: Color(0xFFEC8696),
+            color: Color(0xFF58B9A1),
           ),
           const SizedBox(
             height: 16.0,

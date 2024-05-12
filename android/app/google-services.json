@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "205661651618",
+    "project_id": "inklusive-draw",
+    "storage_bucket": "inklusive-draw.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205661651618:android:807b144e4e681973588dfb",
+        "android_client_info": {
+          "package_name": "com.fyp.inclusive_draw"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbll23IuyoS1YjBUwhfRtOLg3UB4RCfkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
