@@ -1,5 +1,6 @@
 import 'package:InklusiveDraw/homepage/homepage.dart';
 import 'package:InklusiveDraw/user_auth_and_profile/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -44,6 +45,86 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscureConfirm = true;
   final GlobalKey<FormState> _formKeyRegister = GlobalKey<FormState>();
 
+  void _register() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF58B9A1)),
+            strokeWidth: 4,
+            backgroundColor: Colors.grey,
+          ),
+        );
+      },
+    );
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      // successfully registered
+      print('Registered');
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Registration successful, please login',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: const Color(0xFFEC8696),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            textColor: Colors.white,
+          ),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Email already in use',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: const Color(0xFFEC8696),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              textColor: Colors.white,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.message}')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          color: Colors.black54,
+          color: Color(0xFF58B9A1),
           onPressed: () {
             Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) =>
@@ -327,7 +408,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKeyRegister.currentState!.validate()) {
-                            print('Register');
+                            _register();
                             // go to login page
                             const LoginPage();
                           }

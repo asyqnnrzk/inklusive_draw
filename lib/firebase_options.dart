@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'inklusive-draw',
     storageBucket: 'inklusive-draw.appspot.com',
   );
+
 }

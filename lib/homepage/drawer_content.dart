@@ -1,4 +1,6 @@
 import 'package:InklusiveDraw/user_auth_and_profile/login.dart';
+import 'package:InklusiveDraw/user_auth_and_profile/profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 const TextStyle appName = TextStyle(
@@ -14,8 +16,41 @@ const TextStyle textName = TextStyle(
   fontFamily: 'MontserratRegular',
 );
 
-class DrawerContent extends StatelessWidget {
+class DrawerContent extends StatefulWidget {
   const DrawerContent({Key? key}) : super(key: key);
+
+  @override
+  State<DrawerContent> createState() => _DrawerContentState();
+}
+
+class _DrawerContentState extends State<DrawerContent> {
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
+
+  void _checkLoginAndNavigateToProfile() {
+    if (_user == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage(user: _user)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +82,8 @@ class DrawerContent extends StatelessWidget {
               style: textName,
             ),
             onTap: () {
-              // go to Profile page (navigate to login page first for now)
-              Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) =>
-              const LoginPage()),
-              );
+              // go to Profile page
+              _checkLoginAndNavigateToProfile();
             },
           ),
           ListTile(

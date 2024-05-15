@@ -1,5 +1,5 @@
-import 'package:InklusiveDraw/main.dart';
 import 'package:InklusiveDraw/user_auth_and_profile/login.dart';
+import 'package:InklusiveDraw/user_auth_and_profile/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -15,8 +15,7 @@ class AuthPage extends StatelessWidget {
           // user successfully logged in
           if (snapshot.hasData) {
             // go to Profile page
-            // but make it to homepage for now
-            return InklusiveDraw();
+            return ProfilePage();
           }
           // user not logged in
           else {

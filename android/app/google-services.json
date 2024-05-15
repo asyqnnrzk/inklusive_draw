@@ -12,7 +12,12 @@
           "package_name": "com.fyp.inclusive_draw"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "205661651618-jnemof26hmkcql43hd9kskdge7s4ugel.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAbll23IuyoS1YjBUwhfRtOLg3UB4RCfkU"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205661651618-jnemof26hmkcql43hd9kskdge7s4ugel.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

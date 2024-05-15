@@ -1,4 +1,5 @@
 import 'package:InklusiveDraw/homepage/homepage.dart';
+import 'package:InklusiveDraw/user_auth_and_profile/profile.dart';
 import 'package:InklusiveDraw/user_auth_and_profile/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +43,125 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKeyLogin = GlobalKey<FormState>();
 
   void _login() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF58B9A1)),
+            strokeWidth: 4,
+            backgroundColor: Colors.grey,
+          ),
+        );
+      },
+    );
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      // successfully logged in
+      print('Logged in');
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Welcome!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: const Color(0xFF58B9A1),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            textColor: Colors.white,
+          ),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage(user: FirebaseAuth.instance.currentUser)),
+      );
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      if (e.code == 'user-not-found') {
+        print('Wrong email');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              "Incorrect email', 'The email address you entered is not registered",
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: const Color(0xFFEC8696),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              textColor: Colors.white,
+            ),
+          ),
+        );
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              "Incorrect password', 'The password you entered is incorrect",
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: const Color(0xFFEC8696),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              textColor: Colors.white,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.message}')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void _showErrorDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -56,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          color: Colors.black54,
+          color: Color(0xFF58B9A1),
           onPressed: () {
             Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) =>
@@ -204,6 +321,7 @@ class _LoginPageState extends State<LoginPage> {
                           if (_formKeyLogin.currentState!.validate()) {
                             print('Login');
                             // go to profile homepage
+                            _login();
                           }
                         },
                         style: ElevatedButton.styleFrom(
