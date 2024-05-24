@@ -1,20 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:InklusiveDraw/firebase_options.dart';
+import 'package:InklusiveDraw/module/mainpage/on_board_screen.dart';
+import 'package:InklusiveDraw/repository/auth_repository.dart';
+import 'package:InklusiveDraw/source/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'homepage/homepage.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    await Firebase.initializeApp(
-      options: await DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    print('Error initializing Firebase: $e');
-    return;
-  }
-
+  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
+      .then((value) => Get.put(AuthRepository()));
   runApp(const InklusiveDraw());
 }
 
@@ -23,9 +18,12 @@ class InklusiveDraw extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.light,
+      home: const CircularProgressIndicator(),
     );
   }
 }
