@@ -76,27 +76,27 @@ class OnBoardScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(builder: (context) => LoginScreen()),
                       ),
-                      child: Text(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: whiteColor,
+                        backgroundColor: secondaryColor
+                      ),
+                      child: const Text(
                         'Login',
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Homepage()),
+                      ),
+                      child: Text(
+                        'Continue without login',
                       ),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: whiteColor,
                         backgroundColor: secondaryColor
                       ),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: () => Navigator.pushReplacement(
-                    //     context,
-                    //     MaterialPageRoute(builder: (context) => HomePage()),
-                    //   ),
-                    //   child: Text(
-                    //     'Continue without login',
-                    //   ),
-                    //   style: ElevatedButton.styleFrom(
-                    //     foregroundColor: whiteColor,
-                    //     backgroundColor: secondaryColor
-                    //   ),
-                    // ),
                     Image(
                       image: const AssetImage(onBoardImage2),
                       height: size.height * 0.5,

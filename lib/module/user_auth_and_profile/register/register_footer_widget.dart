@@ -1,6 +1,7 @@
 import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../repository/auth_repository.dart';
 import '../../../source/colors.dart';
 import '../../../source/image_strings.dart';
 import '../../../source/text_theme.dart';
@@ -25,8 +26,8 @@ class RegisterFooterWidget extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-            onPressed: () {
-
+            onPressed: () async {
+              await AuthRepository().signInUserWithGoogle();
             },
             icon: const Image(
               image: AssetImage(googleLogo),

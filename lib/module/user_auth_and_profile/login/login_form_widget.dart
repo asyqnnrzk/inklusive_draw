@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +95,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               child: ElevatedButton(
                 onPressed: () {
                   if(formKey.currentState!.validate()) {
-
+                    LoginController.instance.loginUser(
+                      controller.email.text.trim(),
+                      controller.password.text.trim()
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

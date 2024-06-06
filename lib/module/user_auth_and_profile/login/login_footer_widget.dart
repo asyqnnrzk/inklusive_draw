@@ -1,4 +1,5 @@
 import 'package:InklusiveDraw/module/user_auth_and_profile/register/register_screen.dart';
+import 'package:InklusiveDraw/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../source/colors.dart';
@@ -25,8 +26,8 @@ class LoginFooterWidget extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-            onPressed: () {
-
+            onPressed: () async {
+              await AuthRepository().signInUserWithGoogle();
             },
             icon: const Image(
               image: AssetImage(googleLogo),

@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:InklusiveDraw/model/user_model.dart';
+import 'package:InklusiveDraw/model/user/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
