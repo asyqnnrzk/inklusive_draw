@@ -1,45 +1,50 @@
 import 'package:flutter/material.dart';
-import '../../../source/colors.dart';
-import '../../../source/text_theme.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class UserSearch extends StatelessWidget {
-  const UserSearch({super.key});
+  final TextEditingController controller;
+
+  const UserSearch({Key? key, required this.controller}) : super(key: key);
+
+  void _startVoiceSearch() {
+    print('Voice search started');
+    // Implement speech-to-text searching
+  }
+
+  void _clearSearch() {
+    controller.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-              border: Border(
-                  left: BorderSide(
-                      width: 4,
-                      color: primaryColor
-                  )
-              )
-          ),
-          padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 5
-          ),
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        prefixIcon: const Icon(LineAwesomeIcons.search_solid),
+        suffixIcon: SizedBox(
+          width: 96,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Search',
-                style: LightTextTheme.dashboardHeadline.apply(
-                    color: Colors.grey.withOpacity(0.5)
-                ),
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(LineAwesomeIcons.microphone_solid),
+                onPressed: _startVoiceSearch,
               ),
-              const Icon(
-                Icons.mic,
-                size: 25,
-                color: primaryColor,
-              )
+              IconButton(
+                icon: const Icon(LineAwesomeIcons.times_solid),
+                onPressed: _clearSearch,
+              ),
             ],
           ),
         ),
-      ],
+        hintText: 'Search',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.grey[200],
+      ),
     );
   }
 }

@@ -18,6 +18,7 @@ class _DrawerContentState extends State<DrawerContent> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: backgroundColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[

@@ -10,7 +10,7 @@ class LightTextTheme {
     fontFamily: 'MontserratBold',
   );
 
-  static TextStyle textName = TextStyle(
+  static TextStyle textName = const TextStyle(
     color: primaryColor,
     fontSize: 16.0,
     fontFamily: 'MontserratRegular',
@@ -85,6 +85,18 @@ class LightTextTheme {
   static TextStyle profileTxt = const TextStyle(
     color: blackColor,
     fontSize: 16.0,
+    fontFamily: 'MontserratRegular',
+  );
+
+  static TextStyle resourceTitle = const TextStyle(
+    color: blackColor,
+    fontSize: 14.0,
+    fontFamily: 'MontserratBold',
+  );
+
+  static TextStyle resourceCreator = const TextStyle(
+    color: blackColor,
+    fontSize: 12.0,
     fontFamily: 'MontserratRegular',
   );
 }

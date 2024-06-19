@@ -9,10 +9,18 @@ class AppTheme {
     primaryColor: primaryColor,
     brightness: Brightness.light,
     inputDecorationTheme: TextFormFieldTheme.lightInputDecorationTheme,
+    scaffoldBackgroundColor: backgroundColor,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundColor
+    )
   );
 
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    inputDecorationTheme: TextFormFieldTheme.darkInputDecorationTheme
+    inputDecorationTheme: TextFormFieldTheme.darkInputDecorationTheme,
+    scaffoldBackgroundColor: backgroundColor,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundColor
+    )
   );
 }

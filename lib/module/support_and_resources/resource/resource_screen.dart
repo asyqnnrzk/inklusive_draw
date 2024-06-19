@@ -1,8 +1,7 @@
-import 'package:InklusiveDraw/module/app_dashboard/user/user_search.dart';
-import 'package:InklusiveDraw/module/support_and_resources/resource/resource_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'resource_list.dart';
 
 class ResourceScreen extends StatelessWidget {
   const ResourceScreen({super.key});
@@ -19,17 +18,9 @@ class ResourceScreen extends StatelessWidget {
           icon: const Icon(LineAwesomeIcons.angle_left_solid),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              UserSearch(),
-              SizedBox(height: 16.0),
-              ResourceList()
-            ],
-          ),
-        ),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: ResourceList(),
       ),
     );
   }

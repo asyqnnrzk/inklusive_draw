@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../../source/colors.dart';
 import '../../../source/image_strings.dart';
 
@@ -10,7 +12,12 @@ class UserDashboardAppbar extends StatelessWidget implements PreferredSizeWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: const Icon(Icons.menu),
+      leading: IconButton(
+        onPressed: () {
+          Get.back();
+        },
+        icon: const Icon(LineAwesomeIcons.angle_left_solid),
+      ),
       title: const Text(
         'InklusiveDraw',
         style: TextStyle(

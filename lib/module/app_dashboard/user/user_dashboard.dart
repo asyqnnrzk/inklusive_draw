@@ -11,32 +11,34 @@ class UserDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+
     return Scaffold(
       appBar: const UserDashboardAppbar(),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
               // header
-              UserHeader(),
-              SizedBox(height: 16),
+              const UserHeader(),
+              const SizedBox(height: 16),
 
               // search bar
-              UserSearch(),
-              SizedBox(height: 16),
+              UserSearch(controller: searchController),
+              const SizedBox(height: 16),
 
               // categories
-              UserCategories(),
+              const UserCategories(),
 
               // banners
-              UserBanner(),
-              SizedBox(height: 16),
+              const UserBanner(),
+              const SizedBox(height: 16),
 
               // content
-              UserContent()
+              const UserContent()
             ],
           ),
         ),

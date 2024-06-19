@@ -10,6 +10,8 @@ class CommunityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -56,7 +58,7 @@ class CommunityScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                const UserSearch()
+                UserSearch(controller: searchController)
               ],
             ),
           ),
