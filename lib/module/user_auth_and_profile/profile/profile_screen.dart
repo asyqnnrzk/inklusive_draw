@@ -3,6 +3,7 @@ import 'package:InklusiveDraw/module/user_auth_and_profile/profile/update_profil
 import 'package:InklusiveDraw/repository/auth_repository.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/image_strings.dart';
+import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,17 +22,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final user = FirebaseAuth.instance.currentUser!;
 
   Future<Map<String, dynamic>> getUserProfileData(String userId) async {
-    // Fetch the profile document for the given user
-    final profileSnapshot = await FirebaseFirestore.instance
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final profileDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('profile')
         .get();
 
-    if (profileSnapshot.docs.isNotEmpty) {
-      return profileSnapshot.docs.first.data();
+    if (userDoc.exists && profileDoc.docs.isNotEmpty) {
+      return {
+        ...userDoc.data()!,
+        ...profileDoc.docs.first.data(),
+      };
     } else {
-      throw Exception('Profile not found for user');
+      throw Exception('User or profile not found');
     }
   }
 
@@ -54,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         future: getUserProfileData(user.uid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicatorTheme());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -88,20 +92,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Positioned(
                           bottom: 0,
                           right: 0,
-                          child: Container(
-                            width: 35,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: primaryColor,
-                            ),
-                            child: const Icon(
-                              LineAwesomeIcons.pencil_alt_solid,
-                              size: 20,
-                              color: Colors.white70,
+                          child: GestureDetector(
+                            onTap: () => Get.to(() => const UpdateProfileScreen()),
+                            child: Container(
+                              width: 35,
+                              height: 35,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: primaryColor,
+                              ),
+                              child: const Icon(
+                                LineAwesomeIcons.pencil_alt_solid,
+                                size: 20,
+                                color: Colors.white70,
+                              ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -136,11 +143,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 30),
                     const Divider(),
                     const SizedBox(height: 10),
-
-                    // menu
-                    ProfileMenuWidget(title: 'Settings', icon: LineAwesomeIcons.cog_solid, onPress: (){}),
-                    ProfileMenuWidget(title: 'Notifications', icon: Icons.notifications_none, onPress: (){}),
-                    ProfileMenuWidget(title: 'Dashboard', icon: Icons.dashboard_outlined, onPress: (){}),
+                    ProfileMenuWidget(
+                        title: 'Settings',
+                        icon: LineAwesomeIcons.cog_solid,
+                        onPress: (){}
+                    ),
+                    ProfileMenuWidget(
+                        title: 'Notifications',
+                        icon: Icons.notifications_none,
+                        onPress: (){}
+                    ),
+                    ProfileMenuWidget(
+                        title: 'Dashboard',
+                        icon: Icons.dashboard_outlined,
+                        onPress: (){}
+                    ),
                     const Divider(),
                     const SizedBox(height: 10),
                     ProfileMenuWidget(
@@ -160,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: const Text(
                                     'Cancel',
                                     style: TextStyle(
-                                      color: redText
+                                        color: redText
                                     ),
                                   ),
                                   onPressed: () {
@@ -184,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                         );
                       },
-                    )
+                    ),
                   ],
                 ),
               ),

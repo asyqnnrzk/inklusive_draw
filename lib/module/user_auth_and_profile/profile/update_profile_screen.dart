@@ -1,12 +1,88 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../../source/colors.dart';
 import '../../../source/image_strings.dart';
+import '../../service/firestore_service.dart';
+import 'store_image.dart';
 
-class UpdateProfileScreen extends StatelessWidget {
+class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
+
+  @override
+  _UpdateProfileScreenState createState() => _UpdateProfileScreenState();
+}
+
+class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+  final FirestoreService _firestoreService = FirestoreService();
+  final _formKey = GlobalKey<FormState>();
+  String _imageUrl = userDefault;
+  final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _bioController = TextEditingController();
+
+  final User? _currentUser = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileData();
+  }
+
+  Future<void> _fetchProfileData() async {
+    if (_currentUser != null) {
+      String userId = _currentUser!.uid;
+      try {
+        Map<String, dynamic> userData = await _firestoreService.getUserData(userId);
+        Map<String, dynamic> profileData = await _firestoreService.getUserProfile(userId);
+        setState(() {
+          _imageUrl = profileData['avatar'] ?? userDefault;
+          _nameController.text = userData['name'] ?? '';
+          _usernameController.text = userData['username'] ?? '';
+          _bioController.text = profileData['bio'] ?? '';
+        });
+      } catch (e) {
+        print('Error fetching profile data: $e');
+      }
+    }
+  }
+
+  Future<void> _updateProfileImage() async {
+    StoreImage storeImage = StoreImage();
+    String? imageUrl = await storeImage.uploadImageAndGetUrl();
+    if (imageUrl != null) {
+      setState(() {
+        _imageUrl = imageUrl;
+      });
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      _formKey.currentState?.save();
+      if (_currentUser != null) {
+        String userId = _currentUser!.uid;
+
+        Map<String, dynamic> userData = {
+          'name': _nameController.text,
+          'username': _usernameController.text,
+        };
+
+        Map<String, dynamic> profileData = {
+          'avatar': _imageUrl,
+          'bio': _bioController.text,
+        };
+
+        await _firestoreService.updateUserData(userId, userData);
+        await _firestoreService.updateUserProfile(userId, profileData);
+        Get.back();
+      } else {
+        print('User is not authenticated');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,37 +109,41 @@ class UpdateProfileScreen extends StatelessWidget {
                     height: 120,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
-                      child: const Image(
-                        image: AssetImage(
-                            userDefault
-                        ),
+                      child: Image.network(
+                        _imageUrl,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
+                    child: GestureDetector(
+                      onTap: _updateProfileImage,
+                      child: Container(
+                        width: 35,
+                        height: 35,
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(100),
-                          color: primaryColor
-                      ),
-                      child: const Icon(
-                        LineAwesomeIcons.camera_solid,
-                        size: 20,
-                        color: Colors.white70,
+                          color: primaryColor,
+                        ),
+                        child: const Icon(
+                          LineAwesomeIcons.camera_solid,
+                          size: 20,
+                          color: Colors.white70,
+                        ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 50),
               Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: _nameController,
                       decoration: const InputDecoration(
                         label: Text('Name'),
                         hintText: 'Name',
@@ -71,15 +151,16 @@ class UpdateProfileScreen extends StatelessWidget {
                           Icons.person,
                         ),
                       ),
-                      validator: (username) {
-                        if (username == null || username.isEmpty) {
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                           return 'Please enter your name';
                         }
-                        return null; // Return null if the input is valid
+                        return null;
                       },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      controller: _usernameController,
                       decoration: const InputDecoration(
                         label: Text('Username'),
                         hintText: 'Username',
@@ -87,80 +168,51 @@ class UpdateProfileScreen extends StatelessWidget {
                           Icons.person,
                         ),
                       ),
-                      validator: (username) {
-                        if (username == null || username.isEmpty) {
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                           return 'Please enter your username';
                         }
-                        return null; // Return null if the input is valid
+                        return null;
                       },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      controller: _bioController,
                       decoration: const InputDecoration(
-                        label: Text('Password'),
-                        hintText: 'Password',
+                        label: Text('Bio'),
+                        hintText: 'Bio',
                         prefixIcon: Icon(
-                          Icons.lock,
+                          Icons.info,
                         ),
                       ),
-                      validator: (password) {
-                        if (password == null || password.isEmpty) {
-                          return 'Please enter your password';
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your bio';
                         }
-                        if (password.length < 8) {
-                          return 'Password is too short';
-                        }
-                        RegExp regexPassword = RegExp(r'^[a-zA-Z0-9_]+$');
-                        if (!regexPassword.hasMatch(password)) {
-                          return 'Please enter a valid password';
-                        }
-                        return null; // Return null if the input is valid
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text('Email'),
-                        hintText: 'Email',
-                        prefixIcon: Icon(
-                          Icons.email,
-                        ),
-                      ),
-                      validator: (email) {
-                        if (email == null || email.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        RegExp regexEmail = RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                          caseSensitive: false,
-                        );
-                        if (!regexEmail.hasMatch(email)) {
-                          return 'Please enter a valid email address';
-                        }
-                        return null; // Return null if the input is valid
+                        return null;
                       },
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => Get.to(() => const UpdateProfileScreen()),
+                        onPressed: _saveProfile,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor
+                          backgroundColor: primaryColor,
                         ),
                         child: const Text(
-                          'Edit profile',
+                          'Save',
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'MontserratRegular',
-                            color: whiteColor
+                            color: whiteColor,
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: (){},
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent.withOpacity(0.1),
                         elevation: 0,
@@ -169,14 +221,14 @@ class UpdateProfileScreen extends StatelessWidget {
                       child: const Text(
                         'Delete',
                         style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'MontserratBold',
+                          fontSize: 16,
+                          fontFamily: 'MontserratBold',
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),
