@@ -14,6 +14,10 @@ class CommunityScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Community',
+          style: LightTextTheme.profileHeadline,
+        ),
         elevation: 0,
         leading: IconButton(
           onPressed: () {

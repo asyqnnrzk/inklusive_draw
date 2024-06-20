@@ -3,6 +3,7 @@ import 'package:InklusiveDraw/module/support_and_resources/resource/resource_lis
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import '../../../source/text_theme.dart';
 import '../favorites/favorite_screen.dart';
 
 class ResourceScreen extends StatefulWidget {
@@ -30,6 +31,10 @@ class _ResourceScreenState extends State<ResourceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Resources',
+          style: LightTextTheme.profileHeadline,
+        ),
         elevation: 0,
         leading: IconButton(
           onPressed: () {

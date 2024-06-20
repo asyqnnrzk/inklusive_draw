@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/module/user_auth_and_profile/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -38,7 +39,7 @@ class UserDashboardAppbar extends StatelessWidget implements PreferredSizeWidget
           ),
           child: IconButton(
             onPressed: () {
-
+              Get.to(const ProfileScreen());
             },
             icon: const Image(
               image: AssetImage(userDefault),
