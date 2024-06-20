@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../source/text_theme.dart';
 import 'video_player_screen.dart';
@@ -19,13 +20,14 @@ class ResourceListState extends State<ResourceList> {
   final user = FirebaseAuth.instance.currentUser!;
   List<DocumentSnapshot> _allResources = [];
   List<DocumentSnapshot> _filteredResources = [];
-  List<DocumentSnapshot> _favoritedItems = [];
+  List<String> _favoritedItemIds = []; // Store favorited item IDs instead of documents
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(_onSearchChanged);
     _fetchResources();
+    _loadFavorites(); // Load favorites when initializing the widget
   }
 
   @override
@@ -78,18 +80,30 @@ class ResourceListState extends State<ResourceList> {
         'creator': resource['creator'],
       });
       setState(() {
-        if (favoriteDoc.docs.isEmpty) {
-          _favoritedItems.add(resource); // Add the entire resource object
-        } else {
-          _favoritedItems.remove(resource); // Remove the entire resource object
-        }
+        _favoritedItemIds.add(resource.id); // Add the favorited item ID
       });
     } else {
       await favoritesCollection.doc(favoriteDoc.docs.first.id).delete();
       setState(() {
-        _favoritedItems.remove(resource); // Remove the favorited item from the list
+        _favoritedItemIds.remove(resource.id); // Remove the favorited item ID
       });
     }
+    _saveFavorites(); // Save the favorited item IDs after toggling favorites
+  }
+
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? favoritedItemIds = prefs.getStringList('favoritedItemIds');
+    if (favoritedItemIds != null) {
+      setState(() {
+        _favoritedItemIds = favoritedItemIds;
+      });
+    }
+  }
+
+  Future<void> _saveFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('favoritedItemIds', _favoritedItemIds);
   }
 
   @override
@@ -103,7 +117,7 @@ class ResourceListState extends State<ResourceList> {
         final videoUrl = resource['link'];
         final videoId = YoutubePlayer.convertUrlToId(videoUrl);
         final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
-        final isFavorited = _favoritedItems.contains(resource);
+        final isFavorited = _favoritedItemIds.contains(resource.id); // Check if the favorited item IDs list contains the current resource ID
 
         return Column(
           children: [
