@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../source/text_theme.dart';
-import '../../app_dashboard/user/user_search.dart';
 import 'video_player_screen.dart';
 
 class ResourceList extends StatefulWidget {
@@ -13,17 +12,14 @@ class ResourceList extends StatefulWidget {
   const ResourceList({Key? key, required this.controller}) : super(key: key);
 
   @override
-  State<ResourceList> createState() => ResourceListState();
-
-  void filterResources() {
-    // This is a placeholder, the actual logic will be in the State class.
-  }
+  ResourceListState createState() => ResourceListState();
 }
 
 class ResourceListState extends State<ResourceList> {
   final user = FirebaseAuth.instance.currentUser!;
   List<DocumentSnapshot> _allResources = [];
   List<DocumentSnapshot> _filteredResources = [];
+  List<DocumentSnapshot> _favoritedItems = [];
 
   @override
   void initState() {
@@ -66,6 +62,36 @@ class ResourceListState extends State<ResourceList> {
     });
   }
 
+  Future<void> _toggleFavorite(DocumentSnapshot resource) async {
+    final favoritesCollection = FirebaseFirestore.instance.collection('favorites');
+    final favoriteDoc = await favoritesCollection
+        .where('userId', isEqualTo: user.uid)
+        .where('videoId', isEqualTo: resource.id)
+        .get();
+
+    if (favoriteDoc.docs.isEmpty) {
+      await favoritesCollection.add({
+        'userId': user.uid,
+        'videoId': resource.id,
+        'material': resource['material'],
+        'link': resource['link'],
+        'creator': resource['creator'],
+      });
+      setState(() {
+        if (favoriteDoc.docs.isEmpty) {
+          _favoritedItems.add(resource); // Add the entire resource object
+        } else {
+          _favoritedItems.remove(resource); // Remove the entire resource object
+        }
+      });
+    } else {
+      await favoritesCollection.doc(favoriteDoc.docs.first.id).delete();
+      setState(() {
+        _favoritedItems.remove(resource); // Remove the favorited item from the list
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -77,6 +103,7 @@ class ResourceListState extends State<ResourceList> {
         final videoUrl = resource['link'];
         final videoId = YoutubePlayer.convertUrlToId(videoUrl);
         final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+        final isFavorited = _favoritedItems.contains(resource);
 
         return Column(
           children: [
@@ -96,6 +123,15 @@ class ResourceListState extends State<ResourceList> {
                 resource['creator'],
                 overflow: TextOverflow.ellipsis,
                 style: LightTextTheme.resourceCreator,
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorited ? Colors.red : null,
+                ),
+                onPressed: () {
+                  _toggleFavorite(resource);
+                },
               ),
               onTap: () {
                 Navigator.of(context).push(

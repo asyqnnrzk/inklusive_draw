@@ -3,6 +3,7 @@ import 'package:InklusiveDraw/module/support_and_resources/resource/resource_lis
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import '../favorites/favorite_screen.dart';
 
 class ResourceScreen extends StatefulWidget {
   const ResourceScreen({super.key});
@@ -36,6 +37,16 @@ class _ResourceScreenState extends State<ResourceScreen> {
           },
           icon: const Icon(LineAwesomeIcons.angle_left_solid),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => FavoriteScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(

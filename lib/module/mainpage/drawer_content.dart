@@ -5,6 +5,7 @@ import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../source/text_theme.dart';
+import '../support_and_resources/favorites/favorite_screen.dart';
 
 class DrawerContent extends StatefulWidget {
   const DrawerContent({Key? key}) : super(key: key);
@@ -75,11 +76,14 @@ class _DrawerContentState extends State<DrawerContent> {
           ),
           ListTile(
             title: Text(
-                'Setting',
+                'Favorites',
                 style: LightTextTheme.textName
             ),
             onTap: () {
-              // go to Setting page
+              // go to Favorites page
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => FavoriteScreen()),
+              );
             },
           ),
           const Divider(
