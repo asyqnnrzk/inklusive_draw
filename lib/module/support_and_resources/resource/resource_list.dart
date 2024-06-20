@@ -8,123 +8,104 @@ import '../../app_dashboard/user/user_search.dart';
 import 'video_player_screen.dart';
 
 class ResourceList extends StatefulWidget {
-  const ResourceList({Key? key}) : super(key: key);
+  final TextEditingController controller;
+
+  const ResourceList({Key? key, required this.controller}) : super(key: key);
 
   @override
-  State<ResourceList> createState() => _ResourceListState();
+  State<ResourceList> createState() => ResourceListState();
+
+  void filterResources() {
+    // This is a placeholder, the actual logic will be in the State class.
+  }
 }
 
-class _ResourceListState extends State<ResourceList> {
+class ResourceListState extends State<ResourceList> {
   final user = FirebaseAuth.instance.currentUser!;
-  final TextEditingController _searchController = TextEditingController();
   List<DocumentSnapshot> _allResources = [];
   List<DocumentSnapshot> _filteredResources = [];
-  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_onSearchChanged);
+    widget.controller.addListener(_onSearchChanged);
+    _fetchResources();
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    _debounce?.cancel();
+    widget.controller.removeListener(_onSearchChanged);
     super.dispose();
   }
 
-  _onSearchChanged() {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      _filterResources();
+  void _onSearchChanged() {
+    if (widget.controller.text.isEmpty) {
+      setState(() {
+        _filteredResources = _allResources;
+      });
+    }
+  }
+
+  void _fetchResources() {
+    FirebaseFirestore.instance.collection('resources').snapshots().listen((snapshot) {
+      setState(() {
+        _allResources = snapshot.docs;
+        _filteredResources = _allResources;
+      });
     });
   }
 
-  void _filterResources() {
+  void filterResources() {
     setState(() {
       _filteredResources = _allResources.where((resource) {
         return resource['material']
             .toString()
             .toLowerCase()
-            .contains(_searchController.text.toLowerCase());
+            .contains(widget.controller.text.toLowerCase());
       }).toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('resources').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text('No resources available'));
-        }
-
-        _allResources = snapshot.data!.docs;
-        if (_searchController.text.isEmpty) {
-          _filteredResources = _allResources;
-        } else {
-          _filteredResources = _allResources.where((resource) {
-            return resource['material']
-                .toString()
-                .toLowerCase()
-                .contains(_searchController.text.toLowerCase());
-          }).toList();
-        }
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _filteredResources.length,
+      itemBuilder: (context, index) {
+        final resource = _filteredResources[index];
+        final videoUrl = resource['link'];
+        final videoId = YoutubePlayer.convertUrlToId(videoUrl);
+        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
 
         return Column(
           children: [
-            UserSearch(controller: _searchController),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _filteredResources.length,
-                itemBuilder: (context, index) {
-                  final resource = _filteredResources[index];
-                  final videoUrl = resource['link'];
-                  final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-                  final thumbnailUrl =
-                      'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
-
-                  return Column(
-                    children: [
-                      ListTile(
-                        leading: Image.network(
-                          thumbnailUrl,
-                          width: 70,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
-                        title: Text(
-                          resource['material'],
-                          overflow: TextOverflow.ellipsis,
-                          style: LightTextTheme.resourceTitle,
-                        ),
-                        subtitle: Text(
-                          resource['creator'],
-                          overflow: TextOverflow.ellipsis,
-                          style: LightTextTheme.resourceCreator,
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => VideoPlayerScreen(
-                                  videoUrl: videoUrl),
-                            ),
-                          );
-                        },
-                      ),
-                      const Divider(),
-                    ],
-                  );
-                },
+            ListTile(
+              leading: Image.network(
+                thumbnailUrl,
+                width: 70,
+                height: 50,
+                fit: BoxFit.cover,
               ),
+              title: Text(
+                resource['material'],
+                overflow: TextOverflow.ellipsis,
+                style: LightTextTheme.resourceTitle,
+              ),
+              subtitle: Text(
+                resource['creator'],
+                overflow: TextOverflow.ellipsis,
+                style: LightTextTheme.resourceCreator,
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+                  ),
+                );
+              },
             ),
+            const Divider(),
           ],
         );
       },

@@ -27,7 +27,7 @@ class UserDashboard extends StatelessWidget {
               const SizedBox(height: 16),
 
               // search bar
-              UserSearch(controller: searchController),
+              UserSearch(controller: searchController, onSearch: () {  },),
               const SizedBox(height: 16),
 
               // categories

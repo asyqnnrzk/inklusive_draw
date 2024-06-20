@@ -58,7 +58,7 @@ class CommunityScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                UserSearch(controller: searchController)
+                UserSearch(controller: searchController, onSearch: () {  },)
               ],
             ),
           ),
