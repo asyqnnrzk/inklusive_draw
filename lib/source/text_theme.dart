@@ -70,6 +70,12 @@ class LightTextTheme {
     fontFamily: 'MontserratRegular',
   );
 
+  static TextStyle dashboardCategories = const TextStyle(
+    color: blackColor,
+    fontSize: 10.0,
+    fontFamily: 'MontserratRegular',
+  );
+
   static TextStyle profileHeadline = const TextStyle(
     color: blackColor,
     fontSize: 24.0,

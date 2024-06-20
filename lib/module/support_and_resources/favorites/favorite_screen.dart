@@ -14,7 +14,6 @@ class FavoriteScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorites'),
         leading: IconButton(
           onPressed: () {
             Get.back();

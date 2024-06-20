@@ -1,9 +1,7 @@
 import 'package:InklusiveDraw/module/app_dashboard/user/user_appbar.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_banner.dart';
-import 'package:InklusiveDraw/module/app_dashboard/user/user_categories.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_content.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_header.dart';
-import 'package:InklusiveDraw/module/app_dashboard/user/user_search.dart';
 import 'package:flutter/material.dart';
 
 class UserDashboard extends StatelessWidget {
@@ -11,7 +9,6 @@ class UserDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
 
     return Scaffold(
       appBar: const UserDashboardAppbar(),
@@ -26,19 +23,13 @@ class UserDashboard extends StatelessWidget {
               const UserHeader(),
               const SizedBox(height: 16),
 
-              // search bar
-              UserSearch(controller: searchController, onSearch: () {  },),
-              const SizedBox(height: 16),
-
-              // categories
-              const UserCategories(),
-
               // banners
-              const UserBanner(),
+              UserBanner(),
               const SizedBox(height: 16),
 
               // content
               const UserContent()
+              // hardcode, have to be changed once drawing is successful implemented
             ],
           ),
         ),
