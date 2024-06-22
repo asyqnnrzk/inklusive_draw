@@ -177,23 +177,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: const Text(
                                     'Cancel',
                                     style: TextStyle(
-                                        color: redText
+                                        color: greenText
                                     ),
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Dismiss the dialog
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                                 TextButton(
                                   child: const Text(
                                     'Logout',
                                     style: TextStyle(
-                                        color: primaryColor
+                                        color: redText
                                     ),
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Dismiss the dialog
-                                    AuthRepository().logout(); // Perform the logout
+                                    Navigator.of(context).pop();
+                                    AuthRepository().logout();
                                   },
                                 ),
                               ],

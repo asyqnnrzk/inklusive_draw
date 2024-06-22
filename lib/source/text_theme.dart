@@ -35,7 +35,7 @@ class LightTextTheme {
   );
 
   static TextStyle clickableTxt = const TextStyle(
-    color: secondaryColor,
+    color: primaryColor,
     fontSize: 14.0,
     fontFamily: 'MontserratBold',
   );

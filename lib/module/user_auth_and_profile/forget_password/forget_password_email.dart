@@ -2,6 +2,7 @@ import 'package:InklusiveDraw/source/image_strings.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../../source/colors.dart';
 
 class ForgetPasswordEmail extends StatelessWidget {
@@ -11,6 +12,15 @@ class ForgetPasswordEmail extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              Get.back();
+            },
+            icon: const Icon(LineAwesomeIcons.angle_left_solid),
+          ),
+        ),
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(16),

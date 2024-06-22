@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,7 +16,7 @@ class UserDashboardAppbar extends StatelessWidget implements PreferredSizeWidget
     return AppBar(
       leading: IconButton(
         onPressed: () {
-          Get.back();
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Homepage()));
         },
         icon: const Icon(LineAwesomeIcons.angle_left_solid),
       ),

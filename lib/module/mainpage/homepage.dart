@@ -16,7 +16,7 @@ class Homepage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: primaryColor,
         iconTheme: const IconThemeData(
-            color: Colors.white
+          color: Colors.white,
         ),
       ),
       drawer: const DrawerContent(),
@@ -25,27 +25,29 @@ class Homepage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-                'InklusiveDraw',
-                style: LightTextTheme.appName,
+              'InklusiveDraw',
+              style: LightTextTheme.appName,
             ),
             const SizedBox(height: 36.0),
-            Column(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // go to Gallery
-                        // let's redirect to canvas for now
                         Get.to(DrawingScreen());
                       },
                       style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          backgroundColor: primaryColor,
-                          padding: const EdgeInsets.all(24)
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 24.0,
+                        ),
                       ),
                       child: const Icon(
                         LineAwesomeIcons.brush_solid,
@@ -53,26 +55,30 @@ class Homepage extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(width: 16.0),
+                    const SizedBox(height: 8.0),
                     Text(
-                        "My Gallery",
-                        style: LightTextTheme.textName
+                      "My Gallery",
+                      style: LightTextTheme.textName,
                     ),
                   ],
                 ),
-                const SizedBox(height: 36.0),
+                const SizedBox(width: 16.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // go to Exercise Canvas
                         Get.to(DrawingScreen());
                       },
                       style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          backgroundColor: primaryColor,
-                          padding: const EdgeInsets.all(24)
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 24.0,
+                        ),
                       ),
                       child: const Icon(
                         LineAwesomeIcons.dumbbell_solid,
@@ -80,14 +86,14 @@ class Homepage extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(width: 16.0),
+                    const SizedBox(height: 8.0),
                     Text(
-                        "Exercise",
-                        style: LightTextTheme.textName
+                      "Exercise",
+                      style: LightTextTheme.textName,
                     ),
                   ],
                 ),
-                const SizedBox(height: 36.0),
+                const SizedBox(width: 16.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -96,9 +102,14 @@ class Homepage extends StatelessWidget {
                         Get.to(CommunityScreen());
                       },
                       style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          backgroundColor: primaryColor,
-                          padding: const EdgeInsets.all(24)
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 24.0,
+                        ),
                       ),
                       child: const Icon(
                         LineAwesomeIcons.people_carry_solid,
@@ -106,20 +117,18 @@ class Homepage extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(width: 16.0),
+                    const SizedBox(height: 8.0),
                     Text(
-                        "Community",
-                        style: LightTextTheme.textName
+                      "Community",
+                      style: LightTextTheme.textName,
                     ),
                   ],
                 ),
               ],
             ),
-
           ],
         ),
       ),
     );
   }
 }
-
