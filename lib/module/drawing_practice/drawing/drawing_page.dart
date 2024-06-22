@@ -1,16 +1,17 @@
-import 'package:InklusiveDraw/module/drawing_practice/widgets/canvas_widget.dart';
-import 'package:InklusiveDraw/module/drawing_practice/widgets/tools_widget.dart';
-import 'package:InklusiveDraw/source/colors.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/drawing_canvas.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/tools_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:get/get.dart';
 
-class DrawingScreen extends StatefulWidget {
+import '../../../source/colors.dart';
+
+class DrawingPage extends StatefulWidget {
   @override
-  _DrawingScreenState createState() => _DrawingScreenState();
+  _DrawingPageState createState() => _DrawingPageState();
 }
 
-class _DrawingScreenState extends State<DrawingScreen> {
+class _DrawingPageState extends State<DrawingPage> {
   List<Offset?> points = [];
   Color selectedColor = Colors.black;
   double strokeWidth = 5.0;
@@ -53,7 +54,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
           selectStrokeWidth: selectStrokeWidth,
           clearCanvas: clearCanvas,
         ),
-      )
+      ),
     );
   }
 }

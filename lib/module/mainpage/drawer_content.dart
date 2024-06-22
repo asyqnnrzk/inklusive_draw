@@ -52,7 +52,7 @@ class _DrawerContentState extends State<DrawerContent> {
             ),
             onTap: () {
               // go to Profile page
-              Get.to(ProfileScreen());
+              Get.to(const ProfileScreen());
             },
           ),
           ListTile(
@@ -62,7 +62,7 @@ class _DrawerContentState extends State<DrawerContent> {
             ),
             onTap: () {
               // go to Dashboard page
-              Get.to(UserDashboard());
+              Get.to(const UserDashboard());
             },
           ),
           ListTile(
@@ -100,7 +100,7 @@ class _DrawerContentState extends State<DrawerContent> {
             ),
             onTap: () {
               // go to Resources page
-              Get.to(ResourceScreen());
+              Get.to(const ResourceScreen());
             },
           ),
         ],

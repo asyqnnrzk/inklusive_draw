@@ -1,4 +1,4 @@
-import 'package:InklusiveDraw/module/drawing_practice/drawing_screen.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/drawing_page.dart';
 import 'package:InklusiveDraw/module/support_and_resources/community/community_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
@@ -30,99 +30,105 @@ class Homepage extends StatelessWidget {
             ),
             const SizedBox(height: 36.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.to(DrawingScreen());
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // go to Gallery
+                          //Get.to(DrawingScreen());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          backgroundColor: primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16.0,
+                          ),
                         ),
-                        backgroundColor: primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                          horizontal: 24.0,
+                        child: const Icon(
+                          LineAwesomeIcons.photo_video_solid,
+                          size: 24.0,
+                          color: Colors.white,
                         ),
                       ),
-                      child: const Icon(
-                        LineAwesomeIcons.brush_solid,
-                        size: 24.0,
-                        color: Colors.white,
+                      const SizedBox(height: 8.0),
+                      Text(
+                        "My Gallery",
+                        style: LightTextTheme.textName,
                       ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      "My Gallery",
-                      style: LightTextTheme.textName,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 16.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.to(DrawingScreen());
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // go to Drawing Canvas
+                          Get.to(DrawingPage());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          backgroundColor: primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16.0,
+                          ),
                         ),
-                        backgroundColor: primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                          horizontal: 24.0,
+                        child: const Icon(
+                          LineAwesomeIcons.pencil_alt_solid,
+                          size: 24.0,
+                          color: Colors.white,
                         ),
                       ),
-                      child: const Icon(
-                        LineAwesomeIcons.dumbbell_solid,
-                        size: 24.0,
-                        color: Colors.white,
+                      const SizedBox(height: 8.0),
+                      Text(
+                        "Draw",
+                        style: LightTextTheme.textName,
                       ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      "Exercise",
-                      style: LightTextTheme.textName,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 16.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.to(CommunityScreen());
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // go to Community screen
+                          Get.to(const CommunityScreen());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          backgroundColor: primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16.0,
+                          ),
                         ),
-                        backgroundColor: primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                          horizontal: 24.0,
+                        child: const Icon(
+                          LineAwesomeIcons.people_carry_solid,
+                          size: 24.0,
+                          color: Colors.white,
                         ),
                       ),
-                      child: const Icon(
-                        LineAwesomeIcons.people_carry_solid,
-                        size: 24.0,
-                        color: Colors.white,
+                      const SizedBox(height: 8.0),
+                      Text(
+                        "Community",
+                        style: LightTextTheme.textName,
                       ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      "Community",
-                      style: LightTextTheme.textName,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'color_picker_dialog.dart';
 
@@ -19,11 +17,10 @@ class ToolsWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            // current color
             IconButton(
               icon: const Icon(Icons.color_lens),
               onPressed: () async {
-                Color pickedColor = await showDialog(
+                Color? pickedColor = await showDialog(
                   context: context,
                   builder: (context) => ColorPickerDialog(Colors.black),
                 );
@@ -32,46 +29,36 @@ class ToolsWidget extends StatelessWidget {
                 }
               },
             ),
-            // brush type
             IconButton(
               icon: const Icon(Icons.brush),
               onPressed: () {
-
+                selectStrokeWidth(5.0); // Example stroke width for brush
               },
             ),
-            // brush mode
             IconButton(
               icon: const Icon(Icons.create),
               onPressed: () {
                 selectStrokeWidth(10.0);
               },
             ),
-            // eraser mode
             IconButton(
               icon: Icon(MdiIcons.eraser),
               onPressed: () {
-
+                selectStrokeWidth(20.0); // Example stroke width for eraser
               },
             ),
-            // bucket mode
             IconButton(
               icon: Icon(MdiIcons.formatPaint),
               onPressed: () {
-
+                // Implement bucket tool
+                print('Bucket tool selected');
               },
             ),
-            // layer
             IconButton(
               icon: const Icon(Icons.layers),
               onPressed: () {
-
-              },
-            ),
-            // more tools
-            IconButton(
-              icon: Icon(MdiIcons.more),
-              onPressed: () {
-
+                // Implement layer tool
+                print('Layer tool selected');
               },
             ),
           ],
