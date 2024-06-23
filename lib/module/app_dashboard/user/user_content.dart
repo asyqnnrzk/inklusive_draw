@@ -19,288 +19,85 @@ class UserContent extends StatelessWidget {
           'Recent activities',
           style: LightTextTheme.dashboardHeadline,
         ),
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            itemCount: list.length,
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) =>
-                GestureDetector(
-                  onTap: list[index].onPress,
-                  child: SizedBox(
-                    width: 320,
-                    height: 200,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10, top: 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: primaryColor
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    list[index].title,
-                                    style: LightTextTheme.dashboardTxt,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const Flexible(
-                                  child: Image(
-                                    image: AssetImage(
-                                        onBoardImage1
-                                    ),
-                                    height: 110,
-                                  ),
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-                                  onPressed: () {
-
-                                  },
-                                  child: const Icon(Icons.play_arrow_rounded),
-                                ),
-                                const SizedBox(width: 8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      list[index].heading,
-                                      style: LightTextTheme.dashboardTxt,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      list[index].subHeading,
-                                      style: LightTextTheme.dashboardTxt,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            // children: [
-            //   SizedBox(
-            //     width: 320,
-            //     height: 200,
-            //     child: Padding(
-            //       padding: const EdgeInsets.only(right: 10, top: 10),
-            //       child: Container(
-            //         decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.circular(10),
-            //             color: primaryColor
-            //         ),
-            //         padding: const EdgeInsets.all(10),
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             Row(
-            //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //               children: [
-            //                 Flexible(
-            //                   child: Text(
-            //                     'Drawings',
-            //                     style: LightTextTheme.dashboardTxt,
-            //                     maxLines: 2,
-            //                     overflow: TextOverflow.ellipsis,
-            //                   ),
-            //                 ),
-            //                 const Flexible(
-            //                   child: Image(
-            //                     image: AssetImage(
-            //                         onBoardImage1
-            //                     ),
-            //                     height: 110,
-            //                   ),
-            //                 )
-            //               ],
-            //             ),
-            //             Row(
-            //               children: [
-            //                 ElevatedButton(
-            //                   style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-            //                   onPressed: () {
-            //
-            //                   },
-            //                   child: const Icon(Icons.play_arrow_rounded),
-            //                 ),
-            //                 const SizedBox(width: 8),
-            //                 Column(
-            //                   crossAxisAlignment: CrossAxisAlignment.start,
-            //                   children: [
-            //                     Text(
-            //                       'untitled231',
-            //                       style: LightTextTheme.dashboardTxt,
-            //                       overflow: TextOverflow.ellipsis,
-            //                     ),
-            //                     Text(
-            //                       'Time: 4.56',
-            //                       style: LightTextTheme.dashboardTxt,
-            //                       overflow: TextOverflow.ellipsis,
-            //                     ),
-            //                   ],
-            //                 )
-            //               ],
-            //             )
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            //   SizedBox(
-            //     width: 320,
-            //     height: 200,
-            //     child: Padding(
-            //       padding: const EdgeInsets.only(right: 10, top: 10),
-            //       child: Container(
-            //         decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.circular(10),
-            //             color: primaryColor
-            //         ),
-            //         padding: const EdgeInsets.all(10),
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             Row(
-            //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //               children: [
-            //                 Flexible(
-            //                   child: Text(
-            //                     'Drawings',
-            //                     style: LightTextTheme.dashboardTxt,
-            //                     maxLines: 2,
-            //                     overflow: TextOverflow.ellipsis,
-            //                   ),
-            //                 ),
-            //                 const Flexible(
-            //                   child: Image(
-            //                     image: AssetImage(
-            //                         onBoardImage1
-            //                     ),
-            //                     height: 110,
-            //                   ),
-            //                 )
-            //               ],
-            //             ),
-            //             Row(
-            //               children: [
-            //                 ElevatedButton(
-            //                   style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-            //                   onPressed: () {
-            //
-            //                   },
-            //                   child: const Icon(Icons.play_arrow_rounded),
-            //                 ),
-            //                 const SizedBox(width: 8),
-            //                 Column(
-            //                   crossAxisAlignment: CrossAxisAlignment.start,
-            //                   children: [
-            //                     Text(
-            //                       'untitled231',
-            //                       style: LightTextTheme.dashboardTxt,
-            //                       overflow: TextOverflow.ellipsis,
-            //                     ),
-            //                     Text(
-            //                       'Time: 4.56',
-            //                       style: LightTextTheme.dashboardTxt,
-            //                       overflow: TextOverflow.ellipsis,
-            //                     ),
-            //                   ],
-            //                 )
-            //               ],
-            //             )
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            //   SizedBox(
-            //     width: 320,
-            //     height: 200,
-            //     child: Padding(
-            //       padding: const EdgeInsets.only(right: 10, top: 10),
-            //       child: Container(
-            //         decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.circular(10),
-            //             color: primaryColor
-            //         ),
-            //         padding: const EdgeInsets.all(10),
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             Row(
-            //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //               children: [
-            //                 Flexible(
-            //                   child: Text(
-            //                     'Drawings',
-            //                     style: LightTextTheme.dashboardTxt,
-            //                     maxLines: 2,
-            //                     overflow: TextOverflow.ellipsis,
-            //                   ),
-            //                 ),
-            //                 const Flexible(
-            //                   child: Image(
-            //                     image: AssetImage(
-            //                         onBoardImage1
-            //                     ),
-            //                     height: 110,
-            //                   ),
-            //                 )
-            //               ],
-            //             ),
-            //             Row(
-            //               children: [
-            //                 ElevatedButton(
-            //                   style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-            //                   onPressed: () {
-            //
-            //                   },
-            //                   child: const Icon(Icons.play_arrow_rounded),
-            //                 ),
-            //                 const SizedBox(width: 8),
-            //                 Column(
-            //                   crossAxisAlignment: CrossAxisAlignment.start,
-            //                   children: [
-            //                     Text(
-            //                       'untitled231',
-            //                       style: LightTextTheme.dashboardTxt,
-            //                       overflow: TextOverflow.ellipsis,
-            //                     ),
-            //                     Text(
-            //                       'Time: 4.56',
-            //                       style: LightTextTheme.dashboardTxt,
-            //                       overflow: TextOverflow.ellipsis,
-            //                     ),
-            //                   ],
-            //                 )
-            //               ],
-            //             )
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ],
-          ),
-        ),
+        // SizedBox(
+        //   height: 200,
+        //   child: ListView.builder(
+        //     itemCount: list.length,
+        //     shrinkWrap: true,
+        //     scrollDirection: Axis.horizontal,
+        //     itemBuilder: (context, index) =>
+        //         GestureDetector(
+        //           onTap: list[index].onPress,
+        //           child: SizedBox(
+        //             width: 320,
+        //             height: 200,
+        //             child: Padding(
+        //               padding: const EdgeInsets.only(right: 10, top: 10),
+        //               child: Container(
+        //                 decoration: BoxDecoration(
+        //                     borderRadius: BorderRadius.circular(10),
+        //                     color: primaryColor
+        //                 ),
+        //                 padding: const EdgeInsets.all(10),
+        //                 child: Column(
+        //                   crossAxisAlignment: CrossAxisAlignment.start,
+        //                   children: [
+        //                     Row(
+        //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                       children: [
+        //                         Flexible(
+        //                           child: Text(
+        //                             list[index].title,
+        //                             style: LightTextTheme.dashboardTxt,
+        //                             maxLines: 2,
+        //                             overflow: TextOverflow.ellipsis,
+        //                           ),
+        //                         ),
+        //                         const Flexible(
+        //                           child: Image(
+        //                             image: AssetImage(
+        //                                 onBoardImage1
+        //                             ),
+        //                             height: 110,
+        //                           ),
+        //                         )
+        //                       ],
+        //                     ),
+        //                     Row(
+        //                       children: [
+        //                         ElevatedButton(
+        //                           style: ElevatedButton.styleFrom(shape: const CircleBorder()),
+        //                           onPressed: () {
+        //
+        //                           },
+        //                           child: const Icon(Icons.play_arrow_rounded),
+        //                         ),
+        //                         const SizedBox(width: 8),
+        //                         Column(
+        //                           crossAxisAlignment: CrossAxisAlignment.start,
+        //                           children: [
+        //                             Text(
+        //                               list[index].heading,
+        //                               style: LightTextTheme.dashboardTxt,
+        //                               overflow: TextOverflow.ellipsis,
+        //                             ),
+        //                             Text(
+        //                               list[index].subHeading,
+        //                               style: LightTextTheme.dashboardTxt,
+        //                               overflow: TextOverflow.ellipsis,
+        //                             ),
+        //                           ],
+        //                         )
+        //                       ],
+        //                     )
+        //                   ],
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //   ),
+        // ),
       ],
     );
   }
