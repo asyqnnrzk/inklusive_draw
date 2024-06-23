@@ -2,48 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class ColorPickerDialog extends StatefulWidget {
-  final Color initialColor;
+  final Color currentColor;
 
-  ColorPickerDialog(this.initialColor);
+  ColorPickerDialog(this.currentColor);
 
   @override
   _ColorPickerDialogState createState() => _ColorPickerDialogState();
 }
 
 class _ColorPickerDialogState extends State<ColorPickerDialog> {
-  late Color pickedColor;
+  Color selectedColor;
+
+  _ColorPickerDialogState() : selectedColor = Colors.black;
 
   @override
   void initState() {
     super.initState();
-    pickedColor = widget.initialColor;
+    selectedColor = widget.currentColor;
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Pick a color'),
+      title: const Text('Pick a color'),
       content: SingleChildScrollView(
         child: ColorPicker(
-          pickerColor: pickedColor,
+          pickerColor: selectedColor,
           onColorChanged: (color) {
             setState(() {
-              pickedColor = color;
+              selectedColor = color;
             });
           },
+          pickerAreaHeightPercent: 0.8,
         ),
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Cancel'),
+          child: const Text('Select'),
           onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        TextButton(
-          child: Text('Select'),
-          onPressed: () {
-            Navigator.of(context).pop(pickedColor);
+            Navigator.of(context).pop(selectedColor);
           },
         ),
       ],

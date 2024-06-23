@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'color_picker_dialog.dart';
 
 class ToolsWidget extends StatelessWidget {
   final Function(Color) selectColor;
-  final Function(double) selectStrokeWidth;
+  final Function(double) selectBrushThickness;
+  final Function(String) selectTool;
   final Function clearCanvas;
+  final String selectedTool;
+  final double brushThickness;
 
-  ToolsWidget({required this.selectColor, required this.selectStrokeWidth, required this.clearCanvas});
+  ToolsWidget({
+    required this.selectColor,
+    required this.selectBrushThickness,
+    required this.selectTool,
+    required this.clearCanvas,
+    required this.selectedTool,
+    required this.brushThickness,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,47 +31,50 @@ class ToolsWidget extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.color_lens),
               onPressed: () async {
-                Color? pickedColor = await showDialog(
+                Color pickedColor = await showDialog(
                   context: context,
                   builder: (context) => ColorPickerDialog(Colors.black),
                 );
-                if (pickedColor != null) {
-                  selectColor(pickedColor);
-                }
+                selectColor(pickedColor);
               },
             ),
             IconButton(
               icon: const Icon(Icons.brush),
               onPressed: () {
-                selectStrokeWidth(5.0); // Example stroke width for brush
+                selectTool('brush');
               },
+              color: selectedTool == 'brush' ? Colors.blue : Colors.black,
             ),
             IconButton(
               icon: const Icon(Icons.create),
               onPressed: () {
-                selectStrokeWidth(10.0);
+                selectTool('pencil');
               },
+              color: selectedTool == 'pencil' ? Colors.blue : Colors.black,
             ),
             IconButton(
               icon: Icon(MdiIcons.eraser),
               onPressed: () {
-                selectStrokeWidth(20.0); // Example stroke width for eraser
+                selectTool('eraser');
               },
+              color: selectedTool == 'eraser' ? Colors.blue : Colors.black,
             ),
             IconButton(
-              icon: Icon(MdiIcons.formatPaint),
+              icon: const Icon(LineAwesomeIcons.trash_alt),
               onPressed: () {
-                // Implement bucket tool
-                print('Bucket tool selected');
+                clearCanvas();
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.layers),
-              onPressed: () {
-                // Implement layer tool
-                print('Layer tool selected');
-              },
-            ),
+            if (selectedTool == 'brush') ...[
+              Slider(
+                value: brushThickness,
+                min: 1.0,
+                max: 20.0,
+                onChanged: (value) {
+                  selectBrushThickness(value);
+                },
+              ),
+            ]
           ],
         ),
       ),
