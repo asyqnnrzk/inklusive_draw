@@ -9,13 +9,15 @@ class StoreImage {
   Future<String?> uploadImageAndGetUrl() async {
     try {
       // Pick an image from gallery
-      final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+      final pickedFile = await _imagePicker.pickImage(source: ImageSource
+          .gallery);
       if (pickedFile == null) {
         return null;
       }
 
       // Create a reference to the Firebase Storage location
-      Reference reference = _storage.ref().child('images/${DateTime.now().millisecondsSinceEpoch}');
+      Reference reference = _storage.ref().child('images/${DateTime.now()
+          .millisecondsSinceEpoch}');
 
       // Upload the image file to Firebase Storage
       await reference.putFile(File(pickedFile.path));

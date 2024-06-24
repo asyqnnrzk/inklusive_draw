@@ -41,15 +41,18 @@ class _CommunityScreenState extends State<CommunityScreen> {
   void _onSearchChanged() {
     setState(() {
       displayedCommunities = allCommunities.where((community) {
-        return community.name.toLowerCase().contains(searchController.text.toLowerCase());
+        return community.name.toLowerCase().contains(searchController
+            .text.toLowerCase());
       }).toList();
     });
   }
 
   Future<void> _fetchCommunities() async {
-    final snapshot = await FirebaseFirestore.instance.collection('communities').get();
+    final snapshot = await FirebaseFirestore.instance.collection('communities')
+        .get();
     setState(() {
-      allCommunities = snapshot.docs.map((doc) => CommunityModel.fromFirestore(doc)).toList();
+      allCommunities = snapshot.docs.map((doc) => CommunityModel
+          .fromFirestore(doc)).toList();
       displayedCommunities = allCommunities;
     });
   }
@@ -64,7 +67,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
     setState(() {
       favoritedCommunityIds = favoritesSnapshot.docs
           .where((doc) => doc['type'] == 'community')
-          .map((doc) => doc['communityId'] as String)
+          .map((doc) => doc['community_id'] as String)
           .toList();
     });
   }
@@ -75,14 +78,14 @@ class _CommunityScreenState extends State<CommunityScreen> {
         .doc(user.uid)
         .collection('favorites');
     final favoriteDoc = await favoritesCollection
-        .where('communityId', isEqualTo: community.id)
+        .where('community_id', isEqualTo: community.id)
         .get();
 
     if (favoriteDoc.docs.isEmpty) {
       // Add to favorites
       await favoritesCollection.add({
         'type': 'community',
-        'communityId': community.id,
+        'community_id': community.id,
         'name': community.name,
         'description': community.description,
       });
@@ -131,7 +134,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 24.0),
-                UserSearch(controller: searchController, onSearch: _onSearchChanged),
+                UserSearch(controller: searchController, onSearch:
+                _onSearchChanged),
                 const SizedBox(height: 16.0),
                 ListView.builder(
                   shrinkWrap: true,
@@ -139,7 +143,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
                   itemCount: displayedCommunities.length,
                   itemBuilder: (context, index) {
                     final community = displayedCommunities[index];
-                    final isFavorited = favoritedCommunityIds.contains(community.id);
+                    final isFavorited = favoritedCommunityIds.contains(
+                        community.id);
                     return CommunityCard(
                       community: community,
                       isFavorited: isFavorited,

@@ -13,7 +13,8 @@ class UserHeader extends StatelessWidget {
       throw Exception('No authenticated user');
     }
 
-    DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore.instance
+    DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
+        .instance
         .collection('users')
         .doc(user.uid)
         .get();

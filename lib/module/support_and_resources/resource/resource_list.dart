@@ -40,7 +40,8 @@ class ResourceListState extends State<ResourceList> {
   }
 
   void _fetchResources() {
-    FirebaseFirestore.instance.collection('resources').snapshots().listen((snapshot) {
+    FirebaseFirestore.instance.collection('resources').snapshots()
+        .listen((snapshot) {
       setState(() {
         _allResources = snapshot.docs;
         _filteredResources = _allResources;
@@ -65,13 +66,13 @@ class ResourceListState extends State<ResourceList> {
         .doc(user.uid)
         .collection('favorites');
     final favoriteDoc = await favoritesCollection
-        .where('videoId', isEqualTo: resource.id)
+        .where('resource_id', isEqualTo: resource.id)
         .get();
 
     if (favoriteDoc.docs.isEmpty) {
       // Add to favorites
       await favoritesCollection.add({
-        'videoId': resource.id,
+        'resource_id': resource.id,
         'material': resource['material'],
         'link': resource['link'],
         'creator': resource['creator'],
@@ -97,7 +98,8 @@ class ResourceListState extends State<ResourceList> {
     final favoritesSnapshot = await favoritesCollection.get();
 
     setState(() {
-      _favoritedItemIds = favoritesSnapshot.docs.map((doc) => doc['videoId'] as String).toList();
+      _favoritedItemIds = favoritesSnapshot.docs.map((doc) => doc['resource_id']
+      as String).toList();
     });
   }
 
@@ -111,7 +113,8 @@ class ResourceListState extends State<ResourceList> {
         final resource = _filteredResources[index];
         final videoUrl = resource['link'];
         final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/'
+            'hqdefault.jpg';
 
         return StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -171,7 +174,7 @@ class ResourceListState extends State<ResourceList> {
                               .doc(user.uid)
                               .collection('favorites')
                               .add({
-                            'videoId': resource.id,
+                            'resource_id': resource.id,
                             'material': resource['material'],
                             'link': resource['link'],
                             'creator': resource['creator'],
@@ -183,7 +186,8 @@ class ResourceListState extends State<ResourceList> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+                          builder: (context) => VideoPlayerScreen(videoUrl:
+                          videoUrl),
                         ),
                       );
                     },

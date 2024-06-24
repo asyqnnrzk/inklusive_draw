@@ -55,7 +55,8 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
             ..strokeWidth = widget.selectedTool == 'brush'
                 ? widget.brushThickness
                 : 2.0;
-          DrawnLine line = DrawnLine(path: List.from(currentPath), paint: paint);
+          DrawnLine line = DrawnLine(path: List.from(currentPath), paint:
+          paint);
           widget.addLine(line);
           setState(() {
             currentPath.clear();

@@ -1,10 +1,8 @@
 import 'package:InklusiveDraw/controller/register_controller.dart';
 import 'package:InklusiveDraw/model/user/user_model.dart';
 import 'package:InklusiveDraw/source/colors.dart';
-import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../forget_password/forget_password_bottom_sheet.dart';
 
 class RegisterFormWidget extends StatefulWidget {
   const RegisterFormWidget({
@@ -118,7 +116,8 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                     });
                   },
                   child: Icon(
-                    obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                    obscureConfirmPassword ? Icons.visibility : Icons
+                        .visibility_off,
                   ),
                 ),
               ),

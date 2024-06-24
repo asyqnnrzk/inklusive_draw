@@ -1,6 +1,8 @@
 import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
-import 'package:InklusiveDraw/module/support_and_resources/resource/resource_screen.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/profile/profile_screen.dart';
+import 'package:InklusiveDraw/module/support_and_resources/resource/'
+    'resource_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
+    'profile_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

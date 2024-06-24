@@ -29,7 +29,6 @@ class UserDashboard extends StatelessWidget {
 
               // content
               const UserContent()
-              // hardcode, have to be changed once drawing is successful implemented
             ],
           ),
         ),

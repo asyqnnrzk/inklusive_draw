@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,7 +34,7 @@ class FavoriteScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicatorTheme());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -58,7 +59,8 @@ class FavoriteScreen extends StatelessWidget {
               if (type == 'video') {
                 final videoUrl = data['link'];
                 final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-                final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+                final thumbnailUrl = 'https://img.youtube.com/vi/$videoId'
+                    '/hqdefault.jpg';
 
                 return Column(
                   children: [
@@ -80,7 +82,8 @@ class FavoriteScreen extends StatelessWidget {
                         style: LightTextTheme.resourceCreator,
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.favorite, color: Colors.redAccent),
+                        icon: const Icon(Icons.favorite, color: Colors
+                            .redAccent),
                         onPressed: () async {
                           await FirebaseFirestore.instance
                               .collection('users')
@@ -93,7 +96,8 @@ class FavoriteScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+                            builder: (context) => VideoPlayerScreen(videoUrl:
+                            videoUrl),
                           ),
                         );
                       },
@@ -119,7 +123,8 @@ class FavoriteScreen extends StatelessWidget {
                         style: LightTextTheme.resourceCreator,
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.favorite, color: Colors.redAccent),
+                        icon: const Icon(Icons.favorite, color: Colors
+                            .redAccent),
                         onPressed: () async {
                           await FirebaseFirestore.instance
                               .collection('users')

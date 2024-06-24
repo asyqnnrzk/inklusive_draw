@@ -1,5 +1,6 @@
 import 'package:InklusiveDraw/module/app_dashboard/user/user_search.dart';
-import 'package:InklusiveDraw/module/support_and_resources/resource/resource_list.dart';
+import 'package:InklusiveDraw/module/support_and_resources/resource/'
+    'resource_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -15,7 +16,8 @@ class ResourceScreen extends StatefulWidget {
 
 class _ResourceScreenState extends State<ResourceScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final GlobalKey<ResourceListState> _resourceListKey = GlobalKey<ResourceListState>();
+  final GlobalKey<ResourceListState> _resourceListKey =
+  GlobalKey<ResourceListState>();
 
   @override
   void dispose() {
@@ -60,7 +62,8 @@ class _ResourceScreenState extends State<ResourceScreen> {
             children: [
               UserSearch(controller: _searchController, onSearch: _onSearch),
               const SizedBox(height: 16.0),
-              ResourceList(key: _resourceListKey, controller: _searchController),
+              ResourceList(key: _resourceListKey, controller:
+              _searchController),
             ],
           ),
         ),

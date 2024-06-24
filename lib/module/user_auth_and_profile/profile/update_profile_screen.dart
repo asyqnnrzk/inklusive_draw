@@ -35,8 +35,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (_currentUser != null) {
       String userId = _currentUser!.uid;
       try {
-        Map<String, dynamic> userData = await _firestoreService.getUserData(userId);
-        Map<String, dynamic> profileData = await _firestoreService.getUserProfile(userId);
+        Map<String, dynamic> userData = await _firestoreService
+            .getUserData(userId);
+        Map<String, dynamic> profileData = await _firestoreService
+            .getUserProfile(userId);
         setState(() {
           _imageUrl = profileData['avatar'] ?? userDefault;
           _nameController.text = userData['name'] ?? '';

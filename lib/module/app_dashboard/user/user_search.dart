@@ -6,7 +6,8 @@ class UserSearch extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSearch;
 
-  const UserSearch({Key? key, required this.controller, required this.onSearch}) : super(key: key);
+  const UserSearch({Key? key, required this.controller, required this.onSearch})
+      : super(key: key);
 
   void _startVoiceSearch() {
     print('Voice search started');

@@ -1,12 +1,14 @@
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/profile/profile_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
+    'profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../../source/colors.dart';
 import '../../../source/image_strings.dart';
 
-class UserDashboardAppbar extends StatelessWidget implements PreferredSizeWidget {
+class UserDashboardAppbar extends StatelessWidget implements
+    PreferredSizeWidget {
   const UserDashboardAppbar({
     super.key,
   });
@@ -16,7 +18,8 @@ class UserDashboardAppbar extends StatelessWidget implements PreferredSizeWidget
     return AppBar(
       leading: IconButton(
         onPressed: () {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Homepage()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder:
+              (BuildContext context) => const Homepage()));
         },
         icon: const Icon(LineAwesomeIcons.angle_left_solid),
       ),

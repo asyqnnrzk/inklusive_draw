@@ -30,8 +30,10 @@ class FirestoreService {
     await _firestore.collection('users').doc(userId).update(data);
   }
 
-  Future<void> updateUserProfile(String userId, Map<String, dynamic> data) async {
-    final profileCollection = _firestore.collection('users').doc(userId).collection('profile');
+  Future<void> updateUserProfile(String userId, Map<String, dynamic> data)
+  async {
+    final profileCollection = _firestore.collection('users').doc(userId)
+        .collection('profile');
 
     final profileSnapshot = await profileCollection.get();
     if (profileSnapshot.docs.isNotEmpty) {

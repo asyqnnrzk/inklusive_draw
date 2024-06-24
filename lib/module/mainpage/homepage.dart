@@ -1,5 +1,7 @@
-import 'package:InklusiveDraw/module/drawing_practice/drawing/drawing_page.dart';
-import 'package:InklusiveDraw/module/support_and_resources/community/community_screen.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/drawing_page'
+    '.dart';
+import 'package:InklusiveDraw/module/support_and_resources/community/'
+    'community_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';

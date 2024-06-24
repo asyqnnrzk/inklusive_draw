@@ -1,6 +1,9 @@
-import 'package:InklusiveDraw/module/support_and_resources/community/community_screen.dart';
-import 'package:InklusiveDraw/module/support_and_resources/favorites/favorite_screen.dart';
-import 'package:InklusiveDraw/module/support_and_resources/resource/resource_screen.dart';
+import 'package:InklusiveDraw/module/support_and_resources/community/'
+    'community_screen.dart';
+import 'package:InklusiveDraw/module/support_and_resources/favorites/'
+    'favorite_screen.dart';
+import 'package:InklusiveDraw/module/support_and_resources/resource/'
+    'resource_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../source/colors.dart';
 import '../../../source/text_theme.dart';
@@ -53,7 +56,8 @@ class UserBanner extends StatelessWidget {
                         itemCount: categories.length,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const
+                        SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 1.1,
                         ),
@@ -62,7 +66,8 @@ class UserBanner extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => pages[index]),
+                                MaterialPageRoute(builder: (context) =>
+                                pages[index]),
                               );
                             },
                             child: Column(

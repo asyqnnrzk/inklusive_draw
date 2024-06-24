@@ -1,7 +1,9 @@
 import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/register/register_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen'
+    '.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
+    'register_screen.dart';
 import 'package:InklusiveDraw/repository/exceptions/sign_up_fail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,16 +26,19 @@ class AuthRepository extends GetxController {
   }
 
   _setInitialScreen(User? user) {
-    user == null ? Get.offAll(() => const LoginScreen()) : Get.offAll(() => Homepage());
+    user == null ? Get.offAll(() => const LoginScreen()) : Get.offAll(() =>
+    const Homepage());
   }
 
-  Future<void> registerUserWithEmailAndPassword(String email, String password) async {
+  Future<void> registerUserWithEmailAndPassword(String email, String password)
+  async {
     try {
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password
       );
-      firebaseUser.value != null ? Get.offAll(() => const UserDashboard()) : Get.offAll(() => const RegisterScreen());
+      firebaseUser.value != null ? Get.offAll(() => const UserDashboard()) :
+      Get.offAll(() => const RegisterScreen());
     } on FirebaseAuthException catch(e) {
       final ex = SignUpFail.code(e.code);
       print('FIREBASE AUTH EXCEPTION: ${ex.message}');
@@ -45,13 +50,15 @@ class AuthRepository extends GetxController {
     }
   }
 
-  Future<void> loginUserWithEmailAndPassword(String email, String password) async {
+  Future<void> loginUserWithEmailAndPassword(String email, String password)
+  async {
     try {
       await _auth.signInWithEmailAndPassword(
           email: email,
           password: password
       );
-      firebaseUser.value != null ? Get.offAll(() => const UserDashboard()) : Get.offAll(() => const LoginScreen());
+      firebaseUser.value != null ? Get.offAll(() => const UserDashboard()) :
+      Get.offAll(() => const LoginScreen());
     } on FirebaseAuthException catch(e) {
       final ex = SignUpFail.code(e.code);
       print('FIREBASE AUTH EXCEPTION: ${ex.message}');
@@ -74,7 +81,8 @@ class AuthRepository extends GetxController {
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser
+          .authentication;
 
       // Create a new credential
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -83,13 +91,15 @@ class AuthRepository extends GetxController {
       );
 
       // Sign in to Firebase with the Google [UserCredential]
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential = await _auth.signInWithCredential
+        (credential);
 
       // Check if the user is signed in
       User? firebaseUser = userCredential.user;
       if (firebaseUser != null) {
         // Check if user data exists in Firestore
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(firebaseUser.uid).get();
+        DocumentSnapshot userDoc = await _firestore.collection('users')
+            .doc(firebaseUser.uid).get();
 
         if (!userDoc.exists) {
           // If no user data exists, create a new user record

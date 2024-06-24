@@ -1,4 +1,5 @@
-import 'package:InklusiveDraw/module/user_auth_and_profile/forget_password/forget_password_email.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/forget_password/'
+    'forget_password_email.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../source/colors.dart';

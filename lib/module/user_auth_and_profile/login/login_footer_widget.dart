@@ -1,4 +1,5 @@
-import 'package:InklusiveDraw/module/user_auth_and_profile/register/register_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
+    'register_screen.dart';
 import 'package:InklusiveDraw/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

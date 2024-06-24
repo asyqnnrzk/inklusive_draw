@@ -1,5 +1,7 @@
-import 'package:InklusiveDraw/module/user_auth_and_profile/profile/profile_menu.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/profile/update_profile_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
+    'profile_menu.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
+    'update_profile_screen.dart';
 import 'package:InklusiveDraw/repository/auth_repository.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/image_strings.dart';
@@ -22,7 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final user = FirebaseAuth.instance.currentUser!;
 
   Future<Map<String, dynamic>> getUserProfileData(String userId) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final userDoc = await FirebaseFirestore.instance.collection('users')
+        .doc(userId).get();
     final profileDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -93,7 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           bottom: 0,
                           right: 0,
                           child: GestureDetector(
-                            onTap: () => Get.to(() => const UpdateProfileScreen()),
+                            onTap: () => Get.to(() => const
+                            UpdateProfileScreen()),
                             child: Container(
                               width: 35,
                               height: 35,
@@ -128,7 +132,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       width: 200,
                       child: ElevatedButton(
-                        onPressed: () => Get.to(() => const UpdateProfileScreen()),
+                        onPressed: () => Get.to(() => const
+                        UpdateProfileScreen()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                         ),
@@ -171,7 +176,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text('Confirm Logout'),
-                              content: const Text('Are you sure you want to logout?'),
+                              content: const Text('Are you sure you '
+                                  'want to logout?'),
                               actions: <Widget>[
                                 TextButton(
                                   child: const Text(

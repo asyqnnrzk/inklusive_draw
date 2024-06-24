@@ -41,7 +41,7 @@ class ProfileMenuWidget extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: LightTextTheme.profileTxt?.apply(
+        style: LightTextTheme.profileTxt.apply(
             color: textColor
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter'
+    '.dart';
 import 'color_picker_dialog.dart';
 
 class ToolsWidget extends StatelessWidget {

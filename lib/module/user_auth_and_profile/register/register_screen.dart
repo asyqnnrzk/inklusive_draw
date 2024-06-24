@@ -1,6 +1,9 @@
-import 'package:InklusiveDraw/module/user_auth_and_profile/register/register_footer_widget.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/register/register_header_widget.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/register/register_form_widget.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
+    'register_footer_widget.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
+    'register_header_widget.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
+    'register_form_widget.dart';
 import 'package:flutter/material.dart';
 import '../../../source/colors.dart';
 

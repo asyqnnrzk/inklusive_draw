@@ -1,5 +1,6 @@
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/login/'
+    'login_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/image_strings.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,8 @@ class OnBoardScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () => Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(builder: (context) => const
+                        LoginScreen()),
                       ),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: whiteColor,
@@ -87,14 +89,15 @@ class OnBoardScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () => Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => Homepage()),
-                      ),
-                      child: Text(
-                        'Continue without login',
+                        MaterialPageRoute(builder: (context) => const
+                        Homepage()),
                       ),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: whiteColor,
                         backgroundColor: secondaryColor
+                      ),
+                      child: const Text(
+                        'Continue without login',
                       ),
                     ),
                     Image(

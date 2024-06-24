@@ -1,4 +1,5 @@
-import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen.dart';
+import 'package:InklusiveDraw/module/user_auth_and_profile/login/'
+    'login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../repository/auth_repository.dart';

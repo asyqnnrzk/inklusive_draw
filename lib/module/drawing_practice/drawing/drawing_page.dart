@@ -1,5 +1,7 @@
-import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/drawing_canvas.dart';
-import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/tools_widget.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
+    'drawing_canvas.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
+    'tools_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -51,7 +53,8 @@ class _DrawingPageState extends State<DrawingPage> {
   void eraseAt(Offset point) {
     setState(() {
       for (var line in lines) {
-        line.path.removeWhere((linePoint) => (linePoint - point).distance <= brushThickness);
+        line.path.removeWhere((linePoint) => (linePoint - point).distance <=
+            brushThickness);
       }
       lines.removeWhere((line) => line.path.isEmpty);
     });
