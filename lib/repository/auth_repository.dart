@@ -37,7 +37,7 @@ class AuthRepository extends GetxController {
         email: email,
         password: password
       );
-      firebaseUser.value != null ? Get.offAll(() => const UserDashboard()) :
+      firebaseUser.value != null ? Get.offAll(() => const Homepage()) :
       Get.offAll(() => const RegisterScreen());
     } on FirebaseAuthException catch(e) {
       final ex = SignUpFail.code(e.code);
@@ -57,7 +57,7 @@ class AuthRepository extends GetxController {
           email: email,
           password: password
       );
-      firebaseUser.value != null ? Get.offAll(() => const UserDashboard()) :
+      firebaseUser.value != null ? Get.offAll(() => const Homepage()) :
       Get.offAll(() => const LoginScreen());
     } on FirebaseAuthException catch(e) {
       final ex = SignUpFail.code(e.code);
@@ -106,7 +106,6 @@ class AuthRepository extends GetxController {
           await _firestore.collection('users').doc(firebaseUser.uid).set({
             'email': firebaseUser.email,
             'name': firebaseUser.displayName,
-            // Add other fields if necessary
           });
           print('New user registered: ${firebaseUser.email}');
         } else {

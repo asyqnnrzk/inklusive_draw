@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -125,7 +126,7 @@ class ResourceListState extends State<ResourceList> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicatorTheme();
             } else {
               final isFavorited = snapshot.data!.docs.isNotEmpty;
 

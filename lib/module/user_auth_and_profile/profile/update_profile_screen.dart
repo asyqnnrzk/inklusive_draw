@@ -3,9 +3,10 @@ import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import '../../../service/firestore_service.dart';
+import '../../../service/tts_service.dart';
 import '../../../source/colors.dart';
 import '../../../source/image_strings.dart';
-import '../../service/firestore_service.dart';
 import 'store_image.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
@@ -24,6 +25,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final _bioController = TextEditingController();
 
   final User? _currentUser = FirebaseAuth.instance.currentUser;
+  final TtsService _ttsService = TtsService();
 
   @override
   void initState() {
@@ -144,90 +146,149 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        label: Text('Name'),
-                        hintText: 'Name',
-                        prefixIcon: Icon(
-                          Icons.person,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Name',
+                              hintText: 'Name',
+                              prefixIcon: Icon(
+                                Icons.person,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your name';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
+                        IconButton(
+                          onPressed: () {
+                            _ttsService.speak('Please enter your name');
+                          },
+                          icon: const Icon(
+                            Icons.volume_up,
+                            color: primaryColor,
+                            size: 20,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        label: Text('Username'),
-                        hintText: 'Username',
-                        prefixIcon: Icon(
-                          Icons.person,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _usernameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Username',
+                              hintText: 'Username',
+                              prefixIcon: Icon(
+                                Icons.person,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your username';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your username';
-                        }
-                        return null;
-                      },
+                        IconButton(
+                          onPressed: () {
+                            _ttsService.speak('Please enter your username');
+                          },
+                          icon: const Icon(
+                            Icons.volume_up,
+                            color: primaryColor,
+                            size: 20,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _bioController,
-                      decoration: const InputDecoration(
-                        label: Text('Bio'),
-                        hintText: 'Bio',
-                        prefixIcon: Icon(
-                          Icons.info,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _bioController,
+                            decoration: const InputDecoration(
+                              labelText: 'Bio',
+                              hintText: 'Bio',
+                              prefixIcon: Icon(
+                                Icons.info,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your bio';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your bio';
-                        }
-                        return null;
-                      },
+                        IconButton(
+                          onPressed: () {
+                            _ttsService.speak('Please enter your bio');
+                          },
+                          icon: const Icon(
+                            Icons.volume_up,
+                            color: primaryColor,
+                            size: 20,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _saveProfile,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check, color: whiteColor),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Save',
+                            style: LightTextTheme.saveBtn,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _saveProfile,
+                        onPressed: () {Get.back();},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
+                          backgroundColor: primaryColor.withOpacity(0.2),
                         ),
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'MontserratRegular',
-                            color: whiteColor,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.cancel_outlined,
+                              color: blackColor.withOpacity(0.5)
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Cancel',
+                              style: LightTextTheme.cancelBtn,
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent.withOpacity(0.1),
-                        elevation: 0,
-                        foregroundColor: Colors.red,
-                      ),
-                      child: const Text(
-                        'Delete',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'MontserratBold',
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),

@@ -50,6 +50,10 @@ dependencies:
   universal_html: ^2.2.4
   url_launcher: ^6.3.0
 
+  # Speech recognition dependencies
+  speech_to_text: ^6.6.0
+  flutter_tts: ^4.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -73,13 +77,11 @@ flutter:
     - assets/icons/
   fonts:
 
-    - family: MontserratBold
+    - family: Verdana
       fonts:
-        - asset: assets/fonts/montserrat_bold.ttf
-
-    - family: MontserratRegular
-      fonts:
-        - asset: assets/fonts/montserrat_regular.ttf
+        - asset: assets/fonts/verdana.ttf
+        - asset: assets/fonts/verdana-bold.ttf
+        - asset: assets/fonts/verdana-bold-italic.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

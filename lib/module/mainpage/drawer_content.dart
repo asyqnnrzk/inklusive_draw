@@ -6,6 +6,7 @@ import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../service/tts_service.dart';
 import '../../source/text_theme.dart';
 import '../support_and_resources/favorites/favorite_screen.dart';
 
@@ -17,6 +18,7 @@ class DrawerContent extends StatefulWidget {
 }
 
 class _DrawerContentState extends State<DrawerContent> {
+  final TtsService _ttsService = TtsService();
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +58,26 @@ class _DrawerContentState extends State<DrawerContent> {
               // go to Profile page
               Get.to(const ProfileScreen());
             },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.person,
+                  color: primaryColor,
+                  size: 16,
+                ),
+                IconButton(
+                  onPressed: (){
+                    _ttsService.speak('Profile');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                )
+              ],
+            ),
           ),
           ListTile(
             title: Text(
@@ -66,6 +88,26 @@ class _DrawerContentState extends State<DrawerContent> {
               // go to Dashboard page
               Get.to(const UserDashboard());
             },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.dashboard,
+                  color: primaryColor,
+                  size: 16,
+                ),
+                IconButton(
+                  onPressed: (){
+                    _ttsService.speak('Dashboard');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                )
+              ],
+            ),
           ),
           ListTile(
             title: Text(
@@ -75,6 +117,26 @@ class _DrawerContentState extends State<DrawerContent> {
             onTap: () {
               // go to Notifications page
             },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.notifications,
+                  color: primaryColor,
+                  size: 16,
+                ),
+                IconButton(
+                  onPressed: (){
+                    _ttsService.speak('Notifications');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                )
+              ],
+            ),
           ),
           ListTile(
             title: Text(
@@ -87,6 +149,26 @@ class _DrawerContentState extends State<DrawerContent> {
                 MaterialPageRoute(builder: (context) => FavoriteScreen()),
               );
             },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.favorite,
+                  color: primaryColor,
+                  size: 16,
+                ),
+                IconButton(
+                  onPressed: (){
+                    _ttsService.speak('Favorites');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                )
+              ],
+            ),
           ),
           const Divider(
             height: 16.0,
@@ -104,6 +186,26 @@ class _DrawerContentState extends State<DrawerContent> {
               // go to Resources page
               Get.to(const ResourceScreen());
             },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.video_collection,
+                  color: primaryColor,
+                  size: 16,
+                ),
+                IconButton(
+                  onPressed: (){
+                    _ttsService.speak('Resources');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                )
+              ],
+            ),
           ),
         ],
       ),

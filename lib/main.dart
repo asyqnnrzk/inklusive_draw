@@ -1,6 +1,6 @@
 import 'package:InklusiveDraw/controller/notification_service_controller.dart';
 import 'package:InklusiveDraw/firebase_options.dart';
-import 'package:InklusiveDraw/module/mainpage/on_board_screen.dart';
+import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/notifications/'
     'notification.dart';
 import 'package:InklusiveDraw/repository/auth_repository.dart';
@@ -59,10 +59,10 @@ class InklusiveDraw extends StatelessWidget {
       getPages: [
         GetPage(name: '/notification', page: () => const NotificationScreen())
       ],
-      home: Scaffold(
+      home: const Scaffold(
         backgroundColor: secondaryColor,
         body: Center(
-          child: OnBoardScreen()
+          child: Homepage()
         ),
       ),
     );

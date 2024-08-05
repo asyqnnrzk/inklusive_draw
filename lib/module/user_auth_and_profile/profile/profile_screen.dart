@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
+import '../../../service/tts_service.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -22,6 +24,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final user = FirebaseAuth.instance.currentUser!;
+  final TtsService _ttsService = TtsService();
 
   Future<Map<String, dynamic>> getUserProfileData(String userId) async {
     final userDoc = await FirebaseFirestore.instance.collection('users')
@@ -122,28 +125,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Text(
                       userData['username'] ?? 'No data',
-                      style: LightTextTheme.profileTxt,
+                      style: LightTextTheme.profileTxtBold,
                     ),
                     Text(
                       userData['bio'] ?? 'No data',
                       style: LightTextTheme.profileTxt,
                     ),
                     const SizedBox(height: 20),
-                    SizedBox(
-                      width: 200,
-                      child: ElevatedButton(
-                        onPressed: () => Get.to(() => const
-                        UpdateProfileScreen()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                        ),
-                        child: const Text(
-                          'Edit profile',
-                          style: TextStyle(
-                            color: whiteColor,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 200,
+                          child: ElevatedButton(
+                            onPressed: () => Get.to(() => const
+                            UpdateProfileScreen()),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                            ),
+                            child: Text(
+                              'Edit profile',
+                              style: LightTextTheme.editProfile
+                            ),
                           ),
                         ),
-                      ),
+                        IconButton(
+                          color: primaryColor,
+                          icon: const Icon(Icons.volume_up),
+                          onPressed: () => _ttsService.speak('edit profile'),
+                        )
+                      ],
                     ),
                     const SizedBox(height: 30),
                     const Divider(),
@@ -169,7 +180,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'Logout',
                       icon: LineAwesomeIcons.sign_out_alt_solid,
                       textColor: Colors.red,
-                      endIcon: false,
                       onPress: () {
                         showDialog(
                           context: context,
