@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter'
@@ -40,25 +41,32 @@ class ToolsWidget extends StatelessWidget {
               },
             ),
             IconButton(
+              icon: const Icon(Icons.format_paint),
+              onPressed: () {
+                selectTool('bucket');
+              },
+              color: selectedTool == 'bucket' ? primaryColor : Colors.black,
+            ),
+            IconButton(
               icon: const Icon(Icons.brush),
               onPressed: () {
                 selectTool('brush');
               },
-              color: selectedTool == 'brush' ? Colors.blue : Colors.black,
+              color: selectedTool == 'brush' ? primaryColor : Colors.black,
             ),
             IconButton(
               icon: const Icon(Icons.create),
               onPressed: () {
                 selectTool('pencil');
               },
-              color: selectedTool == 'pencil' ? Colors.blue : Colors.black,
+              color: selectedTool == 'pencil' ? primaryColor : Colors.black,
             ),
             IconButton(
               icon: Icon(MdiIcons.eraser),
               onPressed: () {
                 selectTool('eraser');
               },
-              color: selectedTool == 'eraser' ? Colors.blue : Colors.black,
+              color: selectedTool == 'eraser' ? primaryColor : Colors.black,
             ),
             IconButton(
               icon: const Icon(LineAwesomeIcons.trash_alt),
