@@ -1,19 +1,35 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class DrawnLine {
+class CanvasDrawnLine {
   List<Offset> path;
   Paint paint;
 
-  DrawnLine({required this.path, required this.paint});
+  CanvasDrawnLine({required this.path, required this.paint});
+
+  Map<String, dynamic> toJson() => {
+    'path': path.map((offset) => {'dx': offset.dx, 'dy': offset.dy}).toList(),
+    'color': paint.color.value,
+    'strokeWidth': paint.strokeWidth,
+  };
+
+  static CanvasDrawnLine fromJson(Map<String, dynamic> json) {
+    List<Offset> path = (json['path'] as List).map((point) => Offset
+      (point['dx'], point['dy'])).toList();
+    Paint paint = Paint()
+      ..color = Color(json['color'])
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = json['strokeWidth'];
+    return CanvasDrawnLine(path: path, paint: paint);
+  }
 }
 
 class DrawingCanvas extends StatefulWidget {
-  final List<DrawnLine> lines;
+  final List<CanvasDrawnLine> lines;
   final Color selectedColor;
   final double brushThickness;
   final String selectedTool;
-  final Function(DrawnLine) addLine;
+  final Function(CanvasDrawnLine) addLine;
   final Function(Offset) eraseAt;
   final Color backgroundColor;
   final Function(Color) changeBackgroundColor;
@@ -54,14 +70,16 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
         }
       },
       onPanEnd: (details) {
-        if (widget.selectedTool != 'eraser' && widget.selectedTool != 'bucket' && currentPath.isNotEmpty) {
+        if (widget.selectedTool != 'eraser' && widget.selectedTool != 'bucket'
+            && currentPath.isNotEmpty) {
           Paint paint = Paint()
             ..color = widget.selectedColor
             ..strokeCap = StrokeCap.round
             ..strokeWidth = widget.selectedTool == 'brush'
                 ? widget.brushThickness
                 : 2.0;
-          DrawnLine line = DrawnLine(path: List.from(currentPath), paint: paint);
+          CanvasDrawnLine line = CanvasDrawnLine(path: List.from(currentPath),
+              paint: paint);
           widget.addLine(line);
           setState(() {
             currentPath.clear();
@@ -84,7 +102,7 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
 }
 
 class _DrawingPainter extends CustomPainter {
-  final List<DrawnLine> lines;
+  final List<CanvasDrawnLine> lines;
   final List<Offset> currentPath;
   final String selectedTool;
   final Color currentColor;

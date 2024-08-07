@@ -1,23 +1,36 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/drawing_canvas.dart';
-import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/tools_widget.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
+    'drawing_canvas.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
+    'tools_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 
 class DrawingPage extends StatefulWidget {
+  final List<CanvasDrawnLine>? initialLines;
+  final Color? initialBackgroundColor;
+
+  DrawingPage({
+    this.initialLines,
+    this.initialBackgroundColor,
+  });
+
   @override
   _DrawingPageState createState() => _DrawingPageState();
 }
 
 class _DrawingPageState extends State<DrawingPage> {
-  List<DrawnLine> lines = [];
-  List<DrawnLine> undoLines = [];
+  List<CanvasDrawnLine> lines = [];
+  List<CanvasDrawnLine> undoLines = [];
   Color selectedColor = Colors.black;
   double brushThickness = 5.0;
   String selectedTool = 'brush';
@@ -56,7 +69,7 @@ class _DrawingPageState extends State<DrawingPage> {
     });
   }
 
-  void addLine(DrawnLine line) {
+  void addLine(CanvasDrawnLine line) {
     setState(() {
       lines.add(line);
     });
@@ -65,10 +78,47 @@ class _DrawingPageState extends State<DrawingPage> {
   void eraseAt(Offset point) {
     setState(() {
       for (var line in lines) {
-        line.path.removeWhere((linePoint) => (linePoint - point).distance <= brushThickness);
+        line.path.removeWhere((linePoint) => (linePoint - point).distance <=
+            brushThickness);
       }
       lines.removeWhere((line) => line.path.isEmpty);
     });
+  }
+
+  Future<void> saveDrawing() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final now = DateTime.now();
+    final formatter = DateFormat('yyyyMMdd_HHmmss');
+    final fileName = 'drawing_${formatter.format(now)}.json';
+    final file = File('${directory.path}/$fileName');
+
+    final drawingData = {
+      'lines': lines.map((line) => line.toJson()).toList(),
+      'backgroundColor': backgroundColor.value,
+    };
+
+    await file.writeAsString(jsonEncode(drawingData));
+  }
+
+  Future<List<File>> listSavedDrawings() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final files = directory.listSync().whereType<File>().toList();
+    return files.where((file) => file.path.endsWith('.json')).toList();
+  }
+
+  Future<void> loadDrawing() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/drawing.json');
+    if (await file.exists()) {
+      final drawingData = jsonDecode(await file.readAsString());
+      final List<CanvasDrawnLine> loadedLines = (drawingData['lines'] as List)
+          .map((lineJson) => CanvasDrawnLine.fromJson(lineJson))
+          .toList();
+      setState(() {
+        lines = loadedLines;
+        backgroundColor = Color(drawingData['backgroundColor']);
+      });
+    }
   }
 
   Future<void> importDrawing() async {
@@ -82,12 +132,14 @@ class _DrawingPageState extends State<DrawingPage> {
 
   Future<void> exportDrawing() async {
     try {
-      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary = key.currentContext?.findRenderObject() as
+      RenderRepaintBoundary?;
       final image = await boundary?.toImage();
       final byteData = await image?.toByteData(format: ImageByteFormat.png);
       final pngBytes = byteData?.buffer.asUint8List();
 
-      final result = await ImageGallerySaver.saveImage(Uint8List.fromList(pngBytes!));
+      final result = await ImageGallerySaver.saveImage(Uint8List.fromList
+        (pngBytes!));
       print(result);
     } catch (e) {
       print(e);
@@ -135,6 +187,10 @@ class _DrawingPageState extends State<DrawingPage> {
           icon: const Icon(LineAwesomeIcons.angle_left_solid),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: saveDrawing,
+          ),
           IconButton(
             icon: const Icon(Icons.file_upload),
             onPressed: importDrawing,
@@ -191,3 +247,4 @@ class _DrawingPageState extends State<DrawingPage> {
     );
   }
 }
+

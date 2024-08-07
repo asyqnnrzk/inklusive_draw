@@ -13,9 +13,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^6.2.1
   flutter_native_splash: ^2.4.0
-  liquid_swipe: ^3.1.0
-  smooth_page_indicator: ^1.1.0
   get: ^4.6.6
+  shared_preferences: ^2.3.1
 
   # Icon dependencies
   line_awesome_flutter: ^3.0.1
@@ -29,7 +28,6 @@ dependencies:
   awesome_notifications: ^0.9.3+1
   firebase_messaging: ^15.0.0
   flutter_local_notifications: ^17.1.2
-  shared_preferences: ^2.2.3
 
   # Firebase dependencies
   google_sign_in: ^6.1.6
