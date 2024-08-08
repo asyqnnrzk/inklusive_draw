@@ -85,19 +85,72 @@ class _DrawingPageState extends State<DrawingPage> {
     });
   }
 
-  Future<void> saveDrawing() async {
+  Future<void> promptSaveAsDialog() async {
+    final TextEditingController nameController = TextEditingController();
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Save Drawing As'),
+          content: TextField(
+            controller: nameController,
+            decoration: const InputDecoration(
+              hintText: 'Enter drawing name',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                final name = nameController.text;
+                if (name.isNotEmpty) {
+                  saveDrawing(name);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to save the drawing
+  Future<void> saveDrawing(String name) async {
     final directory = await getApplicationDocumentsDirectory();
     final now = DateTime.now();
     final formatter = DateFormat('yyyyMMdd_HHmmss');
-    final fileName = 'drawing_${formatter.format(now)}.json';
-    final file = File('${directory.path}/$fileName');
+    final fileName = 'drawing_${formatter.format(now)}';
 
+    // Save JSON Data
+    final file = File('${directory.path}/$fileName.json');
     final drawingData = {
+      'name': name,
+      'dateCreated': now.toIso8601String(),
       'lines': lines.map((line) => line.toJson()).toList(),
       'backgroundColor': backgroundColor.value,
     };
-
     await file.writeAsString(jsonEncode(drawingData));
+
+    // Save Image File
+    try {
+      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final image = await boundary?.toImage();
+      final byteData = await image?.toByteData(format: ImageByteFormat.png);
+      final pngBytes = byteData?.buffer.asUint8List();
+      final imageFile = File('${directory.path}/$fileName.png');
+      await imageFile.writeAsBytes(pngBytes!);
+    } catch (e) {
+      print('Error saving image: $e');
+    }
   }
 
   Future<List<File>> listSavedDrawings() async {
@@ -189,7 +242,7 @@ class _DrawingPageState extends State<DrawingPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: saveDrawing,
+            onPressed: promptSaveAsDialog,
           ),
           IconButton(
             icon: const Icon(Icons.file_upload),
