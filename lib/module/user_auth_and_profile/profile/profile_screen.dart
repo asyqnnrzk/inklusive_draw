@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         title: Text(
           'Profile',
-          style: LightTextTheme.profileHeadline,
+          style: LightTextTheme.pageHeadline,
         ),
       ),
       body: FutureBuilder<Map<String, dynamic>>(

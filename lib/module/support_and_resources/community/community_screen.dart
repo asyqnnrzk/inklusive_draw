@@ -107,7 +107,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
       appBar: AppBar(
         title: Text(
           'Community',
-          style: LightTextTheme.profileHeadline,
+          style: LightTextTheme.pageHeadline,
         ),
         elevation: 0,
         leading: IconButton(

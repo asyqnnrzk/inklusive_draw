@@ -17,7 +17,7 @@ class FavoriteScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Favorites',
-          style: LightTextTheme.profileHeadline,
+          style: LightTextTheme.pageHeadline,
         ),
         leading: IconButton(
           onPressed: () {

@@ -35,7 +35,7 @@ class _ResourceScreenState extends State<ResourceScreen> {
       appBar: AppBar(
         title: Text(
           'Resources',
-          style: LightTextTheme.profileHeadline,
+          style: LightTextTheme.pageHeadline,
         ),
         elevation: 0,
         leading: IconButton(

@@ -3,7 +3,11 @@ import 'dart:io';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import '../../../source/text_theme.dart';
 import '../drawing/drawing_page.dart';
 import '../drawing/widgets/drawing_canvas.dart';
 
@@ -85,7 +89,18 @@ class _GalleryScreenState extends State<GalleryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Gallery')),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: const Icon(LineAwesomeIcons.angle_left_solid),
+        ),
+        title: Text(
+          'My Gallery',
+          style: LightTextTheme.pageHeadline,
+        ),
+      ),
       body: FutureBuilder<List<File>>(
         future: savedDrawings,
         builder: (context, snapshot) {
@@ -99,9 +114,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
             final files = snapshot.data!;
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
+                crossAxisCount: 1,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
               ),
               itemCount: files.length,
               itemBuilder: (context, index) {
@@ -135,18 +150,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
                               children: [
                                 Text(
                                   name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: LightTextTheme.drawingLabel,
                                 ),
                                 const SizedBox(height: 4.0),
                                 Text(
                                   'Created on: ${dateCreated.toLocal().toString
                                     ().split(' ')[0]}',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 12.0,
-                                  ),
+                                  style: LightTextTheme.drawingLabel,
                                 ),
                                 Row(
                                   children: [
@@ -155,7 +165,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                         elevation: 0.0
                                       ),
                                       onPressed: () => editDrawing(jsonFile),
-                                      child: const Text('Edit'),
+                                      child: Text(
+                                        'Edit',
+                                        style: LightTextTheme.editBtn,
+                                      ),
                                     ),
                                     const SizedBox(width: 8.0),
                                     ElevatedButton(
@@ -164,7 +177,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                       ),
                                       onPressed: () => deleteDrawing(jsonFile,
                                           imageFile),
-                                      child: const Text('Delete'),
+                                      child: Text(
+                                        'Delete',
+                                        style: LightTextTheme.deleteBtn,
+                                      ),
                                     ),
                                   ],
                                 ),

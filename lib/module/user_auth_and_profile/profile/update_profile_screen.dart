@@ -98,7 +98,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         ),
         title: Text(
           'Edit profile',
-          style: LightTextTheme.profileHeadline,
+          style: LightTextTheme.pageHeadline,
         ),
       ),
       body: SingleChildScrollView(

@@ -63,6 +63,39 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // edit button
+  static TextStyle editBtn = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // delete button
+  static TextStyle deleteBtn = const TextStyle(
+      color: redText,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // drawing details at My Gallery
+  static TextStyle drawingLabel = TextStyle(
+      color: blackColor.withOpacity(0.7),
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // appbar title
+  static TextStyle pageHeadline = const TextStyle(
+      color: blackColor,
+      fontSize: 24.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
   static TextStyle textName = const TextStyle(
     color: primaryColor,
     fontSize: 16.0,
@@ -136,13 +169,6 @@ class LightTextTheme {
   static TextStyle dashboardCategories = const TextStyle(
     color: blackColor,
     fontSize: 10.0,
-    fontFamily: 'Verdana',
-    letterSpacing: 1.5
-  );
-
-  static TextStyle profileHeadline = const TextStyle(
-    color: blackColor,
-    fontSize: 24.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
   );

@@ -19,10 +19,11 @@ class DrawingPage extends StatefulWidget {
   final List<CanvasDrawnLine>? initialLines;
   final Color? initialBackgroundColor;
 
-  DrawingPage({
+  const DrawingPage({
+    Key? key,
     this.initialLines,
     this.initialBackgroundColor,
-  });
+  }) : super(key: key);
 
   @override
   _DrawingPageState createState() => _DrawingPageState();
@@ -42,6 +43,18 @@ class _DrawingPageState extends State<DrawingPage> {
 
   final ImagePicker _picker = ImagePicker();
   final GlobalKey key = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.initialLines != null) {
+      lines = widget.initialLines!;
+    }
+    if (widget.initialBackgroundColor != null) {
+      backgroundColor = widget.initialBackgroundColor!;
+    }
+  }
 
   void selectColor(Color color) {
     setState(() {
