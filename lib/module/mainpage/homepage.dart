@@ -1,5 +1,6 @@
 import 'package:InklusiveDraw/module/drawing_practice/drawing/drawing_page.dart';
 import 'package:InklusiveDraw/module/drawing_practice/gallery/gallery_screen.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
 import 'package:InklusiveDraw/module/support_and_resources/community/community_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
@@ -58,7 +59,7 @@ class _HomepageState extends State<Homepage> {
                     'My Gallery',
                         () {
                       // go to Gallery
-                      Get.to(GalleryScreen());
+                      Get.to(const GalleryScreen());
                     },
                   ),
                   _buildGridButton(
@@ -67,7 +68,7 @@ class _HomepageState extends State<Homepage> {
                     'Draw',
                         () {
                       // go to Drawing Canvas
-                      Get.to(DrawingPage());
+                      Get.to(const DrawingPage());
                     },
                   ),
                   _buildGridButton(
@@ -85,6 +86,7 @@ class _HomepageState extends State<Homepage> {
                     'InkGram',
                         () {
                       // go to InkGram screen
+                      Get.to(const InkgramProfile());
                     },
                   ),
                 ],
