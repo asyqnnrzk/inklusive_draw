@@ -9,7 +9,6 @@ Future<void> showCreatePostDialog(BuildContext context) async {
   String description = '';
   File? selectedImage;
 
-  // Pick an image before showing the dialog
   final picker = ImagePicker();
   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
   if (pickedFile != null) {
@@ -60,11 +59,9 @@ Future<void> showCreatePostDialog(BuildContext context) async {
 }
 
 Future<void> uploadPost(String description, File imageFile) async {
-  // Get current user ID
   final userId = FirebaseAuth.instance.currentUser?.uid;
 
   if (userId != null) {
-    // Create a reference to the user's folder in Firebase Storage
     final storageRef = FirebaseStorage.instance
         .ref()
         .child('user_posts')
@@ -77,7 +74,6 @@ Future<void> uploadPost(String description, File imageFile) async {
     // Get the download URL
     final downloadUrl = await storageRef.getDownloadURL();
 
-    // Save the post details in Firestore
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)

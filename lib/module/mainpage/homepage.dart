@@ -1,7 +1,10 @@
-import 'package:InklusiveDraw/module/drawing_practice/drawing/drawing_page.dart';
-import 'package:InklusiveDraw/module/drawing_practice/gallery/gallery_screen.dart';
-import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
-import 'package:InklusiveDraw/module/support_and_resources/community/community_screen.dart';
+import 'package:InklusiveDraw/module/drawing_practice/drawing/drawing_page'
+    '.dart';
+import 'package:InklusiveDraw/module/drawing_practice/gallery/gallery_screen'
+    '.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_homepage.dart';
+import 'package:InklusiveDraw/module/support_and_resources/community/community'
+    '_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +89,7 @@ class _HomepageState extends State<Homepage> {
                     'InkGram',
                         () {
                       // go to InkGram screen
-                      Get.to(const InkgramProfile());
+                      Get.to(const InkgramHomepage());
                     },
                   ),
                 ],
