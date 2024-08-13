@@ -184,14 +184,16 @@ class _InkgramProfileState extends State<InkgramProfile> {
                         return const CircularProgressIndicatorTheme();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      } else if (!snapshot.hasData || snapshot.data!.docs
+                          .isEmpty) {
                         return const Text('No posts yet');
                       } else {
                         return GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const
+                          SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 2.0,
                             mainAxisSpacing: 2.0,
@@ -214,6 +216,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
               ),
             ),
             bottomNavigationBar: BottomNavigationBar(
+              backgroundColor: primaryColor,
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
@@ -233,7 +236,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                 ),
               ],
               currentIndex: _selectedIndex,
-              selectedItemColor: primaryColor,
+              selectedItemColor: secondaryColor,
               onTap: _onItemTapped,
               type: BottomNavigationBarType.fixed,
             ),

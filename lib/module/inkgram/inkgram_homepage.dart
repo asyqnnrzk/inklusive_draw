@@ -1,6 +1,6 @@
 import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
-import 'package:InklusiveDraw/source/image_strings.dart';
+import 'package:InklusiveDraw/source/buttons.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
@@ -97,11 +97,11 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
               bool isLiked = post['isLiked'] ?? false;
 
               return Card(
+                color: tertiaryColor,
                 margin: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Username row at the top
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -109,11 +109,10 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                           const SizedBox(width: 8.0),
                           Text(
                             post['username'] ?? 'Unknown User',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                            style: LightTextTheme.inkgramPostUser
                           ),
+                          const Spacer(),
+                          const ReportButton()
                         ],
                       ),
                     ),
@@ -132,19 +131,20 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
                             post['description'] ?? 'No description',
-                            style: const TextStyle(fontSize: 16),
+                            style: LightTextTheme.inkgramPostDesc,
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.topRight,
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
+                                tooltip: 'Like the post',
                                 icon: Icon(
-                                  isLiked
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
+                                  isLiked ? Icons.favorite : Icons.
+                                  favorite_border,
                                   color: isLiked ? Colors.red : Colors.grey,
                                 ),
                                 onPressed: () {
@@ -161,14 +161,16 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                 },
                               ),
                               IconButton(
+                                tooltip: 'Comment something',
                                 icon: const Icon(Icons.comment),
                                 onPressed: () {
-                                  //Get.to(() => CommentsPage(postId: post['postId']));
+                                  // Navigate to the comments page
+                                  // Get.to(() => CommentsPage(postId: post['postId']));
                                 },
                               ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -179,6 +181,7 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: primaryColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -198,7 +201,7 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: primaryColor,
+        selectedItemColor: secondaryColor,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),

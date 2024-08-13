@@ -11,6 +11,14 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
+  // appbar title
+  static TextStyle pageHeadline = const TextStyle(
+      color: blackColor,
+      fontSize: 24.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
   // label at homepage grid
   static TextStyle labelName = const TextStyle(
     color: whiteColor,
@@ -59,7 +67,6 @@ class LightTextTheme {
       color: blackColor.withOpacity(0.5),
       fontSize: 16.0,
       fontFamily: 'Verdana',
-      fontWeight: FontWeight.bold,
       letterSpacing: 1.5
   );
 
@@ -71,9 +78,35 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // submit button
+  static TextStyle submitBtn = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
   // delete button
   static TextStyle deleteBtn = const TextStyle(
       color: redText,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // report button
+  static TextStyle reportBtn = const TextStyle(
+      color: redText,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // delete button
+  static TextStyle reportDetails = const TextStyle(
+      color: blackColor,
       fontSize: 16.0,
       fontFamily: 'Verdana',
       letterSpacing: 1.5
@@ -88,10 +121,19 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
-  // appbar title
-  static TextStyle pageHeadline = const TextStyle(
+  // username label for each InkGram post at homepage
+  static TextStyle inkgramPostUser = const TextStyle(
       color: blackColor,
-      fontSize: 24.0,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // description label for each InkGram post at homepage
+  static TextStyle inkgramPostDesc = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
       fontFamily: 'Verdana',
       letterSpacing: 1.5
   );

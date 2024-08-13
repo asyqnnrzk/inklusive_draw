@@ -82,6 +82,7 @@ Future<void> uploadPost(String description, File imageFile) async {
       'picture': downloadUrl,
       'description': description,
       'timestamp': FieldValue.serverTimestamp(),
+      'isLiked': false
     });
   } else {
     print('User not signed in.');
