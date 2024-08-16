@@ -1,15 +1,16 @@
 import 'package:InklusiveDraw/module/inkgram/inkgram_homepage.dart';
-import 'package:InklusiveDraw/module/inkgram/inkgram_post.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import '../../service/tts_service.dart';
+import '../../service/inkgram_service.dart';
 import '../../source/image_strings.dart';
 import '../../source/progress_indicator_theme.dart';
 import '../../source/text_theme.dart';
+import '../user_auth_and_profile/profile/update_profile_screen.dart';
+import 'inkgram_post.dart';
 
 class InkgramProfile extends StatefulWidget {
   const InkgramProfile({super.key});
@@ -20,7 +21,6 @@ class InkgramProfile extends StatefulWidget {
 
 class _InkgramProfileState extends State<InkgramProfile> {
   final user = FirebaseAuth.instance.currentUser!;
-  final TtsService _ttsService = TtsService();
   int _selectedIndex = 3;
 
   Future<Map<String, dynamic>> getUserProfileData(String userId) async {
@@ -46,7 +46,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
 
   void _onItemTapped(int index) {
     if (index == 0) {
-      Get.to(() => InkgramHomepage());
+      Get.to(() => const InkgramHomepage());
     } else if (index == 2) {
       showCreatePostDialog(context);
     } else {
@@ -114,38 +114,79 @@ class _InkgramProfileState extends State<InkgramProfile> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: 120,
-                          height: 120,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.network(
-                              userData['avatar'] ?? userDefault,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  userDefault,
-                                  fit: BoxFit.cover,
-                                );
-                              },
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                userData['avatar'] ?? userDefault,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    userDefault,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () => Get.to(() => const
+                                UpdateProfileScreen()),
+                                child: Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    color: primaryColor,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    LineAwesomeIcons.pencil_alt_solid,
+                                    size: 20,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(width: 16.0),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceEvenly,
                                 children: [
-                                  _buildStatColumn("Posts", "9"),
-                                  _buildStatColumn("Followers", "50"),
-                                  _buildStatColumn("Following", "30"),
+                                  _buildStatColumn("Posts", userData['posts'] ?? 0),
+                                  _buildStatColumn("Followers", userData['followers'] ?? 0),
+                                  _buildStatColumn("Following", userData['following'] ?? 0),
                                 ],
                               ),
                               const SizedBox(height: 10),
+                              Center(
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: primaryColor
+                                  ),
+                                  onPressed: () => Get.to(() => const
+                                  UpdateProfileScreen()),
+                                  child: Text(
+                                    'Edit profile',
+                                    style: LightTextTheme.profileTxt,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -158,13 +199,19 @@ class _InkgramProfileState extends State<InkgramProfile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          userData['name'] ?? 'No data',
-                          style: LightTextTheme.profileTxtBold,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            userData['name'] ?? 'No data',
+                            style: LightTextTheme.profileTxtBold,
+                          ),
                         ),
-                        Text(
-                          userData['bio'] ?? 'No data',
-                          style: LightTextTheme.profileTxt,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            userData['bio'] ?? 'No data',
+                            style: LightTextTheme.profileTxt,
+                          ),
                         ),
                       ],
                     ),
@@ -179,8 +226,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                         .orderBy('timestamp', descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicatorTheme();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
@@ -192,19 +238,30 @@ class _InkgramProfileState extends State<InkgramProfile> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
-                          gridDelegate: const
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 2.0,
                             mainAxisSpacing: 2.0,
                           ),
                           itemBuilder: (context, index) {
                             final post = snapshot.data!.docs[index];
-                            return Container(
-                              color: Colors.grey[300],
-                              child: Image.network(
-                                post['picture'],
-                                fit: BoxFit.cover,
+                            final imageUrl = post['picture'];
+                            final description = post['description'];
+
+                            return GestureDetector(
+                              onTap: () {
+                                Get.to(() => InkgramPost(
+                                  postId: post.id,
+                                  imageUrl: imageUrl,
+                                  description: description,
+                                ));
+                              },
+                              child: Container(
+                                color: Colors.grey[300],
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             );
                           },
@@ -246,11 +303,11 @@ class _InkgramProfileState extends State<InkgramProfile> {
     );
   }
 
-  Column _buildStatColumn(String label, String count) {
+  Column _buildStatColumn(String label, int count) {
     return Column(
       children: [
         Text(
-          count,
+          count.toString(),
           style: const TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,

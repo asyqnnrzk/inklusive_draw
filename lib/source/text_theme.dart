@@ -50,6 +50,7 @@ class LightTextTheme {
       color: blackColor,
       fontSize: 20.0,
       fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
       letterSpacing: 1.5
   );
 

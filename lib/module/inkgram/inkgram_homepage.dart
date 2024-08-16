@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import '../../service/inkgram_service.dart';
 import '../../source/colors.dart';
-import 'inkgram_post.dart';
 
 class InkgramHomepage extends StatefulWidget {
   const InkgramHomepage({super.key});
@@ -145,7 +145,7 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                 icon: Icon(
                                   isLiked ? Icons.favorite : Icons.
                                   favorite_border,
-                                  color: isLiked ? Colors.red : Colors.grey,
+                                  color: isLiked ? Colors.red : blackColor,
                                 ),
                                 onPressed: () {
                                   setState(() {
