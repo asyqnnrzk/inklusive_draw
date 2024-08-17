@@ -139,6 +139,23 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // username at comment
+  static TextStyle inkgramCommentUser = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // comment
+  static TextStyle inkgramComment = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
   static TextStyle textName = const TextStyle(
     color: primaryColor,
     fontSize: 16.0,

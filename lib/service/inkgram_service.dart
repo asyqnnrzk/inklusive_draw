@@ -141,3 +141,36 @@ Future<void> uploadPost(String description, File imageFile) async {
     print('User not signed in.');
   }
 }
+
+Future<void> addComment(String userId, String postId, String value) async {
+  // Get the current user's username from Firestore
+  DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .get();
+
+  String username = userDoc['username'];
+
+  // Add the comment to the Firestore
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('inkgram')
+      .doc(postId)
+      .collection('comments')
+      .add({
+    'username': username,
+    'comment': value,
+    'timestamp': FieldValue.serverTimestamp(),
+  });
+
+  // Update the number of comments in the post document
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('inkgram')
+      .doc(postId)
+      .update({
+    'commentCount': FieldValue.increment(1),
+  });
+}

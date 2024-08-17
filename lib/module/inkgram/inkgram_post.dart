@@ -1,5 +1,5 @@
+import 'package:InklusiveDraw/module/inkgram/inkgram_likes.dart';
 import 'package:InklusiveDraw/source/colors.dart';
-import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,23 +7,25 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 import '../../service/tts_service.dart';
+import 'inkgram_comment_full.dart';
 
 class InkgramPost extends StatelessWidget {
   final String postId;
   final String imageUrl;
   final String description;
+  final String userId; // Add userId here
 
   const InkgramPost({
     Key? key,
     required this.postId,
     required this.imageUrl,
     required this.description,
+    required this.userId, // Initialize userId
   }) : super(key: key);
 
   Future<void> _deletePost(BuildContext context) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    // userId is now accessible here
 
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
@@ -127,7 +129,7 @@ class InkgramPost extends StatelessWidget {
                   IconButton(
                     color: primaryColor,
                     icon: const Icon(Icons.volume_up),
-                    onPressed: (){
+                    onPressed: () {
                       ttsService.speak(description);
                     },
                   ),
@@ -141,8 +143,7 @@ class InkgramPost extends StatelessWidget {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child:
-                        CircularProgressIndicatorTheme());
+                        return const Text('');
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData || !snapshot.data!.exists) {
@@ -151,7 +152,7 @@ class InkgramPost extends StatelessWidget {
                         final postData = snapshot.data!.data() as Map<String, dynamic>;
                         final likeCount = postData['likes'] ?? 0;
                         final commentCount = postData['comments'] ?? 0;
-        
+
                         return Row(
                           children: [
                             IconButton(
@@ -163,7 +164,12 @@ class InkgramPost extends StatelessWidget {
                                   Text(likeCount.toString()),
                                 ],
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(() => InkgramLikes(
+                                  postId: postId,
+                                  userId: userId,
+                                ));
+                              },
                             ),
                             IconButton(
                               color: primaryColor,
@@ -174,7 +180,12 @@ class InkgramPost extends StatelessWidget {
                                   Text(commentCount.toString()),
                                 ],
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(() => InkgramCommentFull(
+                                  postId: postId,
+                                  userId: userId,
+                                ));
+                              },
                             ),
                           ],
                         );

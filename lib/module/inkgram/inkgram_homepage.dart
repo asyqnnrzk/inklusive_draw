@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/module/inkgram/inkgram_comment.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/source/buttons.dart';
@@ -156,7 +157,12 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                         .doc(post['userId'])
                                         .collection('inkgram')
                                         .doc(post['postId'])
-                                        .update({'isLiked': isLiked});
+                                        .update({
+                                          'isLiked': isLiked,
+                                          'likes': isLiked
+                                              ? FieldValue.increment(1)
+                                              : FieldValue.increment(-1)
+                                    });
                                   });
                                 },
                               ),
@@ -164,8 +170,14 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                 tooltip: 'Comment something',
                                 icon: const Icon(Icons.comment),
                                 onPressed: () {
-                                  // Navigate to the comments page
-                                  // Get.to(() => CommentsPage(postId: post['postId']));
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (context) => SizedBox(
+                                      height: MediaQuery.of(context).size.height * 0.5,
+                                      child: InkgramComment(postId: post['postId'], userId: post['userId'],),
+                                    ),
+                                  );
                                 },
                               ),
                             ],

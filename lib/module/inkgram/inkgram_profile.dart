@@ -251,6 +251,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                             return GestureDetector(
                               onTap: () {
                                 Get.to(() => InkgramPost(
+                                  userId: user.uid,
                                   postId: post.id,
                                   imageUrl: imageUrl,
                                   description: description,
