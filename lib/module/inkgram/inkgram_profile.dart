@@ -13,26 +13,78 @@ import '../user_auth_and_profile/profile/update_profile_screen.dart';
 import 'inkgram_post.dart';
 
 class InkgramProfile extends StatefulWidget {
-  const InkgramProfile({super.key});
+  final String userId;
+
+  const InkgramProfile({super.key, required this.userId});
 
   @override
   State<InkgramProfile> createState() => _InkgramProfileState();
 }
 
 class _InkgramProfileState extends State<InkgramProfile> {
-  final user = FirebaseAuth.instance.currentUser!;
+  final currentUser = FirebaseAuth.instance.currentUser!;
   int _selectedIndex = 3;
+  bool isFollowing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfFollowing();
+  }
+
+  Future<void> checkIfFollowing() async {
+    final followDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('profile')
+        .doc('following')
+        .collection('users')
+        .doc(widget.userId)
+        .get();
+
+    print('Following Document Exists: ${followDoc.exists}');
+    setState(() {
+      isFollowing = followDoc.exists;
+    });
+  }
+
+  Future<void> followOrUnfollow() async {
+    final userRef = FirebaseFirestore.instance.collection('users').doc(widget.userId);
+    final currentUserRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+
+    try {
+      if (isFollowing) {
+        // Unfollow
+        await currentUserRef.collection('profile').doc('following').collection('users').doc(widget.userId).delete();
+        await userRef.collection('profile').doc('followers').collection('users').doc(currentUser.uid).delete();
+      } else {
+        // Follow
+        await currentUserRef.collection('profile').doc('following').collection('users').doc(widget.userId).set({});
+        await userRef.collection('profile').doc('followers').collection('users').doc(currentUser.uid).set({});
+      }
+      // Update the state after following/unfollowing
+      setState(() {
+        isFollowing = !isFollowing;
+      });
+    } catch (e) {
+      print('Error during follow/unfollow operation: $e');
+    }
+  }
 
   Future<Map<String, dynamic>> getUserProfileData(String userId) async {
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get();
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     final profileDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('profile')
         .get();
+
+    if (profileDoc.docs.isNotEmpty) {
+      var profileData = profileDoc.docs.first.data();
+      print('Profile Data: $profileData');
+    } else {
+      print('No profile data found');
+    }
 
     if (userDoc.exists && profileDoc.docs.isNotEmpty) {
       return {
@@ -59,7 +111,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
-      future: getUserProfileData(user.uid),
+      future: getUserProfileData(widget.userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -131,31 +183,6 @@ class _InkgramProfileState extends State<InkgramProfile> {
                                 },
                               ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () => Get.to(() => const
-                                UpdateProfileScreen()),
-                                child: Container(
-                                  width: 35,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    color: primaryColor,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    LineAwesomeIcons.pencil_alt_solid,
-                                    size: 20,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                         const SizedBox(width: 16.0),
@@ -165,8 +192,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceEvenly,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
                                   _buildStatColumn("Posts", userData['posts'] ?? 0),
                                   _buildStatColumn("Followers", userData['followers'] ?? 0),
@@ -174,15 +200,26 @@ class _InkgramProfileState extends State<InkgramProfile> {
                                 ],
                               ),
                               const SizedBox(height: 10),
+                              // Show Follow/Unfollow or Edit profile button
                               Center(
-                                child: TextButton(
+                                child: widget.userId == currentUser.uid
+                                    ? TextButton(
                                   style: TextButton.styleFrom(
-                                    backgroundColor: primaryColor
+                                    backgroundColor: primaryColor,
                                   ),
-                                  onPressed: () => Get.to(() => const
-                                  UpdateProfileScreen()),
+                                  onPressed: () => Get.to(() => const UpdateProfileScreen()),
                                   child: Text(
                                     'Edit profile',
+                                    style: LightTextTheme.profileTxt,
+                                  ),
+                                )
+                                    : TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: isFollowing ? Colors.grey : primaryColor,
+                                  ),
+                                  onPressed: followOrUnfollow,
+                                  child: Text(
+                                    isFollowing ? 'Unfollow' : 'Follow',
                                     style: LightTextTheme.profileTxt,
                                   ),
                                 ),
@@ -221,7 +258,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('users')
-                        .doc(user.uid)
+                        .doc(widget.userId)
                         .collection('inkgram')
                         .orderBy('timestamp', descending: true)
                         .snapshots(),
@@ -230,8 +267,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                         return const CircularProgressIndicatorTheme();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.docs
-                          .isEmpty) {
+                      } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                         return const Text('No posts yet');
                       } else {
                         return GridView.builder(
@@ -251,7 +287,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                             return GestureDetector(
                               onTap: () {
                                 Get.to(() => InkgramPost(
-                                  userId: user.uid,
+                                  userId: widget.userId,
                                   postId: post.id,
                                   imageUrl: imageUrl,
                                   description: description,

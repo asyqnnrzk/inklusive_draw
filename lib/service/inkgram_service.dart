@@ -46,6 +46,41 @@ class InkgramService {
       print('Error incrementing following: $e');
     }
   }
+
+  // Method to delete a comment
+  Future<void> deleteComment(String postId, String commentId, String commentOwnerId) async {
+    try {
+      // Check if the current user is the owner of the comment or the post
+      DocumentSnapshot postDoc = await _firestore.collection('users').doc(userId).collection('inkgram').doc(postId).get();
+      bool isPostOwner = postDoc.exists && postDoc['userId'] == userId; // Ensure the post exists and check ownership
+
+      if (commentOwnerId == userId || isPostOwner) {
+        // Delete the comment
+        await _firestore.collection('users')
+            .doc(userId)
+            .collection('inkgram')
+            .doc(postId)
+            .collection('comments')
+            .doc(commentId)
+            .delete();
+
+        // Update comment count if the user is the owner of the post
+        if (isPostOwner) {
+          await _firestore.collection('users')
+              .doc(userId)
+              .collection('inkgram')
+              .doc(postId)
+              .update({
+            'commentCount': FieldValue.increment(-1),
+          });
+        }
+      } else {
+        print('User does not have permission to delete this comment.');
+      }
+    } catch (e) {
+      print('Error deleting comment: $e');
+    }
+  }
 }
 
 Future<void> showCreatePostDialog(BuildContext context) async {

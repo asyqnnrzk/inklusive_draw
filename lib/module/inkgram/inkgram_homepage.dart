@@ -4,6 +4,7 @@ import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/source/buttons.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,8 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
     if (index == 2) {
       showCreatePostDialog(context);
     } else if (index == 3) {
-      Get.to(() => const InkgramProfile());
+      Get.to(() => InkgramProfile(userId: FirebaseAuth.instance
+          .currentUser!.uid));
     } else {
       setState(() {
         _selectedIndex = index;
@@ -108,9 +110,16 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                       child: Row(
                         children: [
                           const SizedBox(width: 8.0),
-                          Text(
-                            post['username'] ?? 'Unknown User',
-                            style: LightTextTheme.inkgramPostUser
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(() => InkgramProfile(
+                                userId: post['userId']
+                              ));
+                            },
+                            child: Text(
+                              post['username'] ?? 'Unknown User',
+                              style: LightTextTheme.inkgramPostUser,
+                            ),
                           ),
                           const Spacer(),
                           const ReportButton()

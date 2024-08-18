@@ -8,12 +8,25 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../service/inkgram_service.dart';
 import '../../service/tts_service.dart';
 
-class InkgramCommentFull extends StatelessWidget {
+class InkgramCommentFull extends StatefulWidget {
   final String postId;
   final String userId;
-  final TtsService ttsService = TtsService();
 
   InkgramCommentFull({required this.postId, required this.userId});
+
+  @override
+  State<InkgramCommentFull> createState() => _InkgramCommentFullState();
+}
+
+class _InkgramCommentFullState extends State<InkgramCommentFull> {
+  final TtsService ttsService = TtsService();
+  final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +59,9 @@ class InkgramCommentFull extends StatelessWidget {
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('users')
-                  .doc(userId)
+                  .doc(widget.userId)
                   .collection('inkgram')
-                  .doc(postId)
+                  .doc(widget.postId)
                   .collection('comments')
                   .orderBy('timestamp', descending: true)
                   .snapshots(),
@@ -68,13 +81,16 @@ class InkgramCommentFull extends StatelessWidget {
                 return ListView(
                   children: snapshot.data!.docs.map((doc) {
                     var commentData = doc.data() as Map<String, dynamic>;
+                    String commentId = doc.id;
+                    String commentOwnerId = commentData['userId']; // Assuming you store the userId of the comment owner
+
                     return ListTile(
                       title: Text(commentData['username']),
                       titleTextStyle: LightTextTheme.inkgramCommentUser,
                       subtitle: Text(commentData['comment']),
                       subtitleTextStyle: LightTextTheme.inkgramComment,
                       trailing: SizedBox(
-                        width: 100,
+                        width: 150,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -96,6 +112,16 @@ class InkgramCommentFull extends StatelessWidget {
                                 // Handle like functionality here
                               },
                             ),
+                            if (widget.userId == commentOwnerId || widget.userId == widget.userId) // Check if the user can delete
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () async {
+                                  await InkgramService(userId: widget.userId).deleteComment(widget.postId, commentId, commentOwnerId);
+                                },
+                              ),
                           ],
                         ),
                       ),
@@ -113,6 +139,7 @@ class InkgramCommentFull extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
+                    controller: _commentController,
                     decoration: InputDecoration(
                       hintText: 'Add a comment...',
                       border: InputBorder.none,
@@ -120,15 +147,19 @@ class InkgramCommentFull extends StatelessWidget {
                     ),
                     onSubmitted: (value) async {
                       if (value.isNotEmpty) {
-                        await addComment(userId, postId, value);
+                        await addComment(widget.userId, widget.postId, value);
+                        _commentController.clear();
                       }
                     },
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.send_rounded),
-                  onPressed: () {
-                    // Handle sending comment if not using onSubmitted
+                  onPressed: () async {
+                    if (_commentController.text.isNotEmpty) {
+                      await addComment(widget.userId, widget.postId, _commentController.text);
+                      _commentController.clear();
+                    }
                   },
                 ),
               ],

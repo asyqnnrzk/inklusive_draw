@@ -67,8 +67,10 @@ class InkgramLikes extends StatelessWidget {
                 return ListView(
                   children: snapshot.data!.docs.map((doc) {
                     var likesData = doc.data() as Map<String, dynamic>;
-                    return SizedBox(
-                      width: 16.0,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0
+                      ),
                       child: Row(
                         children: [
                           Text(
