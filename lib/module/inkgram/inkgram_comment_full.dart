@@ -2,6 +2,7 @@ import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -21,11 +22,48 @@ class InkgramCommentFull extends StatefulWidget {
 class _InkgramCommentFullState extends State<InkgramCommentFull> {
   final TtsService ttsService = TtsService();
   final TextEditingController _commentController = TextEditingController();
+  final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void dispose() {
     _commentController.dispose();
     super.dispose();
+  }
+
+  Future<void> showDeleteConfirmationDialog(String commentId) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Delete Comment?',
+          style: LightTextTheme.deleteBtn,
+        ),
+        content: Text(
+          'Are you sure you want to delete this comment?',
+          style: LightTextTheme.reportDetails,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: LightTextTheme.cancelBtn,
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await InkgramService(userId: widget.userId)
+                  .deleteComment(widget.postId, commentId);
+            },
+            child: Text(
+              'Delete',
+              style: LightTextTheme.deleteBtn,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -67,7 +105,8 @@ class _InkgramCommentFullState extends State<InkgramCommentFull> {
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicatorTheme());
+                  return const Center(
+                      child: CircularProgressIndicatorTheme());
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(
@@ -82,19 +121,42 @@ class _InkgramCommentFullState extends State<InkgramCommentFull> {
                   children: snapshot.data!.docs.map((doc) {
                     var commentData = doc.data() as Map<String, dynamic>;
                     String commentId = doc.id;
-                    String commentOwnerId = commentData['userId']; // Assuming you store the userId of the comment owner
+                    String commentOwnerId = commentData['userId'];
 
                     return ListTile(
-                      title: Text(commentData['username']),
-                      titleTextStyle: LightTextTheme.inkgramCommentUser,
-                      subtitle: Text(commentData['comment']),
-                      subtitleTextStyle: LightTextTheme.inkgramComment,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            commentData['username'],
+                            style: LightTextTheme.inkgramCommentUser,
+                          ),
+                          const SizedBox(height: 4.0),
+                          Text(
+                            commentData['comment'],
+                            style: LightTextTheme.inkgramComment,
+                            maxLines: null,
+                            softWrap: true,
+                          ),
+                          const SizedBox(height: 4.0),
+                          TextButton(
+                            onPressed: () {
+                              // Handle reply action
+                            },
+                            child: Text(
+                              'Reply',
+                              style: LightTextTheme.replyBtn,
+                            ),
+                          ),
+                        ],
+                      ),
                       trailing: SizedBox(
                         width: 150,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
+                              iconSize: 18.0,
                               icon: const Icon(
                                 Icons.volume_up,
                                 color: primaryColor,
@@ -103,23 +165,16 @@ class _InkgramCommentFullState extends State<InkgramCommentFull> {
                                 ttsService.speak(commentData['comment']);
                               },
                             ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.favorite_border,
-                                color: blackColor,
-                              ),
-                              onPressed: () {
-                                // Handle like functionality here
-                              },
-                            ),
-                            if (widget.userId == commentOwnerId || widget.userId == widget.userId) // Check if the user can delete
+                            if (currentUserId == commentOwnerId ||
+                                currentUserId == widget.userId)
                               IconButton(
+                                iconSize: 18.0,
                                 icon: const Icon(
                                   Icons.delete,
                                   color: Colors.red,
                                 ),
-                                onPressed: () async {
-                                  await InkgramService(userId: widget.userId).deleteComment(widget.postId, commentId, commentOwnerId);
+                                onPressed: () {
+                                  showDeleteConfirmationDialog(commentId);
                                 },
                               ),
                           ],
@@ -154,10 +209,11 @@ class _InkgramCommentFullState extends State<InkgramCommentFull> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send_rounded),
+                  icon: const Icon(Icons.send_rounded, color: primaryColor),
                   onPressed: () async {
                     if (_commentController.text.isNotEmpty) {
-                      await addComment(widget.userId, widget.postId, _commentController.text);
+                      await addComment(
+                          widget.userId, widget.postId, _commentController.text);
                       _commentController.clear();
                     }
                   },

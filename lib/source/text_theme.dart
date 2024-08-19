@@ -156,6 +156,14 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // reply button
+  static TextStyle replyBtn = TextStyle(
+      color: blackColor.withOpacity(0.5),
+      fontSize: 12.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
   static TextStyle textName = const TextStyle(
     color: primaryColor,
     fontSize: 16.0,

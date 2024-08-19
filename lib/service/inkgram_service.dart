@@ -48,32 +48,57 @@ class InkgramService {
   }
 
   // Method to delete a comment
-  Future<void> deleteComment(String postId, String commentId, String commentOwnerId) async {
+  Future<void> deleteComment(String postId, String commentId) async {
     try {
-      // Check if the current user is the owner of the comment or the post
-      DocumentSnapshot postDoc = await _firestore.collection('users').doc(userId).collection('inkgram').doc(postId).get();
-      bool isPostOwner = postDoc.exists && postDoc['userId'] == userId; // Ensure the post exists and check ownership
+      // Retrieve the post document to get the post owner's userId
+      DocumentSnapshot postDoc = await _firestore.collection('users')
+          .doc(userId)
+          .collection('inkgram')
+          .doc(postId)
+          .get();
 
-      if (commentOwnerId == userId || isPostOwner) {
+      if (!postDoc.exists) {
+        print('Post does not exist.');
+        return;
+      }
+
+      String postOwnerId = postDoc['userId']; // Get the post owner's userId
+
+      // Check if the current user is the post owner or the comment owner
+      DocumentSnapshot commentDoc = await _firestore.collection('users')
+          .doc(postOwnerId)
+          .collection('inkgram')
+          .doc(postId)
+          .collection('comments')
+          .doc(commentId)
+          .get();
+
+      if (!commentDoc.exists) {
+        print('Comment does not exist.');
+        return;
+      }
+
+      String commentOwnerId = commentDoc['userId']; // Get the comment owner's userId
+
+      // Check if the current user has permission to delete the comment
+      if (userId == postOwnerId || userId == commentOwnerId) {
         // Delete the comment
         await _firestore.collection('users')
-            .doc(userId)
+            .doc(postOwnerId)
             .collection('inkgram')
             .doc(postId)
             .collection('comments')
             .doc(commentId)
             .delete();
 
-        // Update comment count if the user is the owner of the post
-        if (isPostOwner) {
-          await _firestore.collection('users')
-              .doc(userId)
-              .collection('inkgram')
-              .doc(postId)
-              .update({
-            'commentCount': FieldValue.increment(-1),
-          });
-        }
+        // Update the comment count in the post document
+        await _firestore.collection('users')
+            .doc(postOwnerId)
+            .collection('inkgram')
+            .doc(postId)
+            .update({
+          'comments': FieldValue.increment(-1),
+        });
       } else {
         print('User does not have permission to delete this comment.');
       }
@@ -164,7 +189,9 @@ Future<void> uploadPost(String description, File imageFile) async {
         'picture': downloadUrl,
         'description': description,
         'timestamp': FieldValue.serverTimestamp(),
-        'isLiked': false
+        'userId': userId,
+        'commentCount': 0,
+        'likes': 0,
       });
 
       // Increment the user's post count
@@ -194,6 +221,7 @@ Future<void> addComment(String userId, String postId, String value) async {
       .doc(postId)
       .collection('comments')
       .add({
+    'userId': userId,
     'username': username,
     'comment': value,
     'timestamp': FieldValue.serverTimestamp(),
@@ -206,6 +234,6 @@ Future<void> addComment(String userId, String postId, String value) async {
       .collection('inkgram')
       .doc(postId)
       .update({
-    'commentCount': FieldValue.increment(1),
+    'comments': FieldValue.increment(1),
   });
 }
