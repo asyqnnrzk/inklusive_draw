@@ -78,7 +78,8 @@ class InkgramService {
         return;
       }
 
-      String commentOwnerId = commentDoc['userId']; // Get the comment owner's userId
+      String commentOwnerId = commentDoc['userId'];
+      // Get the comment owner's userId
 
       // Check if the current user has permission to delete the comment
       if (userId == postOwnerId || userId == commentOwnerId) {
@@ -104,6 +105,129 @@ class InkgramService {
       }
     } catch (e) {
       print('Error deleting comment: $e');
+    }
+  }
+
+  // Method to add a reply to a comment
+  Future<void> addReply(String postId, String commentId, String replyText)
+  async {
+    try {
+      // Get the current user's username from Firestore
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      String username = userDoc['username'];
+
+      // Reference to the comment document and its replies subcollection
+      DocumentReference commentRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('inkgram')
+          .doc(postId)
+          .collection('comments')
+          .doc(commentId);
+
+      CollectionReference repliesRef = commentRef.collection('replies');
+
+      // Check if the 'replies' collection already exists by fetching any
+      // documents
+      QuerySnapshot repliesSnapshot = await repliesRef.limit(1).get();
+
+      // If no replies exist, the collection doesn't exist yet
+      if (repliesSnapshot.docs.isEmpty) {
+        print('No replies yet, creating the replies collection...');
+      }
+
+      // Add the reply to the 'replies' collection
+      await repliesRef.add({
+        'userId': userId,
+        'username': username,
+        'reply': replyText,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Update the number of comments in the post document
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('inkgram')
+          .doc(postId)
+          .update({
+        'comments': FieldValue.increment(1),
+      });
+    } catch (e) {
+      print('Error adding reply: $e');
+    }
+  }
+
+  // Method to delete a reply
+  Future<void> deleteReply(String postId, String commentId, String replyId)
+  async {
+    try {
+      // Print debug information to verify correct paths and IDs
+      print('Deleting reply with ID: $replyId from comment: $commentId on post:'
+          ' $postId');
+
+      // Retrieve the post document to get the post owner's userId
+      DocumentSnapshot postDoc = await _firestore.collection('users')
+          .doc(userId)
+          .collection('inkgram')
+          .doc(postId)
+          .get();
+
+      if (!postDoc.exists) {
+        print('Post does not exist.');
+        return;
+      }
+
+      String postOwnerId = postDoc['userId']; // Get the post owner's userId
+
+      // Retrieve the comment document
+      DocumentSnapshot commentDoc = await _firestore.collection('users')
+          .doc(postOwnerId)
+          .collection('inkgram')
+          .doc(postId)
+          .collection('comments')
+          .doc(commentId)
+          .get();
+
+      if (!commentDoc.exists) {
+        print('Comment does not exist for commentId: $commentId');
+        return;
+      }
+
+      String commentOwnerId = commentDoc['userId'];
+      // Get the comment owner's userId
+
+      // Check if the current user has permission to delete the reply
+      if (userId == postOwnerId || userId == commentOwnerId) {
+        // Delete the reply
+        await _firestore.collection('users')
+            .doc(postOwnerId)
+            .collection('inkgram')
+            .doc(postId)
+            .collection('comments')
+            .doc(commentId)
+            .collection('replies')
+            .doc(replyId)
+            .delete();
+
+        // Update the comment count in the post document
+        await _firestore.collection('users')
+            .doc(postOwnerId)
+            .collection('inkgram')
+            .doc(postId)
+            .update({
+          'comments': FieldValue.increment(-1),
+        });
+        print('Reply successfully deleted');
+      } else {
+        print('User does not have permission to delete this reply.');
+      }
+    } catch (e) {
+      print('Error deleting reply: $e');
     }
   }
 }
