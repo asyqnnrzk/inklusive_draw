@@ -1,4 +1,5 @@
 import 'package:InklusiveDraw/module/inkgram/inkgram_homepage.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_search.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -214,6 +215,8 @@ class _InkgramProfileState extends State<InkgramProfile> {
   void _onItemTapped(int index) {
     if (index == 0) {
       Get.to(() => const InkgramHomepage());
+    } else if (index == 1) {
+      Get.to(() => const InkgramSearch());
     } else if (index == 2) {
       showCreatePostDialog(context);
     } else {

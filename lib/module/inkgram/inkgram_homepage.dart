@@ -1,5 +1,6 @@
 import 'package:InklusiveDraw/module/inkgram/inkgram_comment.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_search.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/source/buttons.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
@@ -48,7 +49,9 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
   }
 
   void _onItemTapped(int index) {
-    if (index == 2) {
+    if (index == 1) {
+      Get.to(() => const InkgramSearch());
+    } else if (index == 2) {
       showCreatePostDialog(context);
     } else if (index == 3) {
       Get.to(() => InkgramProfile(userId: FirebaseAuth.instance
@@ -183,8 +186,10 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                     context: context,
                                     isScrollControlled: true,
                                     builder: (context) => SizedBox(
-                                      height: MediaQuery.of(context).size.height * 0.5,
-                                      child: InkgramComment(postId: post['postId'], userId: post['userId'],),
+                                      height: MediaQuery.of(context).size
+                                          .height * 0.5,
+                                      child: InkgramComment(postId: post
+                                      ['postId'], userId: post['userId'],),
                                     ),
                                   );
                                 },
