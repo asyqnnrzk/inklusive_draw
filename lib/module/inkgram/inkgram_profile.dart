@@ -32,13 +32,58 @@ class _InkgramProfileState extends State<InkgramProfile> {
     checkIfFollowing();
   }
 
+  Future<String?> getProfileId(String userId) async {
+    final profileDocs = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('profile')
+        .get();
+
+    if (profileDocs.docs.isNotEmpty) {
+      return profileDocs.docs.first.id;
+    } else {
+      return null;
+    }
+  }
+
+  Future<String?> getFollowingUserName(String userId) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users')
+        .doc(userId).get();
+    if (userDoc.exists) {
+      final data = userDoc.data();
+      return data?['username'] as String?;
+    }
+    return null;
+  }
+
+  Future<String?> getFollowerUserName() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users')
+          .doc(currentUser.uid).get();
+      if (userDoc.exists) {
+        final data = userDoc.data();
+        return data?['username'] as String?;
+      }
+    }
+    return null;
+  }
+
   Future<void> checkIfFollowing() async {
+    final profileId = await getProfileId(currentUser.uid);
+
+    if (profileId == null) {
+      print('Profile ID not found');
+      return;
+    }
+
     final followDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(currentUser.uid)
         .collection('profile')
-        .doc('following')
-        .collection('users')
+        .doc(profileId)
+        .collection('following')
         .doc(widget.userId)
         .get();
 
@@ -49,20 +94,89 @@ class _InkgramProfileState extends State<InkgramProfile> {
   }
 
   Future<void> followOrUnfollow() async {
-    final userRef = FirebaseFirestore.instance.collection('users').doc(widget.userId);
-    final currentUserRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+    // Get the profile ID of the person you're following
+    final followingProfileId = await getProfileId(widget.userId);
+    if (followingProfileId == null) {
+      print('Following profile ID not found');
+      return;
+    }
+
+    // Get the profile ID of the current user (follower)
+    final followerProfileId = await getProfileId(currentUser.uid);
+    if (followerProfileId == null) {
+      print('Follower profile ID not found');
+      return;
+    }
+
+    // Get usernames
+    final followingUserName = await getFollowingUserName(widget.userId);
+    final followerUserName = await getFollowerUserName();
+
+    if (followingUserName == null || followerUserName == null) {
+      print('Username not found');
+      return;
+    }
+
+    // Reference to the follower collection (target user who is being followed)
+    final followerRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('profile')
+        .doc(followingProfileId)
+        .collection('followers')
+        .doc(currentUser.uid);
+
+    // Reference to the following collection (current user who is following)
+    final followingRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('profile')
+        .doc(followerProfileId)
+        .collection('following')
+        .doc(widget.userId);
+
+    // Reference to update follower and following counts
+    final followerCountRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('profile')
+        .doc(followingProfileId); // The profile of the person being followed
+
+    final followingCountRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('profile')
+        .doc(followerProfileId); // The profile of the current user (follower)
 
     try {
       if (isFollowing) {
         // Unfollow
-        await currentUserRef.collection('profile').doc('following').collection('users').doc(widget.userId).delete();
-        await userRef.collection('profile').doc('followers').collection('users').doc(currentUser.uid).delete();
+        await followingRef.delete();
+        await followerRef.delete();
+        print('Unfollowed successfully');
+
+        // Decrease follower and following counts
+        await followerCountRef.update({'followers': FieldValue.increment(-1)});
+        await followingCountRef.update({'following': FieldValue.increment(-1)});
       } else {
         // Follow
-        await currentUserRef.collection('profile').doc('following').collection('users').doc(widget.userId).set({});
-        await userRef.collection('profile').doc('followers').collection('users').doc(currentUser.uid).set({});
+        await followingRef.set({
+          'userId': widget.userId,
+          'userName': followingUserName,
+        });
+        print('Following added');
+
+        await followerRef.set({
+          'userId': currentUser.uid,
+          'userName': followerUserName,
+        });
+        print('Follower added');
+
+        // Increase follower and following counts
+        await followerCountRef.update({'followers': FieldValue.increment(1)});
+        await followingCountRef.update({'following': FieldValue.increment(1)});
       }
-      // Update the state after following/unfollowing
+
       setState(() {
         isFollowing = !isFollowing;
       });
@@ -72,7 +186,8 @@ class _InkgramProfileState extends State<InkgramProfile> {
   }
 
   Future<Map<String, dynamic>> getUserProfileData(String userId) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final userDoc = await FirebaseFirestore.instance.collection('users')
+        .doc(userId).get();
     final profileDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -192,11 +307,15 @@ class _InkgramProfileState extends State<InkgramProfile> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceEvenly,
                                 children: [
-                                  _buildStatColumn("Posts", userData['posts'] ?? 0),
-                                  _buildStatColumn("Followers", userData['followers'] ?? 0),
-                                  _buildStatColumn("Following", userData['following'] ?? 0),
+                                  _buildStatColumn("Posts", userData['posts']
+                                      ?? 0),
+                                  _buildStatColumn("Followers", userData
+                                  ['followers'] ?? 0),
+                                  _buildStatColumn("Following", userData
+                                  ['following'] ?? 0),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -207,7 +326,8 @@ class _InkgramProfileState extends State<InkgramProfile> {
                                   style: TextButton.styleFrom(
                                     backgroundColor: primaryColor,
                                   ),
-                                  onPressed: () => Get.to(() => const UpdateProfileScreen()),
+                                  onPressed: () => Get.to(() => const
+                                  UpdateProfileScreen()),
                                   child: Text(
                                     'Edit profile',
                                     style: LightTextTheme.profileTxt,
@@ -215,7 +335,8 @@ class _InkgramProfileState extends State<InkgramProfile> {
                                 )
                                     : TextButton(
                                   style: TextButton.styleFrom(
-                                    backgroundColor: isFollowing ? Colors.grey : primaryColor,
+                                    backgroundColor: isFollowing ? Colors.grey
+                                        : primaryColor,
                                   ),
                                   onPressed: followOrUnfollow,
                                   child: Text(
@@ -267,14 +388,16 @@ class _InkgramProfileState extends State<InkgramProfile> {
                         return const CircularProgressIndicatorTheme();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      } else if (!snapshot.hasData || snapshot.data!.docs
+                          .isEmpty) {
                         return const Text('No posts yet');
                       } else {
                         return GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data!.docs.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const
+                          SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 2.0,
                             mainAxisSpacing: 2.0,
