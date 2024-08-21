@@ -64,10 +64,11 @@ class LightTextTheme {
   );
 
   // cancel button
-  static TextStyle cancelBtn = TextStyle(
-      color: blackColor.withOpacity(0.5),
+  static TextStyle cancelBtn = const TextStyle(
+      color: primaryColor,
       fontSize: 16.0,
       fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
       letterSpacing: 1.5
   );
 
@@ -105,7 +106,7 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
-  // delete button
+  // details on report window
   static TextStyle reportDetails = const TextStyle(
       color: blackColor,
       fontSize: 16.0,
@@ -160,6 +161,14 @@ class LightTextTheme {
   static TextStyle replyBtn = TextStyle(
       color: blackColor.withOpacity(0.5),
       fontSize: 12.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // hint text
+  static TextStyle hintTxt = TextStyle(
+      color: blackColor.withOpacity(0.5),
+      fontSize: 16.0,
       fontFamily: 'Verdana',
       letterSpacing: 1.5
   );

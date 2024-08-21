@@ -8,6 +8,7 @@ import '../../service/inkgram_service.dart';
 import '../../source/colors.dart';
 import '../../source/text_theme.dart';
 import 'inkgram_profile.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class InkgramSearch extends StatefulWidget {
   const InkgramSearch({super.key});
@@ -21,6 +22,37 @@ class _InkgramSearchState extends State<InkgramSearch> {
   List<DocumentSnapshot> searchResults = [];
   int _selectedIndex = 1;
 
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  bool _hasInteractedWithSearch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (status) => print('Status: $status'),
+        onError: (error) => print('Error: $error'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(onResult: (val) {
+          setState(() {
+            searchController.text = val.recognizedWords;
+            search(val.recognizedWords);
+          });
+        });
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
+  }
+
   void search(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -30,12 +62,10 @@ class _InkgramSearchState extends State<InkgramSearch> {
     }
 
     try {
-      // Perform a broad query to fetch all documents
       QuerySnapshot userResult = await FirebaseFirestore.instance
           .collection('users')
           .get();
 
-      // Filter results client-side
       List<DocumentSnapshot> filteredResults = userResult.docs.where((doc) {
         String username = doc.get('username') ?? '';
         String name = doc.get('name') ?? '';
@@ -93,18 +123,53 @@ class _InkgramSearchState extends State<InkgramSearch> {
               controller: searchController,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
-                hintText: 'Search users by username or name...',
+                hintText: 'Search for InkGram users...',
+                hintStyle: LightTextTheme.hintTxt,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                suffixIcon: IconButton(
+                  icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                  onPressed: _listen,
+                ),
               ),
+              onTap: () {
+                setState(() {
+                  _hasInteractedWithSearch = true;
+                });
+              },
               onChanged: (query) {
                 search(query);
               },
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: _hasInteractedWithSearch
+                ? (searchResults.isEmpty
+                ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 80,
+                    color: blackColor.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No results found',
+                    style: LightTextTheme.hintTxt,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Don't give up, let's try again!",
+                    style: LightTextTheme.hintTxt,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+                : ListView.builder(
               itemCount: searchResults.length,
               itemBuilder: (context, index) {
                 var result = searchResults[index];
@@ -116,6 +181,28 @@ class _InkgramSearchState extends State<InkgramSearch> {
                   },
                 );
               },
+            ))
+                : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icons/seek.png',
+                    color: blackColor.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Start searching...',
+                    style: LightTextTheme.hintTxt,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Enter a username or name to search.',
+                    style: LightTextTheme.hintTxt,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
