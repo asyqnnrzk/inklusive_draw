@@ -113,7 +113,7 @@ class AuthRepository extends GetxController {
         }
 
         // Navigate to user dashboard
-        Get.offAll(() => const UserDashboard());
+        Get.offAll(() => UserDashboard());
       } else {
         Get.offAll(() => const LoginScreen());
       }

@@ -271,14 +271,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       child: ElevatedButton(
                         onPressed: () {Get.back();},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor.withOpacity(0.2),
+                          backgroundColor: secondaryColor,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.cancel_outlined,
-                              color: blackColor.withOpacity(0.5)
+                              color: primaryColor
                             ),
                             const SizedBox(width: 8),
                             Text(

@@ -43,11 +43,11 @@ class UserHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hey, ${userData['username']}',
+                'Hey, ${userData['username']} 😉',
                 style: LightTextTheme.dashboardTxt,
               ),
               Text(
-                'Your dashboard',
+                'This is your dashboard!',
                 style: LightTextTheme.dashboardHeadline,
               ),
             ],

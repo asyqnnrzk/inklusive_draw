@@ -41,13 +41,14 @@ class ResourceListState extends State<ResourceList> {
   }
 
   void _fetchResources() {
-    FirebaseFirestore.instance.collection('resources').snapshots()
-        .listen((snapshot) {
-      setState(() {
-        _allResources = snapshot.docs;
-        _filteredResources = _allResources;
-      });
-    });
+    FirebaseFirestore.instance.collection('resources').snapshots().listen(
+          (snapshot) {
+        setState(() {
+          _allResources = snapshot.docs;
+          _filteredResources = _allResources;
+        });
+      },
+    );
   }
 
   void filterResources() {
@@ -66,9 +67,8 @@ class ResourceListState extends State<ResourceList> {
         .collection('users')
         .doc(user.uid)
         .collection('favorites');
-    final favoriteDoc = await favoritesCollection
-        .where('resource_id', isEqualTo: resource.id)
-        .get();
+    final favoriteDoc =
+    await favoritesCollection.where('resource_id', isEqualTo: resource.id).get();
 
     if (favoriteDoc.docs.isEmpty) {
       // Add to favorites
@@ -99,9 +99,52 @@ class ResourceListState extends State<ResourceList> {
     final favoritesSnapshot = await favoritesCollection.get();
 
     setState(() {
-      _favoritedItemIds = favoritesSnapshot.docs.map((doc) => doc['resource_id']
-      as String).toList();
+      _favoritedItemIds =
+          favoritesSnapshot.docs.map((doc) => doc['resource_id'] as String).toList();
     });
+  }
+
+  Widget buildResourceTile(
+      DocumentSnapshot resource, String thumbnailUrl, bool isFavorited) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Image.network(
+            thumbnailUrl,
+            width: 70,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+          title: Text(
+            resource['material'],
+            overflow: TextOverflow.ellipsis,
+            style: LightTextTheme.resourceTitle,
+          ),
+          subtitle: Text(
+            resource['creator'],
+            overflow: TextOverflow.ellipsis,
+            style: LightTextTheme.resourceCreator,
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              isFavorited ? Icons.favorite : Icons.favorite_border,
+              color: isFavorited ? Colors.redAccent : null,
+            ),
+            onPressed: () async {
+              await _toggleFavorite(resource);
+            },
+          ),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => VideoPlayerScreen(videoUrl: resource['link']),
+              ),
+            );
+          },
+        ),
+        const Divider(),
+      ],
+    );
   }
 
   @override
@@ -114,88 +157,27 @@ class ResourceListState extends State<ResourceList> {
         final resource = _filteredResources[index];
         final videoUrl = resource['link'];
         final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/'
-            'hqdefault.jpg';
+        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
 
-        return StreamBuilder(
+        return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
               .collection('favorites')
-              .where('videoId', isEqualTo: resource.id)
+              .where('resource_id', isEqualTo: resource.id)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicatorTheme();
+            } else if (snapshot.hasError) {
+              print('Error: ${snapshot.error}');
+              return const Text('Something went wrong');
+            } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              const isFavorited = false;
+              return buildResourceTile(resource, thumbnailUrl, isFavorited);
             } else {
               final isFavorited = snapshot.data!.docs.isNotEmpty;
-
-              return Column(
-                children: [
-                  ListTile(
-                    leading: Image.network(
-                      thumbnailUrl,
-                      width: 70,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text(
-                      resource['material'],
-                      overflow: TextOverflow.ellipsis,
-                      style: LightTextTheme.resourceTitle,
-                    ),
-                    subtitle: Text(
-                      resource['creator'],
-                      overflow: TextOverflow.ellipsis,
-                      style: LightTextTheme.resourceCreator,
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorited ? Colors.redAccent : null,
-                      ),
-                      onPressed: () async {
-                        if (isFavorited) {
-                          // Remove from favorites
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('favorites')
-                              .where('videoId', isEqualTo: resource.id)
-                              .get()
-                              .then((snapshot) {
-                            for (DocumentSnapshot doc in snapshot.docs) {
-                              doc.reference.delete();
-                            }
-                          });
-                        } else {
-                          // Add to favorites
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('favorites')
-                              .add({
-                            'resource_id': resource.id,
-                            'material': resource['material'],
-                            'link': resource['link'],
-                            'creator': resource['creator'],
-                            'type': 'video'
-                          });
-                        }
-                      },
-                    ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => VideoPlayerScreen(videoUrl:
-                          videoUrl),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(),
-                ],
-              );
+              return buildResourceTile(resource, thumbnailUrl, isFavorited);
             }
           },
         );

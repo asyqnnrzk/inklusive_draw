@@ -1,18 +1,29 @@
-import 'package:InklusiveDraw/source/image_strings.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:ui';
 
 class UserDashboardContent {
   final String title;
-  final String image;
-  final String heading;
-  final String subHeading;
-  final VoidCallback? onPress;
+  final String imagePath;
+  final VoidCallback onPress;
 
-  UserDashboardContent(this.title, this.image, this.heading, this. subHeading, this.onPress);
+  UserDashboardContent({
+    required this.title,
+    required this.imagePath,
+    required this.onPress,
+  });
 
-  static List<UserDashboardContent> list = [
-    UserDashboardContent('Drawings', onBoardImage1, 'untitled231', 'Time: 4.56', null),
-    UserDashboardContent('Drawings', onBoardImage1, 'untitled231', 'Time: 4.56', null),
-    UserDashboardContent('Drawings', onBoardImage1, 'untitled231', 'Time: 4.56', null),
-  ];
+  // Create an instance from drawing data
+  factory UserDashboardContent.fromDrawingData(String title, File jsonFile) {
+    // Derive the image file path from the JSON file path
+    final imageFilePath = jsonFile.path.replaceAll('.json', '.png');
+
+    return UserDashboardContent(
+      title: title,
+      imagePath: imageFilePath,
+      onPress: () {
+        // Define what happens when this content is pressed
+        print('Tapped on: $title');
+      },
+    );
+  }
 }

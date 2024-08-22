@@ -6,6 +6,7 @@ import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../repository/auth_repository.dart';
 import '../../service/tts_service.dart';
 import '../../source/text_theme.dart';
 import '../support_and_resources/favorites/favorite_screen.dart';
@@ -19,6 +20,45 @@ class DrawerContent extends StatefulWidget {
 
 class _DrawerContentState extends State<DrawerContent> {
   final TtsService _ttsService = TtsService();
+
+  Future<bool?> _showLogoutConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Confirm Logout',
+            style: LightTextTheme.logoutTxt,
+          ),
+          content: Text(
+            'Are you sure you want to logout?',
+            style: LightTextTheme.reportDetails,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                'Cancel',
+                style: LightTextTheme.cancelBtn,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text(
+                'Logout',
+                style: LightTextTheme.logoutTxt,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +126,7 @@ class _DrawerContentState extends State<DrawerContent> {
             ),
             onTap: () {
               // go to Dashboard page
-              Get.to(const UserDashboard());
+              Get.to(UserDashboard());
             },
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -197,6 +237,39 @@ class _DrawerContentState extends State<DrawerContent> {
                 IconButton(
                   onPressed: (){
                     _ttsService.speak('Resources');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                )
+              ],
+            ),
+          ),
+          ListTile(
+            title: Text(
+              'Logout',
+              style: LightTextTheme.logoutTxt,
+            ),
+            onTap: () async {
+              bool? shouldLogout = await _showLogoutConfirmationDialog(context);
+              if (shouldLogout == true) {
+                Navigator.of(context).pop();
+                AuthRepository().logout();
+              }
+            },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                  size: 16,
+                ),
+                IconButton(
+                  onPressed: () {
+                    _ttsService.speak('Logout');
                   },
                   icon: const Icon(
                     Icons.volume_up,

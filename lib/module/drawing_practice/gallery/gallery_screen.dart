@@ -11,7 +11,9 @@ import '../../../source/text_theme.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class GalleryScreen extends StatefulWidget {
-  const GalleryScreen({super.key});
+  final String? initialFilePath;
+
+  const GalleryScreen({super.key, this.initialFilePath});
 
   @override
   State<GalleryScreen> createState() => _GalleryScreenState();
@@ -141,9 +143,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   final files = filteredDrawings.isEmpty
                       ? snapshot.data!
                       : filteredDrawings;
+
                   return GridView.builder(
-                    gridDelegate: const
-                    SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,
                       crossAxisSpacing: 16.0,
                       mainAxisSpacing: 16.0,
@@ -151,21 +153,27 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     itemCount: files.length,
                     itemBuilder: (context, index) {
                       final jsonFile = files[index];
-                      final imageFile = File(jsonFile.path.replaceAll('.json',
-                          '.png'));
+                      final imageFile = File(jsonFile.path.replaceAll('.json', '.png'));
 
                       try {
-                        final drawingData = jsonDecode(jsonFile
-                            .readAsStringSync());
+                        final drawingData = jsonDecode(jsonFile.readAsStringSync());
                         final name = drawingData['name'] ?? 'Untitled';
-                        final dateCreated = drawingData.containsKey
-                          ('dateCreated')
+                        final dateCreated = drawingData.containsKey('dateCreated')
                             ? DateTime.parse(drawingData['dateCreated'])
                             : DateTime.now();
 
                         return GestureDetector(
-                          onTap: () => drawingOps.loadAndEditDrawing(context,
-                              jsonFile),
+                          onTap: () {
+                            // Navigate to gallery screen with exact drawing
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GalleryScreen(
+                                  initialFilePath: jsonFile.path,
+                                ),
+                              ),
+                            );
+                          },
                           child: Card(
                             color: primaryColor,
                             child: Column(
@@ -179,8 +187,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         name,
@@ -188,8 +195,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                       ),
                                       const SizedBox(height: 4.0),
                                       Text(
-                                        'Created on: ${dateCreated.toLocal()
-                                            .toString().split(' ')[0]}',
+                                        'Created on: ${dateCreated.toLocal().toString().split(' ')[0]}',
                                         style: LightTextTheme.drawingLabel,
                                       ),
                                       Row(
@@ -198,8 +204,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                             style: ElevatedButton.styleFrom(
                                               elevation: 0.0,
                                             ),
-                                            onPressed: () => drawingOps
-                                                .editDrawing(context, jsonFile),
+                                            onPressed: () => drawingOps.editDrawing(context, jsonFile),
                                             child: Text(
                                               'Edit',
                                               style: LightTextTheme.editBtn,
@@ -210,12 +215,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: redButton,
                                             ),
-                                            onPressed: () => drawingOps
-                                                .deleteDrawing(
-                                                context,
-                                                jsonFile,
-                                                imageFile,
-                                                refreshGallery),
+                                            onPressed: () => drawingOps.deleteDrawing(
+                                              context,
+                                              jsonFile,
+                                              imageFile,
+                                              refreshGallery,
+                                            ),
                                             child: Text(
                                               'Delete',
                                               style: LightTextTheme.deleteBtn,
@@ -231,8 +236,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           ),
                         );
                       } catch (e) {
-                        return const Center(child: Text('Error loading '
-                            'drawing'));
+                        return const Center(child: Text('Error loading drawing'));
                       }
                     },
                   );

@@ -173,11 +173,21 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // text at drawer
   static TextStyle textName = const TextStyle(
     color: primaryColor,
     fontSize: 16.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
+  );
+
+  // logout text at drawer
+  static TextStyle logoutTxt = const TextStyle(
+      color: Colors.red,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
   );
 
   static TextStyle subName = const TextStyle(
@@ -224,7 +234,7 @@ class LightTextTheme {
 
   static TextStyle dashboardHeadline = const TextStyle(
     color: blackColor,
-    fontSize: 24.0,
+    fontSize: 20.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
   );
@@ -233,6 +243,7 @@ class LightTextTheme {
     color: blackColor,
     fontSize: 16.0,
     fontFamily: 'Verdana',
+    fontWeight: FontWeight.bold,
     letterSpacing: 1.5
   );
 
@@ -245,7 +256,7 @@ class LightTextTheme {
 
   static TextStyle dashboardCategories = const TextStyle(
     color: blackColor,
-    fontSize: 10.0,
+    fontSize: 14.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
   );

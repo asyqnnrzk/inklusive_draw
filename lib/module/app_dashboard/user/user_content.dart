@@ -1,17 +1,18 @@
-import 'package:InklusiveDraw/model/user/user_content_model.dart';
+import 'dart:io';
+import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../source/colors.dart';
-import '../../../source/image_strings.dart';
 import '../../../source/text_theme.dart';
+import '../../../model/user/user_content_model.dart';
 
 class UserContent extends StatelessWidget {
-  const UserContent({super.key});
+  final List<UserDashboardContent> recentDrawings;
+
+  const UserContent({super.key, required this.recentDrawings});
 
   @override
   Widget build(BuildContext context) {
-
-    final list = UserDashboardContent.list;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -19,85 +20,80 @@ class UserContent extends StatelessWidget {
           'Recent activities',
           style: LightTextTheme.dashboardHeadline,
         ),
-        // SizedBox(
-        //   height: 200,
-        //   child: ListView.builder(
-        //     itemCount: list.length,
-        //     shrinkWrap: true,
-        //     scrollDirection: Axis.horizontal,
-        //     itemBuilder: (context, index) =>
-        //         GestureDetector(
-        //           onTap: list[index].onPress,
-        //           child: SizedBox(
-        //             width: 320,
-        //             height: 200,
-        //             child: Padding(
-        //               padding: const EdgeInsets.only(right: 10, top: 10),
-        //               child: Container(
-        //                 decoration: BoxDecoration(
-        //                     borderRadius: BorderRadius.circular(10),
-        //                     color: primaryColor
-        //                 ),
-        //                 padding: const EdgeInsets.all(10),
-        //                 child: Column(
-        //                   crossAxisAlignment: CrossAxisAlignment.start,
-        //                   children: [
-        //                     Row(
-        //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                       children: [
-        //                         Flexible(
-        //                           child: Text(
-        //                             list[index].title,
-        //                             style: LightTextTheme.dashboardTxt,
-        //                             maxLines: 2,
-        //                             overflow: TextOverflow.ellipsis,
-        //                           ),
-        //                         ),
-        //                         const Flexible(
-        //                           child: Image(
-        //                             image: AssetImage(
-        //                                 onBoardImage1
-        //                             ),
-        //                             height: 110,
-        //                           ),
-        //                         )
-        //                       ],
-        //                     ),
-        //                     Row(
-        //                       children: [
-        //                         ElevatedButton(
-        //                           style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-        //                           onPressed: () {
-        //
-        //                           },
-        //                           child: const Icon(Icons.play_arrow_rounded),
-        //                         ),
-        //                         const SizedBox(width: 8),
-        //                         Column(
-        //                           crossAxisAlignment: CrossAxisAlignment.start,
-        //                           children: [
-        //                             Text(
-        //                               list[index].heading,
-        //                               style: LightTextTheme.dashboardTxt,
-        //                               overflow: TextOverflow.ellipsis,
-        //                             ),
-        //                             Text(
-        //                               list[index].subHeading,
-        //                               style: LightTextTheme.dashboardTxt,
-        //                               overflow: TextOverflow.ellipsis,
-        //                             ),
-        //                           ],
-        //                         )
-        //                       ],
-        //                     )
-        //                   ],
-        //                 ),
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //   ),
-        // ),
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            itemCount: recentDrawings.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              final content = recentDrawings[index];
+              return GestureDetector(
+                onTap: content.onPress,
+                child: SizedBox(
+                  width: 200,
+                  height: 25,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 10, top: 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: secondaryColor,
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: content.imagePath.isNotEmpty
+                                ? Image.file(
+                              File(content.imagePath),
+                              fit: BoxFit.cover,
+                            )
+                                : const Icon(Icons.image, size: 80),
+                          ),
+                          Text(
+                            content.title,
+                            style: LightTextTheme.dashboardTxt,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 32.0),
+        SizedBox(
+          child: Column(
+            children: [
+              Text(
+                "Feeling like posting something? Let's go to ",
+                style: LightTextTheme.dashboardTxt,
+              ),
+              GestureDetector(
+                child: Text(
+                  "InkGram!",
+                  style: LightTextTheme.appName,
+                ),
+                onTap: (){
+                  final userId = FirebaseAuth.instance.currentUser?.uid;
+                  if (userId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InkgramProfile(userId: userId),
+                      ),
+                    );
+                  }
+                }
+              ),
+            ],
+          ),
+        )
       ],
     );
   }

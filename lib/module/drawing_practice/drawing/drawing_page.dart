@@ -6,8 +6,8 @@ import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
     'drawing_canvas.dart';
 import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
     'tools_widget.dart';
+import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -103,25 +103,35 @@ class _DrawingPageState extends State<DrawingPage> {
 
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // User must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Save Drawing As'),
+          title: Text(
+            'Save Drawing As',
+            style: LightTextTheme.reportDetails,
+          ),
           content: TextField(
             controller: nameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Enter drawing name',
+              hintStyle: LightTextTheme.reportDetails,
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: LightTextTheme.cancelBtn,
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Save'),
+              child: Text(
+                'Save',
+                style: LightTextTheme.cancelBtn,
+              ),
               onPressed: () {
                 final name = nameController.text;
                 if (name.isNotEmpty) {
@@ -248,7 +258,42 @@ class _DrawingPageState extends State<DrawingPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Get.back();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(
+                    'Have you save this?',
+                    style: LightTextTheme.reportDetails,
+                  ),
+                  content: Text(
+                    'Make sure to save first!',
+                    style: LightTextTheme.reportDetails,
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: LightTextTheme.cancelBtn,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Yes',
+                        style: LightTextTheme.deleteBtn,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
           },
           icon: const Icon(LineAwesomeIcons.angle_left_solid),
         ),

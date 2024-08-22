@@ -2,7 +2,7 @@ import 'package:InklusiveDraw/module/inkgram/inkgram_comment.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_search.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
-import 'package:InklusiveDraw/source/buttons.dart';
+import 'package:InklusiveDraw/source/report_button.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';

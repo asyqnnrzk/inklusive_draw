@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
     'profile_menu.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
@@ -172,7 +173,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ProfileMenuWidget(
                         title: 'Dashboard',
                         icon: Icons.dashboard_outlined,
-                        onPress: (){}
+                        onPress: (){
+                          Get.to(() => UserDashboard());
+                        }
                     ),
                     const Divider(),
                     const SizedBox(height: 10),
@@ -185,27 +188,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: const Text('Confirm Logout'),
-                              content: const Text('Are you sure you '
-                                  'want to logout?'),
+                              title: Text(
+                                'Confirm Logout',
+                                style: LightTextTheme.logoutTxt,
+                              ),
+                              content: Text(
+                                'Are you sure you want to logout?',
+                                style: LightTextTheme.reportDetails,
+                              ),
                               actions: <Widget>[
                                 TextButton(
-                                  child: const Text(
+                                  child: Text(
                                     'Cancel',
-                                    style: TextStyle(
-                                        color: greenText
-                                    ),
+                                    style: LightTextTheme.cancelBtn,
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
                                 ),
                                 TextButton(
-                                  child: const Text(
+                                  child: Text(
                                     'Logout',
-                                    style: TextStyle(
-                                        color: redText
-                                    ),
+                                    style: LightTextTheme.logoutTxt
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).pop();
