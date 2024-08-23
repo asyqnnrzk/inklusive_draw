@@ -190,6 +190,7 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // subtitle at login and register
   static TextStyle subName = const TextStyle(
     color: blackColor,
     fontSize: 24.0,
@@ -204,13 +205,24 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
-  static TextStyle tfName = const TextStyle(
-    color: blackColor,
+  // textfield texts
+  static TextStyle tfName = TextStyle(
+    color: blackColor.withOpacity(0.5),
     fontSize: 16.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
   );
 
+  // error at textfields texts
+  static TextStyle tfError = const TextStyle(
+      color: Colors.red,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // for any clickable text
   static TextStyle clickableTxt = const TextStyle(
     color: primaryColor,
     fontSize: 14.0,
@@ -218,13 +230,15 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
-  static TextStyle forgetPassword = const TextStyle(
+  // forgot password text
+  static TextStyle forgotPassword = const TextStyle(
     color: blackColor,
     fontSize: 20.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
   );
 
+  // reset password text
   static TextStyle resetWithEmail = const TextStyle(
     color: blackColor,
     fontSize: 16.0,
@@ -232,6 +246,7 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
+  // headline at dashboard page
   static TextStyle dashboardHeadline = const TextStyle(
     color: blackColor,
     fontSize: 20.0,
@@ -239,6 +254,7 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
+  // bold text at dashboard page
   static TextStyle dashboardTxtBold = const TextStyle(
     color: blackColor,
     fontSize: 16.0,
@@ -247,6 +263,7 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
+  // regular text at dashboard page
   static TextStyle dashboardTxt = const TextStyle(
     color: blackColor,
     fontSize: 16.0,
@@ -254,6 +271,7 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
+  // dashboard categories text
   static TextStyle dashboardCategories = const TextStyle(
     color: blackColor,
     fontSize: 14.0,
@@ -273,6 +291,22 @@ class LightTextTheme {
     fontSize: 12.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
+  );
+
+  // login/register button text
+  static TextStyle loginBtn = const TextStyle(
+      color: whiteColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // sign in with google text
+  static TextStyle googleBtn = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
   );
 }
 

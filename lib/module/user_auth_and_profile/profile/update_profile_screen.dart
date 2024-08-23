@@ -151,11 +151,24 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _nameController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Name',
+                              labelStyle: LightTextTheme.tfName,
                               hintText: 'Name',
-                              prefixIcon: Icon(
-                                Icons.person,
+                              hintStyle: LightTextTheme.tfName,
+                              errorStyle: LightTextTheme.tfError,
+                              prefixIcon: const Icon(
+                                Icons.person_pin_rounded,
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  _ttsService.speak('Please enter your name');
+                                },
+                                icon: const Icon(
+                                  Icons.volume_up,
+                                  color: primaryColor,
+                                  size: 20,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -166,16 +179,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             },
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            _ttsService.speak('Please enter your name');
-                          },
-                          icon: const Icon(
-                            Icons.volume_up,
-                            color: primaryColor,
-                            size: 20,
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -184,11 +187,25 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _usernameController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Username',
+                              labelStyle: LightTextTheme.tfName,
                               hintText: 'Username',
-                              prefixIcon: Icon(
+                              hintStyle: LightTextTheme.tfName,
+                              errorStyle: LightTextTheme.tfError,
+                              prefixIcon: const Icon(
                                 Icons.person,
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  _ttsService.speak('Please enter your '
+                                      'username');
+                                },
+                                icon: const Icon(
+                                  Icons.volume_up,
+                                  color: primaryColor,
+                                  size: 20,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -199,16 +216,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             },
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            _ttsService.speak('Please enter your username');
-                          },
-                          icon: const Icon(
-                            Icons.volume_up,
-                            color: primaryColor,
-                            size: 20,
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -217,11 +224,24 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _bioController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Bio',
+                              labelStyle: LightTextTheme.tfName,
                               hintText: 'Bio',
-                              prefixIcon: Icon(
+                              hintStyle: LightTextTheme.tfName,
+                              errorStyle: LightTextTheme.tfError,
+                              prefixIcon: const Icon(
                                 Icons.info,
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  _ttsService.speak('Please enter your bio');
+                                },
+                                icon: const Icon(
+                                  Icons.volume_up,
+                                  color: primaryColor,
+                                  size: 20,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -230,16 +250,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               }
                               return null;
                             },
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            _ttsService.speak('Please enter your bio');
-                          },
-                          icon: const Icon(
-                            Icons.volume_up,
-                            color: primaryColor,
-                            size: 20,
                           ),
                         ),
                       ],

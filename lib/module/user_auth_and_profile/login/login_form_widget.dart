@@ -3,6 +3,7 @@ import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/login_controller.dart';
+import '../../../service/tts_service.dart';
 import '../forget_password/forget_password_bottom_sheet.dart';
 
 class LoginFormWidget extends StatefulWidget {
@@ -15,7 +16,7 @@ class LoginFormWidget extends StatefulWidget {
 }
 
 class _LoginFormWidgetState extends State<LoginFormWidget> {
-
+  final TtsService _ttsService = TtsService();
   bool obscurePassword = true;
 
   @override
@@ -33,11 +34,24 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
           children: [
             TextFormField(
               controller: controller.email,
-              decoration: const InputDecoration(
-                label: Text('Email'),
-                hintText: 'Enter your username',
-                prefixIcon: Icon(
+              decoration: InputDecoration(
+                label: const Text('Email'),
+                labelStyle: LightTextTheme.tfName,
+                hintText: 'Enter your email',
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
+                prefixIcon: const Icon(
                   Icons.email,
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    _ttsService.speak('Please enter your email');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 20,
+                  ),
                 ),
               ),
               validator: (email) {
@@ -53,19 +67,38 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               obscureText: obscurePassword,
               decoration: InputDecoration(
                 label: const Text('Password'),
+                labelStyle: LightTextTheme.tfName,
                 hintText: 'Enter your password',
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
                 prefixIcon: const Icon(
                   Icons.lock,
                 ),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      obscurePassword = !obscurePassword;
-                    });
-                  },
-                  child: Icon(
-                    obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  ),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          obscurePassword = !obscurePassword;
+                        });
+                      },
+                      child: Icon(
+                        obscurePassword ? Icons.visibility : Icons
+                            .visibility_off,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _ttsService.speak('Please enter your password');
+                      },
+                      icon: const Icon(
+                        Icons.volume_up,
+                        color: primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               validator: (password) {
@@ -80,7 +113,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               alignment: Alignment.bottomRight,
               child: TextButton(
                 onPressed: () {
-                  ForgetPasswordBottomSheet(context);
+                  forgetPasswordBottomSheet(context);
                 },
                 child: Text(
                   'Forgot password',
@@ -103,11 +136,9 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor
                 ),
-                child: const Text(
+                child: Text(
                   'Login',
-                  style: TextStyle(
-                    color: whiteColor
-                  ),
+                  style: LightTextTheme.loginBtn
                 ),
               ),
             )

@@ -5,7 +5,6 @@ import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
 import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
     'register_form_widget.dart';
 import 'package:flutter/material.dart';
-import '../../../source/colors.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -14,17 +13,6 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            color: primaryColor,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(16),

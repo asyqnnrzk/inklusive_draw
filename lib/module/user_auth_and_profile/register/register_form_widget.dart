@@ -1,8 +1,10 @@
 import 'package:InklusiveDraw/controller/register_controller.dart';
 import 'package:InklusiveDraw/model/user/user_model.dart';
 import 'package:InklusiveDraw/source/colors.dart';
+import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../service/tts_service.dart';
 
 class RegisterFormWidget extends StatefulWidget {
   const RegisterFormWidget({
@@ -14,9 +16,11 @@ class RegisterFormWidget extends StatefulWidget {
 }
 
 class _RegisterFormWidgetState extends State<RegisterFormWidget> {
-
+  final TtsService _ttsService = TtsService();
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
+  String? _passwordErrorMessage;
+  String? _passwordConfirmErrorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +37,24 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
           children: [
             TextFormField(
               controller: controller.name,
-              decoration: const InputDecoration(
-                label: Text('Name'),
+              decoration: InputDecoration(
+                label: const Text('Name'),
+                labelStyle: LightTextTheme.tfName,
                 hintText: 'Enter your name',
-                prefixIcon: Icon(
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
+                prefixIcon: const Icon(
                   Icons.person_pin_rounded,
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    _ttsService.speak('Please enter your name');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 20,
+                  ),
                 ),
               ),
               validator: (name) {
@@ -50,11 +67,24 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
             const SizedBox(height: 16),
             TextFormField(
               controller: controller.username,
-              decoration: const InputDecoration(
-                label: Text('Username'),
+              decoration: InputDecoration(
+                label: const Text('Username'),
+                labelStyle: LightTextTheme.tfName,
                 hintText: 'Enter your username',
-                prefixIcon: Icon(
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
+                prefixIcon: const Icon(
                   Icons.person,
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    _ttsService.speak('Please enter your username');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 20,
+                  ),
                 ),
               ),
               validator: (username) {
@@ -70,32 +100,57 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
               obscureText: obscurePassword,
               decoration: InputDecoration(
                 label: const Text('Password'),
+                labelStyle: LightTextTheme.tfName,
                 hintText: 'Enter your password',
-                prefixIcon: const Icon(
-                  Icons.lock,
-                ),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      obscurePassword = !obscurePassword;
-                    });
-                  },
-                  child: Icon(
-                    obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  ),
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
+                prefixIcon: const Icon(Icons.lock),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          obscurePassword = !obscurePassword;
+                        });
+                      },
+                      child: Icon(
+                        obscurePassword ? Icons.visibility : Icons
+                            .visibility_off,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        if (_passwordErrorMessage != null) {
+                          _ttsService.speak(_passwordErrorMessage!);
+                        } else {
+                          _ttsService.speak('Please enter your password');
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.volume_up,
+                        color: primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               validator: (password) {
                 if (password == null || password.isEmpty) {
-                  return 'Please enter your password';
+                  _passwordErrorMessage = 'Please enter your password';
+                  return _passwordErrorMessage;
                 }
                 if (password.length < 8) {
-                  return 'Password is too short';
+                  _passwordErrorMessage = 'Password is too short';
+                  return _passwordErrorMessage;
                 }
                 RegExp regexPassword = RegExp(r'^[a-zA-Z0-9_]+$');
                 if (!regexPassword.hasMatch(password)) {
-                  return 'Please enter a valid password';
+                  _passwordErrorMessage = 'Only a-z, 0-9, _ accepted';
+                  return _passwordErrorMessage;
                 }
+                _passwordErrorMessage = null;
                 return null; // Return null if the input is valid
               },
             ),
@@ -105,42 +160,79 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
               obscureText: obscureConfirmPassword,
               decoration: InputDecoration(
                 label: const Text('Confirm Password'),
+                labelStyle: LightTextTheme.tfName,
                 hintText: 'Re-enter your password',
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
                 prefixIcon: const Icon(
                   Icons.lock,
                 ),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      obscureConfirmPassword = !obscureConfirmPassword;
-                    });
-                  },
-                  child: Icon(
-                    obscureConfirmPassword ? Icons.visibility : Icons
-                        .visibility_off,
-                  ),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          obscureConfirmPassword = !obscureConfirmPassword;
+                        });
+                      },
+                      child: Icon(
+                        obscureConfirmPassword ? Icons.visibility : Icons
+                            .visibility_off,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        if (_passwordConfirmErrorMessage != null) {
+                          _ttsService.speak(_passwordConfirmErrorMessage!);
+                        } else {
+                          _ttsService.speak('Please re-enter your password');
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.volume_up,
+                        color: primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               validator: (confirmPassword) {
                 if (confirmPassword == null || confirmPassword.isEmpty)
                 {
-                  return 'Please re-enter your password';
+                  _passwordConfirmErrorMessage = 'Please re-enter your '
+                      'password';
+                  return _passwordConfirmErrorMessage;
                 }
-                // if (controller.confirmPasswordController.text !=
-                //     controller.passwordController.text) {
-                //   return 'Password is not match';
-                // }
+                if (confirmPassword != controller.password.text) {
+                  _passwordConfirmErrorMessage = 'Password do not match';
+                  return _passwordConfirmErrorMessage;
+                }
                 return null; // Return null if the input is valid
               },
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: controller.email,
-              decoration: const InputDecoration(
-                label: Text('Email'),
+              decoration: InputDecoration(
+                label: const Text('Email'),
+                labelStyle: LightTextTheme.tfName,
                 hintText: 'Enter your email',
-                prefixIcon: Icon(
+                hintStyle: LightTextTheme.tfName,
+                errorStyle: LightTextTheme.tfError,
+                prefixIcon: const Icon(
                   Icons.email,
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    _ttsService.speak('Please enter your email');
+                  },
+                  icon: const Icon(
+                    Icons.volume_up,
+                    color: primaryColor,
+                    size: 20,
+                  ),
                 ),
               ),
               validator: (email) {
@@ -152,7 +244,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   caseSensitive: false,
                 );
                 if (!regexEmail.hasMatch(email)) {
-                  return 'Please enter a valid email address';
+                  return 'Please enter a valid email';
                 }
                 return null; // Return null if the input is valid
               },
@@ -178,11 +270,9 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor
                 ),
-                child: const Text(
+                child: Text(
                   'Register',
-                  style: TextStyle(
-                      color: whiteColor
-                  ),
+                  style: LightTextTheme.loginBtn
                 ),
               ),
             )

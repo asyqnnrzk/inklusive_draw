@@ -3,7 +3,6 @@ import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
 import 'package:InklusiveDraw/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../source/colors.dart';
 import '../../../source/image_strings.dart';
 import '../../../source/text_theme.dart';
 
@@ -16,12 +15,9 @@ class LoginFooterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
+        Text(
           'OR',
-          style: TextStyle(
-              color: blackColor,
-              fontFamily: 'MontserratBold'
-          ),
+          style: LightTextTheme.googleBtn,
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -34,11 +30,9 @@ class LoginFooterWidget extends StatelessWidget {
               image: AssetImage(googleLogo),
               width: 20,
             ),
-            label: const Text(
+            label: Text(
               'Continue with Google',
-              style: TextStyle(
-                  color: blackColor
-              ),
+              style: LightTextTheme.googleBtn,
             ),
           ),
         ),

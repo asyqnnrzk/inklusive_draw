@@ -64,13 +64,13 @@ dev_dependencies:
 
 flutter_icons:
   android: true
-  image_path: assets/app_icon/app_icon_transparent.png
+  image_path: assets/app_icon/icon_app_transparent.png
 
 flutter_native_splash:
   color: '#EC8696'
   color_dark: '#272727'
-  image: assets/images/logo_transparent.png
-  image_dark: assets/images/logo_transparent.png
+  image: assets/app_icon/icon_app_transparent.png
+  image_dark: assets/app_icon/icon_app_transparent.png
 
 flutter:
   uses-material-design: true
