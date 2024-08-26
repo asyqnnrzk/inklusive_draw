@@ -9,6 +9,52 @@ import '../../../source/text_theme.dart';
 import '../resource/video_player_screen.dart';
 
 class FavoriteScreen extends StatelessWidget {
+
+  Future<void> _confirmDelete(BuildContext context, String userId, String
+  favoriteId) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Remove Favorite?',
+            style: LightTextTheme.reportDetails,
+          ),
+          content: Text(
+            'Are you sure you want to remove this from your favorite?',
+            style: LightTextTheme.reportDetails,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Cancel',
+                style: LightTextTheme.cancelBtn,
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(
+                'Remove',
+                style: LightTextTheme.deleteBtn,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('favorites')
+          .doc(favoriteId)
+          .delete();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
@@ -38,7 +84,10 @@ class FavoriteScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No favorites available'));
+            return Center(child: Text(
+              'No favorites available',
+              style: LightTextTheme.dashboardTxtBold,
+            ));
           }
 
           final favorites = snapshot.data!.docs;
@@ -59,8 +108,8 @@ class FavoriteScreen extends StatelessWidget {
               if (type == 'video') {
                 final videoUrl = data['link'];
                 final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-                final thumbnailUrl = 'https://img.youtube.com/vi/$videoId'
-                    '/hqdefault.jpg';
+                final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/'
+                    'hqdefault.jpg';
 
                 return Column(
                   children: [
@@ -84,14 +133,8 @@ class FavoriteScreen extends StatelessWidget {
                       trailing: IconButton(
                         icon: const Icon(Icons.favorite, color: Colors
                             .redAccent),
-                        onPressed: () async {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('favorites')
-                              .doc(favorite.id)
-                              .delete();
-                        },
+                        onPressed: () => _confirmDelete(context, user.uid,
+                            favorite.id),
                       ),
                       onTap: () {
                         Navigator.of(context).push(
@@ -125,14 +168,8 @@ class FavoriteScreen extends StatelessWidget {
                       trailing: IconButton(
                         icon: const Icon(Icons.favorite, color: Colors
                             .redAccent),
-                        onPressed: () async {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('favorites')
-                              .doc(favorite.id)
-                              .delete();
-                        },
+                        onPressed: () => _confirmDelete(context, user.uid,
+                            favorite.id),
                       ),
                     ),
                     const Divider(),

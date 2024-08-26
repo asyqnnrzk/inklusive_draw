@@ -37,7 +37,7 @@ class ResourceListState extends State<ResourceList> {
   }
 
   void _onSearchChanged() {
-    filterResources();
+    filterResources(widget.controller.text);
   }
 
   void _fetchResources() {
@@ -51,13 +51,14 @@ class ResourceListState extends State<ResourceList> {
     );
   }
 
-  void filterResources() {
+  void filterResources(String query) {
     setState(() {
+      final lowerCaseQuery = query.toLowerCase();
       _filteredResources = _allResources.where((resource) {
         return resource['material']
             .toString()
             .toLowerCase()
-            .contains(widget.controller.text.toLowerCase());
+            .contains(lowerCaseQuery);
       }).toList();
     });
   }
@@ -68,7 +69,8 @@ class ResourceListState extends State<ResourceList> {
         .doc(user.uid)
         .collection('favorites');
     final favoriteDoc =
-    await favoritesCollection.where('resource_id', isEqualTo: resource.id).get();
+    await favoritesCollection.where('resource_id', isEqualTo: resource.id)
+        .get();
 
     if (favoriteDoc.docs.isEmpty) {
       // Add to favorites
@@ -100,7 +102,8 @@ class ResourceListState extends State<ResourceList> {
 
     setState(() {
       _favoritedItemIds =
-          favoritesSnapshot.docs.map((doc) => doc['resource_id'] as String).toList();
+          favoritesSnapshot.docs.map((doc) => doc['resource_id'] as String)
+              .toList();
     });
   }
 
@@ -137,7 +140,8 @@ class ResourceListState extends State<ResourceList> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => VideoPlayerScreen(videoUrl: resource['link']),
+                builder: (context) => VideoPlayerScreen(videoUrl:
+                resource['link']),
               ),
             );
           },
@@ -149,7 +153,29 @@ class ResourceListState extends State<ResourceList> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return _filteredResources.isEmpty
+        ? Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.search_off,
+            size: 80,
+            color: Colors.grey,
+          ),
+          const SizedBox(height: 16.0),
+          Text(
+            'No resources found',
+            style: LightTextTheme.hintTxt,
+          ),
+          Text(
+            'Please try another keyword',
+            style: LightTextTheme.hintTxt,
+          ),
+        ],
+      ),
+    )
+        : ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: _filteredResources.length,
@@ -157,7 +183,8 @@ class ResourceListState extends State<ResourceList> {
         final resource = _filteredResources[index];
         final videoUrl = resource['link'];
         final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault'
+            '.jpg';
 
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
@@ -173,7 +200,7 @@ class ResourceListState extends State<ResourceList> {
               print('Error: ${snapshot.error}');
               return const Text('Something went wrong');
             } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              const isFavorited = false;
+              final isFavorited = false;
               return buildResourceTile(resource, thumbnailUrl, isFavorited);
             } else {
               final isFavorited = snapshot.data!.docs.isNotEmpty;

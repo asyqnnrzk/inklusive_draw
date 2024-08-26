@@ -279,13 +279,15 @@ class LightTextTheme {
     letterSpacing: 1.5
   );
 
+  // title for community and resource
   static TextStyle resourceTitle = const TextStyle(
-    color: blackColor,
+    color: Colors.pinkAccent,
     fontSize: 14.0,
     fontFamily: 'Verdana',
     letterSpacing: 1.5
   );
 
+  // resource creator text
   static TextStyle resourceCreator = const TextStyle(
     color: blackColor,
     fontSize: 12.0,
@@ -305,6 +307,31 @@ class LightTextTheme {
   static TextStyle googleBtn = const TextStyle(
       color: blackColor,
       fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // label for forum title post
+  static TextStyle forumTitle = const TextStyle(
+      color: blackColor,
+      fontSize: 18.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // label for forum post
+  static TextStyle forumLabel = const TextStyle(
+      color: blackColor,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // label for forum poster
+  static TextStyle forumBy = TextStyle(
+      color: blackColor.withOpacity(0.7),
+      fontSize: 12.0,
       fontFamily: 'Verdana',
       letterSpacing: 1.5
   );

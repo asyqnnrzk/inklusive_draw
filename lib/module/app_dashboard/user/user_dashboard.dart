@@ -1,3 +1,5 @@
+import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
+import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_appbar.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_banner.dart';
@@ -31,13 +33,19 @@ class UserDashboard extends StatelessWidget {
                 future: RecentDrawings.fetchRecentDrawings(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child:
+                    CircularProgressIndicatorTheme());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.recentDrawings.isEmpty) {
-                    return const Center(child: Text('No recent drawings available'));
+                  } else if (!snapshot.hasData || snapshot.data!.recentDrawings
+                      .isEmpty) {
+                    return Center(child: Text(
+                      'No recent drawings available',
+                      style: LightTextTheme.dashboardTxtBold,
+                    ));
                   } else {
-                    return UserContent(recentDrawings: snapshot.data!.recentDrawings);
+                    return UserContent(recentDrawings: snapshot.data!
+                        .recentDrawings);
                   }
                 },
               ),

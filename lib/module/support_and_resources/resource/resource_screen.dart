@@ -1,6 +1,7 @@
-import 'package:InklusiveDraw/module/app_dashboard/user/user_search.dart';
 import 'package:InklusiveDraw/module/support_and_resources/resource/'
     'resource_list.dart';
+import 'package:InklusiveDraw/module/support_and_resources/resource/'
+    'resource_search.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -25,8 +26,8 @@ class _ResourceScreenState extends State<ResourceScreen> {
     super.dispose();
   }
 
-  void _onSearch() {
-    _resourceListKey.currentState?.filterResources();
+  void _onSearch(String query) {
+    _resourceListKey.currentState?.filterResources(query);
   }
 
   @override
@@ -60,7 +61,7 @@ class _ResourceScreenState extends State<ResourceScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              UserSearch(controller: _searchController, onSearch: _onSearch),
+              ResourceSearch(onSearch: _onSearch),
               const SizedBox(height: 16.0),
               ResourceList(key: _resourceListKey, controller:
               _searchController),

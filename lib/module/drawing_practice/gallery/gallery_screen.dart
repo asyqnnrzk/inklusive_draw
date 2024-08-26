@@ -138,7 +138,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No saved drawings found'));
+                  return Center(
+                    child: Text(
+                      'No saved drawings found',
+                      style: LightTextTheme.dashboardTxtBold,
+                    )
+                  );
                 } else {
                   final files = filteredDrawings.isEmpty
                       ? snapshot.data!

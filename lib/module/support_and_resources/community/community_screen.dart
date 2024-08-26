@@ -1,3 +1,7 @@
+import 'package:InklusiveDraw/module/support_and_resources/community/'
+    'community_search.dart';
+import 'package:InklusiveDraw/module/support_and_resources/community/'
+    'forum/forum_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +11,6 @@ import '../../../model/community_model.dart';
 import '../favorites/favorite_screen.dart';
 import 'community_card.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
-import '../../app_dashboard/user/user_search.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -39,65 +42,100 @@ class _CommunityScreenState extends State<CommunityScreen> {
   }
 
   void _onSearchChanged() {
-    setState(() {
-      displayedCommunities = allCommunities.where((community) {
-        return community.name.toLowerCase().contains(searchController
-            .text.toLowerCase());
+    search(searchController.text);
+  }
+
+  void search(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        displayedCommunities = allCommunities;
+      });
+      return;
+    }
+
+    try {
+      QuerySnapshot userResult = await FirebaseFirestore.instance
+          .collection('communities')
+          .get();
+
+      List<CommunityModel> filteredResults = userResult.docs.map((doc) {
+        return CommunityModel.fromFirestore(doc);
+      }).where((community) {
+        return community.name.toLowerCase().contains(query.toLowerCase()) ||
+            community.description.toLowerCase().contains(query.toLowerCase());
       }).toList();
-    });
+
+      setState(() {
+        displayedCommunities = filteredResults;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future<void> _fetchCommunities() async {
-    final snapshot = await FirebaseFirestore.instance.collection('communities')
-        .get();
-    setState(() {
-      allCommunities = snapshot.docs.map((doc) => CommunityModel
-          .fromFirestore(doc)).toList();
-      displayedCommunities = allCommunities;
-    });
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection
+        ('communities').get();
+      setState(() {
+        allCommunities = snapshot.docs.map((doc) => CommunityModel
+            .fromFirestore(doc)).toList();
+        displayedCommunities = allCommunities;
+      });
+    } catch (e) {
+      print('Error fetching communities: $e');
+    }
   }
 
   Future<void> _loadFavorites() async {
-    final favoritesCollection = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('favorites');
-    final favoritesSnapshot = await favoritesCollection.get();
+    try {
+      final favoritesCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites');
+      final favoritesSnapshot = await favoritesCollection.get();
 
-    setState(() {
-      favoritedCommunityIds = favoritesSnapshot.docs
-          .where((doc) => doc['type'] == 'community')
-          .map((doc) => doc['community_id'] as String)
-          .toList();
-    });
+      setState(() {
+        favoritedCommunityIds = favoritesSnapshot.docs
+            .where((doc) => doc['type'] == 'community')
+            .map((doc) => doc['community_id'] as String)
+            .toList();
+      });
+    } catch (e) {
+      print('Error loading favorites: $e');
+    }
   }
 
   Future<void> _toggleFavorite(CommunityModel community) async {
-    final favoritesCollection = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('favorites');
-    final favoriteDoc = await favoritesCollection
-        .where('community_id', isEqualTo: community.id)
-        .get();
+    try {
+      final favoritesCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites');
+      final favoriteDoc = await favoritesCollection
+          .where('community_id', isEqualTo: community.id)
+          .get();
 
-    if (favoriteDoc.docs.isEmpty) {
-      // Add to favorites
-      await favoritesCollection.add({
-        'type': 'community',
-        'community_id': community.id,
-        'name': community.name,
-        'description': community.description,
-      });
-      setState(() {
-        favoritedCommunityIds.add(community.id);
-      });
-    } else {
-      // Remove from favorites
-      await favoritesCollection.doc(favoriteDoc.docs.first.id).delete();
-      setState(() {
-        favoritedCommunityIds.remove(community.id);
-      });
+      if (favoriteDoc.docs.isEmpty) {
+        // Add to favorites
+        await favoritesCollection.add({
+          'type': 'community',
+          'community_id': community.id,
+          'name': community.name,
+          'description': community.description,
+        });
+        setState(() {
+          favoritedCommunityIds.add(community.id);
+        });
+      } else {
+        // Remove from favorites
+        await favoritesCollection.doc(favoriteDoc.docs.first.id).delete();
+        setState(() {
+          favoritedCommunityIds.remove(community.id);
+        });
+      }
+    } catch (e) {
+      print('Error toggling favorite: $e');
     }
   }
 
@@ -134,21 +172,50 @@ class _CommunityScreenState extends State<CommunityScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 24.0),
-                UserSearch(controller: searchController, onSearch:
-                _onSearchChanged),
+                CommunitySearch(onSearch: search),
                 const SizedBox(height: 16.0),
-                ListView.builder(
+                displayedCommunities.isEmpty
+                    ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.search_off,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16.0),
+                      Text(
+                        'No communities found',
+                        style: LightTextTheme.hintTxt,
+                      ),
+                      Text(
+                        'Please try another keyword',
+                        style: LightTextTheme.hintTxt,
+                      ),
+                    ],
+                  ),
+                )
+                    : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: displayedCommunities.length,
                   itemBuilder: (context, index) {
                     final community = displayedCommunities[index];
-                    final isFavorited = favoritedCommunityIds.contains(
-                        community.id);
+                    final isFavorited = favoritedCommunityIds.contains
+                      (community.id);
                     return CommunityCard(
                       community: community,
                       isFavorited: isFavorited,
                       onFavoriteToggle: () => _toggleFavorite(community),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ForumHomepage(communityId:
+                            community.id),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
