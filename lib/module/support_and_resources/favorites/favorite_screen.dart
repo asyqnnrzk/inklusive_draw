@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'package:InklusiveDraw/module/support_and_resources/community/'
+    'community_screen.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,9 +12,8 @@ import '../../../source/text_theme.dart';
 import '../resource/video_player_screen.dart';
 
 class FavoriteScreen extends StatelessWidget {
-
-  Future<void> _confirmDelete(BuildContext context, String userId, String
-  favoriteId) async {
+  Future<void> _confirmDelete(BuildContext context, String userId,
+      String favoriteId) async {
     final bool? confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -22,7 +24,7 @@ class FavoriteScreen extends StatelessWidget {
             style: LightTextTheme.reportDetails,
           ),
           content: Text(
-            'Are you sure you want to remove this from your favorite?',
+            'Remove this from your favorite?',
             style: LightTextTheme.reportDetails,
           ),
           actions: <Widget>[
@@ -55,9 +57,18 @@ class FavoriteScreen extends StatelessWidget {
     }
   }
 
+  final List<Color> _pastelColors = [
+    const Color(0xFFE5B9E2), // Light pastel purple
+    const Color(0xFFB9E5B9), // Light pastel green
+    const Color(0xFFB9E2F5), // Light pastel blue
+    const Color(0xFFFFE5B9), // Light pastel beige
+    const Color(0xFFB9E5E0), // Light pastel mint
+  ];
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
+    final random = Random();
 
     return Scaffold(
       appBar: AppBar(
@@ -104,6 +115,7 @@ class FavoriteScreen extends StatelessWidget {
               }
 
               final type = data['type'];
+              final color = _pastelColors[random.nextInt(_pastelColors.length)];
 
               if (type == 'video') {
                 final videoUrl = data['link'];
@@ -111,69 +123,77 @@ class FavoriteScreen extends StatelessWidget {
                 final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/'
                     'hqdefault.jpg';
 
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: Image.network(
-                        thumbnailUrl,
-                        width: 70,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
-                      title: Text(
-                        data['material'],
-                        overflow: TextOverflow.ellipsis,
-                        style: LightTextTheme.resourceTitle,
-                      ),
-                      subtitle: Text(
-                        data['creator'],
-                        overflow: TextOverflow.ellipsis,
-                        style: LightTextTheme.resourceCreator,
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.favorite, color: Colors
-                            .redAccent),
-                        onPressed: () => _confirmDelete(context, user.uid,
-                            favorite.id),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => VideoPlayerScreen(videoUrl:
-                            videoUrl),
-                          ),
-                        );
-                      },
+                return Card(
+                  color: color,
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric
+                    (vertical: 8, horizontal: 16),
+                  child: ListTile(
+                    leading: Image.network(
+                      thumbnailUrl,
+                      width: 70,
+                      height: 50,
+                      fit: BoxFit.cover,
                     ),
-                    const Divider(),
-                  ],
+                    title: Text(
+                      data['material'],
+                      overflow: TextOverflow.ellipsis,
+                      style: LightTextTheme.resourceTitle,
+                    ),
+                    subtitle: Text(
+                      data['creator'],
+                      overflow: TextOverflow.ellipsis,
+                      style: LightTextTheme.resourceCreator,
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.favorite, color: Colors.redAccent),
+                      onPressed: () => _confirmDelete(context, user.uid,
+                          favorite.id),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerScreen
+                            (videoUrl: videoUrl),
+                        ),
+                      );
+                    },
+                  ),
                 );
               } else if (type == 'community') {
                 final communityName = data['name'];
                 final communityDescription = data['description'];
 
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text(
-                        communityName,
-                        overflow: TextOverflow.ellipsis,
-                        style: LightTextTheme.resourceTitle,
-                      ),
-                      subtitle: Text(
-                        communityDescription,
-                        overflow: TextOverflow.ellipsis,
-                        style: LightTextTheme.resourceCreator,
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.favorite, color: Colors
-                            .redAccent),
-                        onPressed: () => _confirmDelete(context, user.uid,
-                            favorite.id),
-                      ),
+                return Card(
+                  color: color,
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric
+                    (vertical: 8, horizontal: 16),
+                  child: ListTile(
+                    title: Text(
+                      communityName,
+                      overflow: TextOverflow.ellipsis,
+                      style: LightTextTheme.resourceTitle,
                     ),
-                    const Divider(),
-                  ],
+                    subtitle: Text(
+                      communityDescription,
+                      overflow: TextOverflow.ellipsis,
+                      style: LightTextTheme.resourceCreator,
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.favorite, color: Colors
+                          .redAccent),
+                      onPressed: () => _confirmDelete
+                        (context, user.uid, favorite.id),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const CommunityScreen()
+                        ),
+                      );
+                    },
+                  ),
                 );
               } else {
                 return Container();

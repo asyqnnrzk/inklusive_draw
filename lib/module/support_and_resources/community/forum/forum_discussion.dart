@@ -91,8 +91,8 @@ class _ForumDiscussionState extends State<ForumDiscussion> {
           icon: const Icon(LineAwesomeIcons.angle_left_solid),
         ),
       ),
-      body: Column(
-        children: [
+      body: CustomScrollView(
+        slivers: [
           StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('communities')
@@ -102,88 +102,119 @@ class _ForumDiscussionState extends State<ForumDiscussion> {
                 .snapshots(),
             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicatorTheme());
+                return const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicatorTheme()),
+                );
               }
               if (!snapshot.hasData) {
-                return Center(child: Text(
-                  'Post not found.',
-                  style: LightTextTheme.forumLabel,
-                ));
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      'Post not found.',
+                      style: LightTextTheme.forumLabel,
+                    ),
+                  ),
+                );
               }
 
               final post = snapshot.data!;
-              return Container(
-                color: greenButton,
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              final postData = post.data() as Map<String, dynamic>;
+              final imageUrl = postData['imageUrl'];
+
+              return SliverList(
+                delegate: SliverChildListDelegate([
+                  Container(
+                    color: greenButton,
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            post['title'],
-                            style: LightTextTheme.forumTitle,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                postData['title'],
+                                style: LightTextTheme.forumTitle,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.volume_up),
+                              iconSize: 16.0,
+                              color: primaryColor,
+                              onPressed: () =>
+                                  _readPost(postData['title'],
+                                      postData['content']),
+                              tooltip: 'Read Aloud',
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          postData['content'],
+                          style: LightTextTheme.forumLabel,
+                        ),
+                        const SizedBox(height: 10),
+                        // Display image if imageUrl is available
+                        if (imageUrl != null)
+                          Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.volume_up),
-                          iconSize: 16.0,
-                          color: primaryColor,
-                          onPressed: () => _readPost(post['title'],
-                              post['content']),
-                          tooltip: 'Read Aloud',
-                        ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      post['content'],
-                      style: LightTextTheme.forumLabel,
-                    ),
-                  ],
-                ),
+                  ),
+                ]),
               );
             },
           ),
-          Expanded(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('communities')
-                  .doc(widget.communityId)
-                  .collection('forum')
-                  .doc(widget.postId)
-                  .collection('comments')
-                  .orderBy('timestamp', descending: false)
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicatorTheme());
-                }
-                if (!snapshot.hasData) {
-                  return Center(child: Text(
-                    'Be the first to comment!',
-                    style: LightTextTheme.forumLabel,
-                  ));
-                }
+          StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('communities')
+                .doc(widget.communityId)
+                .collection('forum')
+                .doc(widget.postId)
+                .collection('comments')
+                .orderBy('timestamp', descending: false)
+                .snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicatorTheme()),
+                );
+              }
+              if (!snapshot.hasData) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      'Be the first to comment!',
+                      style: LightTextTheme.forumLabel,
+                    ),
+                  ),
+                );
+              }
 
-                final comments = snapshot.data!.docs;
-                if (comments.isEmpty) {
-                  return Center(child: Text(
-                    'Be the first to comment!',
-                    style: LightTextTheme.forumLabel,
-                  ));
-                }
+              final comments = snapshot.data!.docs;
+              if (comments.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      'Be the first to comment!',
+                      style: LightTextTheme.forumLabel,
+                    ),
+                  ),
+                );
+              }
 
-                return ListView.builder(
-                  itemCount: comments.length,
-                  itemBuilder: (context, index) {
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
                     final comment = comments[index];
                     final commentId = comment.id;
                     final authorId = comment['authorId'];
-                    final currentUserId = FirebaseAuth.instance.currentUser!
-                        .uid;
+                    final currentUserId =
+                        FirebaseAuth.instance.currentUser!.uid;
 
                     return ListTile(
                       title: Text(
@@ -202,12 +233,14 @@ class _ForumDiscussionState extends State<ForumDiscussion> {
                             icon: const Icon(Icons.volume_up),
                             iconSize: 16.0,
                             color: primaryColor,
-                            onPressed: () => _readComment(comment['content']),
+                            onPressed: () =>
+                                _readComment(comment['content']),
                             tooltip: 'Read Aloud',
                           ),
                         ],
                       ),
-                      trailing: currentUserId == authorId ? IconButton(
+                      trailing: currentUserId == authorId
+                          ? IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         iconSize: 16.0,
                         onPressed: () {
@@ -249,36 +282,39 @@ class _ForumDiscussionState extends State<ForumDiscussion> {
                             },
                           );
                         },
-                      ) : null,
+                      )
+                          : null,
                     );
                   },
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _commentController,
-                    decoration: InputDecoration(
-                      labelText: 'Add a comment',
-                      labelStyle: LightTextTheme.forumLabel,
-                      suffixIcon: IconButton(
-                        icon: const Icon(
-                            Icons.send_rounded, color: primaryColor
-                        ),
-                        onPressed: _sendComment,
-                      ),
-                    ),
-                    onSubmitted: (value) {
-                      _sendComment();
-                    },
-                  ),
+                  childCount: comments.length,
                 ),
-              ],
+              );
+            },
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _commentController,
+                      decoration: InputDecoration(
+                        labelText: 'Add a comment',
+                        labelStyle: LightTextTheme.forumLabel,
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.send_rounded,
+                              color: primaryColor),
+                          onPressed: _sendComment,
+                        ),
+                      ),
+                      onSubmitted: (value) {
+                        _sendComment();
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

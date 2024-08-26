@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'forum_post.dart';
 import 'forum_discussion.dart';
 import 'post_card.dart';
@@ -16,7 +17,8 @@ class ForumHomepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Community ID: $communityId');
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -38,7 +40,6 @@ class ForumHomepage extends StatelessWidget {
             .collection('forum')
             .orderBy('timestamp', descending: true)
             .snapshots(),
-
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicatorTheme());
@@ -94,7 +95,7 @@ class ForumHomepage extends StatelessWidget {
                     ),
                   );
                 },
-                onDelete: () async {
+                onDelete: currentUser?.uid == post['authorId'] ? () async {
                   // Delete the post from Firestore
                   await FirebaseFirestore.instance
                       .collection('communities')
@@ -102,7 +103,7 @@ class ForumHomepage extends StatelessWidget {
                       .collection('forum')
                       .doc(post.id)
                       .delete();
-                },
+                } : null,
               );
             },
           );

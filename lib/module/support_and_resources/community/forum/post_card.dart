@@ -7,14 +7,14 @@ class PostCard extends StatelessWidget {
   final String content;
   final String author;
   final VoidCallback onTap;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
   PostCard({
     required this.title,
     required this.content,
     required this.author,
     required this.onTap,
-    required this.onDelete,
+    this.onDelete,
   });
 
   // List of pastel colors
@@ -67,53 +67,54 @@ class PostCard extends StatelessWidget {
               ),
             ],
           ),
-          Positioned(
-            top: 8.0,
-            right: 8.0,
-            child: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              iconSize: 16.0,
-              onPressed: () {
-                // Show confirmation dialog before deleting
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(
-                        'Delete Post?',
-                        style: LightTextTheme.deleteBtn,
-                      ),
-                      content: Text(
-                        'Are you sure you want to delete this post?',
-                        style: LightTextTheme.reportDetails,
-                      ),
-                      actions: [
-                        TextButton(
-                          child: Text(
-                            'Cancel',
-                            style: LightTextTheme.cancelBtn,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
+          if (onDelete != null)
+            Positioned(
+              top: 8.0,
+              right: 8.0,
+              child: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                iconSize: 16.0,
+                onPressed: () {
+                  // Show confirmation dialog before deleting
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text(
+                          'Delete Post?',
+                          style: LightTextTheme.deleteBtn,
                         ),
-                        TextButton(
-                          child: Text(
-                            'Delete',
-                            style: LightTextTheme.deleteBtn,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            onDelete();
-                          },
+                        content: Text(
+                          'Are you sure you want to delete this post?',
+                          style: LightTextTheme.reportDetails,
                         ),
-                      ],
-                    );
-                  },
-                );
-              },
+                        actions: [
+                          TextButton(
+                            child: Text(
+                              'Cancel',
+                              style: LightTextTheme.cancelBtn,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text(
+                              'Delete',
+                              style: LightTextTheme.deleteBtn,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              onDelete!();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );
