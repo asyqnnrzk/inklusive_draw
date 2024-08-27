@@ -95,10 +95,21 @@ class FavoriteScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text(
-              'No favorites available',
-              style: LightTextTheme.dashboardTxtBold,
-            ));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'No favorites yet',
+                    style: LightTextTheme.dashboardTxtBold,
+                  ),
+                  Text(
+                    'Start adding some!',
+                    style: LightTextTheme.dashboardTxtBold,
+                  ),
+                ],
+              ));
           }
 
           final favorites = snapshot.data!.docs;

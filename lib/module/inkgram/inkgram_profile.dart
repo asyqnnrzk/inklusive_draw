@@ -393,7 +393,10 @@ class _InkgramProfileState extends State<InkgramProfile> {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData || snapshot.data!.docs
                           .isEmpty) {
-                        return const Text('No posts yet');
+                        return Text(
+                          'Start create new post!',
+                          style: LightTextTheme.inkgramPostDesc,
+                        );
                       } else {
                         return GridView.builder(
                           shrinkWrap: true,

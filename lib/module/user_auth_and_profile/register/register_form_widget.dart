@@ -260,7 +260,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                       name: controller.name.text.trim(),
                       username: controller.username.text.trim(),
                       password: controller.password.text.trim(),
-                      plainPassword: controller.confirmPassword.text.trim(),
                       email: controller.email.text.trim()
                     );
 
