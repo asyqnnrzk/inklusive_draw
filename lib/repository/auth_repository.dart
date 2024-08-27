@@ -2,9 +2,8 @@ import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen'
     '.dart';
-import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
-    'register_screen.dart';
 import 'package:InklusiveDraw/repository/exceptions/sign_up_fail.dart';
+import 'package:InklusiveDraw/source/image_strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -33,17 +32,30 @@ class AuthRepository extends GetxController {
   Future<void> registerUserWithEmailAndPassword(String email, String password)
   async {
     try {
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password
-      );
-      firebaseUser.value != null ? Get.offAll(() => const Homepage()) :
-      Get.offAll(() => const RegisterScreen());
-    } on FirebaseAuthException catch(e) {
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        // Create profile subcollection for the new user
+        await _firestore.collection('users').doc(firebaseUser.uid)
+            .collection('profile').doc(firebaseUser.uid).set({
+          'avatar': userDefault,
+          'bio': 'Default bio',
+          'followers': 0,
+          'following': 0,
+          'posts': 0,
+        });
+        print('User registered and profile created: ${firebaseUser.uid}');
+        Get.offAll(() => const Homepage());
+      } else {
+        throw Exception('Failed to get user after registration');
+      }
+    } on FirebaseAuthException catch (e) {
       final ex = SignUpFail.code(e.code);
       print('FIREBASE AUTH EXCEPTION: ${ex.message}');
       throw ex;
-    } catch (_) {
+    } catch (e) {
       const ex = SignUpFail();
       print('EXCEPTION: ${ex.message}');
       throw ex;
@@ -53,17 +65,15 @@ class AuthRepository extends GetxController {
   Future<void> loginUserWithEmailAndPassword(String email, String password)
   async {
     try {
-      await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password
-      );
-      firebaseUser.value != null ? Get.offAll(() => const Homepage()) :
-      Get.offAll(() => const LoginScreen());
-    } on FirebaseAuthException catch(e) {
+      UserCredential userCredential = await _auth
+          .signInWithEmailAndPassword(email: email, password: password);
+      print('User logged in: ${userCredential.user?.uid}');
+      Get.offAll(() => const Homepage());
+    } on FirebaseAuthException catch (e) {
       final ex = SignUpFail.code(e.code);
       print('FIREBASE AUTH EXCEPTION: ${ex.message}');
       throw ex;
-    } catch (_) {
+    } catch (e) {
       const ex = SignUpFail();
       print('EXCEPTION: ${ex.message}');
       throw ex;
@@ -113,7 +123,7 @@ class AuthRepository extends GetxController {
         }
 
         // Navigate to user dashboard
-        Get.offAll(() => UserDashboard());
+        Get.offAll(() => const UserDashboard());
       } else {
         Get.offAll(() => const LoginScreen());
       }

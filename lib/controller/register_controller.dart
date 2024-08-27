@@ -16,7 +16,8 @@ class RegisterController extends GetxController {
   final userRepo = Get.put(UserRepository());
 
   void registerUser(String email, String password) {
-    String? error = AuthRepository.instance.registerUserWithEmailAndPassword(email, password) as String?;
+    String? error = AuthRepository.instance.registerUserWithEmailAndPassword
+      (email, password) as String?;
     if (error != null) {
       Get.showSnackbar(GetSnackBar(message: error.toString()));
     }

@@ -9,11 +9,11 @@ class SignUpFail {
         return const SignUpFail('Please enter a stronger password');
       case 'invalid-email':
         return const SignUpFail('Email is not valid or badly formatted');
-      case 'email-already-in-used':
+      case 'email-already-in-use':
         return const SignUpFail('An account already exists for that email');
       case 'operation-not-allowed':
-        return const SignUpFail('Operation is not allowed, '
-            'please contact support');
+        return const SignUpFail('Operation is not allowed, please contact '
+            'support');
       case 'user-disabled':
         return const SignUpFail('This user has been disabled');
       default:

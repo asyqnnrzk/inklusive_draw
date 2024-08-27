@@ -335,6 +335,23 @@ class LightTextTheme {
       fontFamily: 'Verdana',
       letterSpacing: 1.5
   );
+
+  // for snackbar title
+  static TextStyle snackbarBold = const TextStyle(
+      color: redText,
+      fontSize: 18.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
+  // for snackbar message
+  static TextStyle snackbarTxt = const TextStyle(
+      color: blackColor,
+      fontSize: 18.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
 }
 
 class DarkTextTheme {
