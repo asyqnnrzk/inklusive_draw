@@ -8,12 +8,14 @@ import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
     'tools_widget.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+import '../../../source/colors.dart';
 
 class DrawingPage extends StatefulWidget {
   final List<CanvasDrawnLine>? initialLines;
@@ -165,7 +167,8 @@ class _DrawingPageState extends State<DrawingPage> {
 
     // Save Image File
     try {
-      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary = key.currentContext?.findRenderObject() as
+      RenderRepaintBoundary?;
       final image = await boundary?.toImage();
       final byteData = await image?.toByteData(format: ImageByteFormat.png);
       final pngBytes = byteData?.buffer.asUint8List();
@@ -220,6 +223,18 @@ class _DrawingPageState extends State<DrawingPage> {
     } catch (e) {
       print(e);
     }
+
+    Get.snackbar(
+      '',
+      '',
+      titleText: Text(
+        'Saving...',
+        style: LightTextTheme.snackbarTxt,
+      ),
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: greenButton,
+      colorText: blackColor,
+    );
   }
 
   void undo() {

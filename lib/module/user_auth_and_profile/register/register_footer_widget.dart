@@ -1,5 +1,7 @@
+import 'package:InklusiveDraw/module/admin_panel/request_admin_access_screen.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/login/'
     'login_screen.dart';
+import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../repository/auth_repository.dart';
@@ -44,7 +46,16 @@ class RegisterFooterWidget extends StatelessWidget {
             'Already have account? Login',
             style: LightTextTheme.clickableTxt,
           ),
-        )
+        ),
+        TextButton(
+          onPressed: () {
+            Get.to(() => RequestAdminAccessScreen());
+          },
+          child: Text(
+            'Request for admin role',
+            style: LightTextTheme.clickableTxt.copyWith(color: blackColor),
+          ),
+        ),
       ],
     );
   }

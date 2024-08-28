@@ -1,4 +1,4 @@
-import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
+import 'package:InklusiveDraw/module/app_dashboard/dashboard_selector.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen'
     '.dart';
@@ -55,7 +55,7 @@ class AuthRepository extends GetxController {
       UserCredential userCredential = await _auth
           .signInWithEmailAndPassword(email: email, password: password);
       print('User logged in: ${userCredential.user?.uid}');
-      Get.offAll(() => const UserDashboard());
+      Get.offAll(() => const DashboardSelector());
     } on FirebaseAuthException catch (e) {
       final ex = SignUpFail.code(e.code);
       print('FIREBASE AUTH EXCEPTION: ${ex.message}');
@@ -110,7 +110,7 @@ class AuthRepository extends GetxController {
         }
 
         // Navigate to user dashboard
-        Get.offAll(() => const UserDashboard());
+        Get.offAll(() => const DashboardSelector());
       } else {
         Get.offAll(() => const LoginScreen());
       }

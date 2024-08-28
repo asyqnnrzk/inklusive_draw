@@ -1,4 +1,4 @@
-import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
+import 'package:InklusiveDraw/module/app_dashboard/dashboard_selector.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
     'profile_menu.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
@@ -174,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: 'Dashboard',
                         icon: Icons.dashboard_outlined,
                         onPress: (){
-                          Get.to(() => UserDashboard());
+                          Get.to(() => const DashboardSelector());
                         }
                     ),
                     const Divider(),

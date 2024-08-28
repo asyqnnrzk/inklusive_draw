@@ -1,4 +1,4 @@
-import 'package:InklusiveDraw/module/app_dashboard/user/user_dashboard.dart';
+import 'package:InklusiveDraw/module/app_dashboard/dashboard_selector.dart';
 import 'package:InklusiveDraw/module/support_and_resources/resource/'
     'resource_screen.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
@@ -126,7 +126,7 @@ class _DrawerContentState extends State<DrawerContent> {
             ),
             onTap: () {
               // go to Dashboard page
-              Get.to(UserDashboard());
+              Get.to(const DashboardSelector());
             },
             trailing: Row(
               mainAxisSize: MainAxisSize.min,

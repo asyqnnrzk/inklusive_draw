@@ -63,6 +63,15 @@ class LightTextTheme {
       letterSpacing: 1.5
   );
 
+  // yes button
+  static TextStyle yesBtn = const TextStyle(
+      color: Colors.pinkAccent,
+      fontSize: 16.0,
+      fontFamily: 'Verdana',
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.5
+  );
+
   // cancel button
   static TextStyle cancelBtn = const TextStyle(
       color: primaryColor,
@@ -349,6 +358,14 @@ class LightTextTheme {
   static TextStyle snackbarTxt = const TextStyle(
       color: blackColor,
       fontSize: 18.0,
+      fontFamily: 'Verdana',
+      letterSpacing: 1.5
+  );
+
+  // for admin to add resources
+  static TextStyle adminAddBtn = const TextStyle(
+      color: blackColor,
+      fontSize: 10.0,
       fontFamily: 'Verdana',
       letterSpacing: 1.5
   );
