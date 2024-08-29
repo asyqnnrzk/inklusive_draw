@@ -13,7 +13,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-
 import '../../../service/tts_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -160,11 +159,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 30),
                     const Divider(),
                     const SizedBox(height: 10),
-                    ProfileMenuWidget(
-                        title: 'Settings',
-                        icon: LineAwesomeIcons.cog_solid,
-                        onPress: (){}
-                    ),
                     ProfileMenuWidget(
                         title: 'Notifications',
                         icon: Icons.notifications_none,

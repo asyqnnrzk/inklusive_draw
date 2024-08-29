@@ -1,33 +1,31 @@
-import 'dart:async';
-import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import '../../../source/text_theme.dart';
-import 'video_player_screen.dart';
+import '../../../../source/text_theme.dart';
+import '../../support_and_resources/resource/video_player_screen.dart';
+import '../manage_resource_community.dart';
 
-class ResourceList extends StatefulWidget {
+class ResourceListDelete extends StatefulWidget {
   final TextEditingController controller;
 
-  const ResourceList({Key? key, required this.controller}) : super(key: key);
+  const ResourceListDelete({Key? key, required this.controller}) :
+        super(key: key);
 
   @override
-  ResourceListState createState() => ResourceListState();
+  ResourceListDeleteState createState() => ResourceListDeleteState();
 }
 
-class ResourceListState extends State<ResourceList> {
+class ResourceListDeleteState extends State<ResourceListDelete> {
   final user = FirebaseAuth.instance.currentUser!;
   List<DocumentSnapshot> _allResources = [];
   List<DocumentSnapshot> _filteredResources = [];
-  List<String> _favoritedItemIds = [];
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(_onSearchChanged);
     _fetchResources();
-    _loadFavorites();
   }
 
   @override
@@ -63,52 +61,11 @@ class ResourceListState extends State<ResourceList> {
     });
   }
 
-  Future<void> _toggleFavorite(DocumentSnapshot resource) async {
-    final favoritesCollection = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('favorites');
-    final favoriteDoc =
-    await favoritesCollection.where('resource_id', isEqualTo: resource.id)
-        .get();
-
-    if (favoriteDoc.docs.isEmpty) {
-      // Add to favorites
-      await favoritesCollection.add({
-        'resource_id': resource.id,
-        'material': resource['material'],
-        'link': resource['link'],
-        'creator': resource['creator'],
-        'type': 'video'
-      });
-      setState(() {
-        _favoritedItemIds.add(resource.id);
-      });
-    } else {
-      // Remove from favorites
-      await favoritesCollection.doc(favoriteDoc.docs.first.id).delete();
-      setState(() {
-        _favoritedItemIds.remove(resource.id);
-      });
-    }
+  void _deleteResource(String resourceId) async {
+    deleteResource(context, resourceId);
   }
 
-  Future<void> _loadFavorites() async {
-    final favoritesCollection = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('favorites');
-    final favoritesSnapshot = await favoritesCollection.get();
-
-    setState(() {
-      _favoritedItemIds =
-          favoritesSnapshot.docs.map((doc) => doc['resource_id'] as String)
-              .toList();
-    });
-  }
-
-  Widget buildResourceTile(
-      DocumentSnapshot resource, String thumbnailUrl, bool isFavorited) {
+  Widget buildResourceTile(DocumentSnapshot resource, String thumbnailUrl) {
     return Column(
       children: [
         ListTile(
@@ -130,12 +87,10 @@ class ResourceListState extends State<ResourceList> {
             style: LightTextTheme.resourceCreator,
           ),
           trailing: IconButton(
-            icon: Icon(
-              isFavorited ? Icons.favorite : Icons.favorite_border,
-              color: isFavorited ? Colors.redAccent : null,
-            ),
-            onPressed: () async {
-              await _toggleFavorite(resource);
+            icon: const Icon(Icons.delete),
+            color: Colors.red,
+            onPressed: () {
+              _deleteResource(resource.id);
             },
           ),
           onTap: () {
@@ -184,31 +139,10 @@ class ResourceListState extends State<ResourceList> {
         final resource = _filteredResources[index];
         final videoUrl = resource['link'];
         final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault'
-            '.jpg';
+        final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/'
+            'hqdefault.jpg';
 
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .collection('favorites')
-              .where('resource_id', isEqualTo: resource.id)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicatorTheme();
-            } else if (snapshot.hasError) {
-              print('Error: ${snapshot.error}');
-              return const Text('Something went wrong');
-            } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              final isFavorited = false;
-              return buildResourceTile(resource, thumbnailUrl, isFavorited);
-            } else {
-              final isFavorited = snapshot.data!.docs.isNotEmpty;
-              return buildResourceTile(resource, thumbnailUrl, isFavorited);
-            }
-          },
-        );
+        return buildResourceTile(resource, thumbnailUrl);
       },
     );
   }
