@@ -116,60 +116,70 @@ class UserListScreen extends StatelessWidget {
                   final bio = profileData['bio'] ?? 'No Bio';
                   final avatarUrl = profileData['avatar'] ?? '';
 
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: avatarUrl.isNotEmpty
-                          ? NetworkImage(avatarUrl)
-                          : null,
-                      child: avatarUrl.isEmpty ? const Icon(Icons.person) :
-                      null,
-                    ),
-                    title: Text(username),
-                    subtitle: Text('$bio\n$email'),
-                    isThreeLine: true,
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.email),
-                          color: primaryColor,
-                          onPressed: () => sendEmail(email),
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: avatarUrl.isNotEmpty
+                              ? NetworkImage(avatarUrl)
+                              : null,
+                          child: avatarUrl.isEmpty ? const Icon(Icons.person) :
+                          null,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Colors.red,
-                          onPressed: () async {
-                            final confirm = await Get.defaultDialog<bool>(
-                              title: 'Delete User',
-                              titleStyle: LightTextTheme.deleteBtn,
-                              middleText: 'Are you sure you want to delete '
-                                  '$username?',
-                              middleTextStyle: LightTextTheme.reportDetails,
-                              confirm: ElevatedButton(
-                                onPressed: () {
-                                  Get.back(result: true);
-                                },
-                                child: Text(
-                                  'Delete',
-                                  style: LightTextTheme.deleteBtn,
-                                ),
-                              ),
-                              cancel: TextButton(
-                                onPressed: () => Get.back(result: false),
-                                child: Text(
-                                  'Cancel',
-                                  style: LightTextTheme.cancelBtn,
-                                ),
-                              ),
-                            );
+                        title: Text('Username: $username'),
+                        titleTextStyle: LightTextTheme.dashboardTxt,
+                        subtitle: Text('Bio: $bio\n$email'),
+                        subtitleTextStyle: LightTextTheme.dashboardTxt,
+                        isThreeLine: true,
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.email),
+                              color: primaryColor,
+                              onPressed: () => sendEmail(email),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              color: Colors.red,
+                              onPressed: () async {
+                                final confirm = await Get.defaultDialog<bool>(
+                                  title: 'Delete User',
+                                  titleStyle: LightTextTheme.deleteBtn,
+                                  middleText: 'Are you sure you want to delete '
+                                      '$username?',
+                                  middleTextStyle: LightTextTheme.reportDetails,
+                                  confirm: ElevatedButton(
+                                    onPressed: () {
+                                      Get.back(result: true);
+                                    },
+                                    child: Text(
+                                      'Delete',
+                                      style: LightTextTheme.deleteBtn,
+                                    ),
+                                  ),
+                                  cancel: TextButton(
+                                    onPressed: () => Get.back(result: false),
+                                    child: Text(
+                                      'Cancel',
+                                      style: LightTextTheme.cancelBtn,
+                                    ),
+                                  ),
+                                );
 
-                            if (confirm == true) {
-                              deleteUser(userId);
-                            }
-                          },
+                                if (confirm == true) {
+                                  deleteUser(userId);
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const Divider()
+                    ],
                   );
                 },
               );
