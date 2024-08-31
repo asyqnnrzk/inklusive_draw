@@ -11,6 +11,7 @@ import '../../source/image_strings.dart';
 import '../../source/progress_indicator_theme.dart';
 import '../../source/text_theme.dart';
 import '../user_auth_and_profile/profile/update_profile_screen.dart';
+import 'inkgram_notifications.dart';
 import 'inkgram_post.dart';
 
 class InkgramProfile extends StatefulWidget {
@@ -24,7 +25,7 @@ class InkgramProfile extends StatefulWidget {
 
 class _InkgramProfileState extends State<InkgramProfile> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-  int _selectedIndex = 3;
+  int _selectedIndex = 4;
   bool isFollowing = false;
 
   @override
@@ -53,20 +54,6 @@ class _InkgramProfileState extends State<InkgramProfile> {
     if (userDoc.exists) {
       final data = userDoc.data();
       return data?['username'] as String?;
-    }
-    return null;
-  }
-
-  Future<String?> getFollowerUserName() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null) {
-      final userDoc = await FirebaseFirestore.instance.collection('users')
-          .doc(currentUser.uid).get();
-      if (userDoc.exists) {
-        final data = userDoc.data();
-        return data?['username'] as String?;
-      }
     }
     return null;
   }
@@ -111,21 +98,10 @@ class _InkgramProfileState extends State<InkgramProfile> {
 
     // Get usernames
     final followingUserName = await getFollowingUserName(widget.userId);
-    final followerUserName = await getFollowerUserName();
-
-    if (followingUserName == null || followerUserName == null) {
-      print('Username not found');
+    if (followingUserName == null) {
+      print('Username of the user being followed not found');
       return;
     }
-
-    // Reference to the follower collection (target user who is being followed)
-    final followerRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .collection('profile')
-        .doc(followingProfileId)
-        .collection('followers')
-        .doc(currentUser.uid);
 
     // Reference to the following collection (current user who is following)
     final followingRef = FirebaseFirestore.instance
@@ -136,46 +112,42 @@ class _InkgramProfileState extends State<InkgramProfile> {
         .collection('following')
         .doc(widget.userId);
 
-    // Reference to update follower and following counts
-    final followerCountRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .collection('profile')
-        .doc(followingProfileId); // The profile of the person being followed
-
+    // Reference to update following counts
     final followingCountRef = FirebaseFirestore.instance
         .collection('users')
         .doc(currentUser.uid)
         .collection('profile')
-        .doc(followerProfileId); // The profile of the current user (follower)
+        .doc(followerProfileId);
 
     try {
       if (isFollowing) {
         // Unfollow
         await followingRef.delete();
-        await followerRef.delete();
         print('Unfollowed successfully');
 
-        // Decrease follower and following counts
-        await followerCountRef.update({'followers': FieldValue.increment(-1)});
+        // Debugging: Check the document exists
+        final doc = await followingCountRef.get();
+        print('Document data before decrement: ${doc.data()}');
+
+        // Decrease following count
         await followingCountRef.update({'following': FieldValue.increment(-1)});
+        print('Following count decreased successfully');
+
+        // Debugging: Check the updated document
+        final updatedDoc = await followingCountRef.get();
+        print('Document data after decrement: ${updatedDoc.data()}');
       } else {
         // Follow
         await followingRef.set({
           'userId': widget.userId,
           'userName': followingUserName,
+          'timestamp': Timestamp.now()
         });
         print('Following added');
 
-        await followerRef.set({
-          'userId': currentUser.uid,
-          'userName': followerUserName,
-        });
-        print('Follower added');
-
-        // Increase follower and following counts
-        await followerCountRef.update({'followers': FieldValue.increment(1)});
+        // Increase following count
         await followingCountRef.update({'following': FieldValue.increment(1)});
+        print('Following count increased successfully');
       }
 
       setState(() {
@@ -219,6 +191,8 @@ class _InkgramProfileState extends State<InkgramProfile> {
       Get.to(() => const InkgramSearch());
     } else if (index == 2) {
       showCreatePostDialog(context);
+    } else if (index == 3) {
+      Get.to(() => const InkgramNotifications());
     } else {
       setState(() {
         _selectedIndex = index;
@@ -315,8 +289,6 @@ class _InkgramProfileState extends State<InkgramProfile> {
                                 children: [
                                   _buildStatColumn("Posts", userData['posts']
                                       ?? 0),
-                                  _buildStatColumn("Followers", userData
-                                  ['followers'] ?? 0),
                                   _buildStatColumn("Following", userData
                                   ['following'] ?? 0),
                                 ],
@@ -443,19 +415,23 @@ class _InkgramProfileState extends State<InkgramProfile> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Home',
+                  label: '',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.search),
-                  label: 'Search',
+                  label: '',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.add_box),
-                  label: 'Create',
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications),
+                  label: '',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),
-                  label: 'Profile',
+                  label: '',
                 ),
               ],
               currentIndex: _selectedIndex,
@@ -474,10 +450,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
       children: [
         Text(
           count.toString(),
-          style: const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-          ),
+          style: LightTextTheme.dashboardTxt
         ),
         const SizedBox(height: 4.0),
         Text(label),

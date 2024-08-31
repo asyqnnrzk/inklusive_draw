@@ -1,4 +1,5 @@
 import 'package:InklusiveDraw/module/inkgram/inkgram_comment.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_notifications.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_profile.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_search.dart';
 import 'package:InklusiveDraw/module/mainpage/homepage.dart';
@@ -27,6 +28,15 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
   Future<List<Map<String, dynamic>>> _fetchPosts() async {
     List<Map<String, dynamic>> posts = [];
 
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      print('User not authenticated');
+      return posts;
+    }
+
+    final userId = currentUser.uid;
+
     QuerySnapshot userSnapshot = await _firestore.collection('users').get();
 
     for (var userDoc in userSnapshot.docs) {
@@ -41,11 +51,37 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
         postData['username'] = userDoc['username'];
         postData['userId'] = userDoc.id;
         postData['postId'] = postDoc.id;
+
+        // Check if the current user has liked this post
+        final likeDoc = await _firestore
+            .collection('users')
+            .doc(userDoc.id)
+            .collection('inkgram')
+            .doc(postDoc.id)
+            .collection('likes')
+            .doc(userId)
+            .get();
+
+        postData['isLiked'] = likeDoc.exists;
+
         posts.add(postData);
       }
     }
 
     return posts;
+  }
+
+  Future<String?> _getCurrentUserName() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      final userData = userDoc.data() as Map<String, dynamic>?;
+      return userData?['username'] as String?;
+    }
+    return null;
   }
 
   void _onItemTapped(int index) {
@@ -54,12 +90,74 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
     } else if (index == 2) {
       showCreatePostDialog(context);
     } else if (index == 3) {
+      Get.to(() => const InkgramNotifications());
+    } else if (index == 4) {
       Get.to(() => InkgramProfile(userId: FirebaseAuth.instance
           .currentUser!.uid));
     } else {
       setState(() {
         _selectedIndex = index;
       });
+    }
+  }
+
+  void _toggleLike(String postId, String userId) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      print('User not authenticated');
+      return;
+    }
+
+    final currentUserName = await _getCurrentUserName();
+    if (currentUserName == null) {
+      print('Current user username not found');
+      return;
+    }
+
+    final likeId = currentUser.uid;
+
+    final likesRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('inkgram')
+        .doc(postId)
+        .collection('likes')
+        .doc(likeId);
+
+    final postRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('inkgram')
+        .doc(postId);
+
+    try {
+      final likeDoc = await likesRef.get();
+
+      if (likeDoc.exists) {
+        // Un-like
+        await likesRef.delete();
+        await postRef.update({
+          'likes': FieldValue.increment(-1),
+        });
+        print('Unliked post');
+      } else {
+        // Like
+        await likesRef.set({
+          'userId': likeId,
+          'username': currentUserName,
+          'timestamp': Timestamp.now(),
+        });
+        await postRef.update({
+          'likes': FieldValue.increment(1),
+        });
+        print('Liked post');
+      }
+
+      // Refresh the UI state to reflect the like/unlike change
+      setState(() {});
+    } catch (e) {
+      print('Error toggling like: $e');
     }
   }
 
@@ -116,7 +214,7 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                           GestureDetector(
                             onTap: () {
                               Get.to(() => InkgramProfile(
-                                userId: post['userId']
+                                  userId: post['userId']
                               ));
                             },
                             child: Text(
@@ -161,21 +259,7 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                   color: isLiked ? Colors.red : blackColor,
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    isLiked = !isLiked;
-                                    // Update the post in Firestore
-                                    _firestore
-                                        .collection('users')
-                                        .doc(post['userId'])
-                                        .collection('inkgram')
-                                        .doc(post['postId'])
-                                        .update({
-                                          'isLiked': isLiked,
-                                          'likes': isLiked
-                                              ? FieldValue.increment(1)
-                                              : FieldValue.increment(-1)
-                                    });
-                                  });
+                                  _toggleLike(post['postId'], post['userId']);
                                 },
                               ),
                               IconButton(
@@ -186,10 +270,12 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                     context: context,
                                     isScrollControlled: true,
                                     builder: (context) => SizedBox(
-                                      height: MediaQuery.of(context).size
-                                          .height * 0.5,
-                                      child: InkgramComment(postId: post
-                                      ['postId'], userId: post['userId'],),
+                                      height: MediaQuery.of(context)
+                                          .size.height * 0.5,
+                                      child: InkgramComment(
+                                        postId: post['postId'],
+                                        userId: post['userId'],
+                                      ),
                                     ),
                                   );
                                 },
@@ -211,19 +297,23 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Search',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
-            label: 'Create',
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: '',
           ),
         ],
         currentIndex: _selectedIndex,

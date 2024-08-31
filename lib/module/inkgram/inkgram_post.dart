@@ -29,7 +29,8 @@ class InkgramPost extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Delete Post?', style: LightTextTheme.reportBtn),
-        content: Text('Are you sure you want to delete this post?', style: LightTextTheme.reportDetails),
+        content: Text('Are you sure you want to delete this post?',
+            style: LightTextTheme.reportDetails),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -73,7 +74,8 @@ class InkgramPost extends StatelessWidget {
   }
 
   Future<void> _editDescription(BuildContext context) async {
-    TextEditingController descriptionController = TextEditingController(text: description);
+    TextEditingController descriptionController = TextEditingController
+      (text: description);
 
     final newDescription = await showDialog<String?>(
       context: context,
@@ -90,7 +92,8 @@ class InkgramPost extends StatelessWidget {
             child: Text('Cancel', style: LightTextTheme.cancelBtn),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(descriptionController.text),
+            onPressed: () => Navigator.of(context).pop(descriptionController
+                .text),
             child: Text('Save', style: LightTextTheme.saveBtn),
           ),
         ],
@@ -175,7 +178,8 @@ class InkgramPost extends StatelessWidget {
                       } else if (!snapshot.hasData || !snapshot.data!.exists) {
                         return const Text('Post not found');
                       } else {
-                        final postData = snapshot.data!.data() as Map<String, dynamic>;
+                        final postData = snapshot.data!.data() as Map<String,
+                            dynamic>;
                         final likeCount = postData['likes'] ?? 0;
                         final commentCount = postData['comments'] ?? 0;
 

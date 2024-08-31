@@ -7,6 +7,7 @@ class UserModel {
   final String username;
   final String password;
   final String email;
+  final Timestamp signUpDate;
 
   const UserModel({
     this.id,
@@ -14,6 +15,7 @@ class UserModel {
     required this.username,
     required this.password,
     required this.email,
+    required this.signUpDate
   });
 
   // Method to convert the model to JSON with hashed password
@@ -24,6 +26,7 @@ class UserModel {
       'username': username,
       'password': hashedPassword,
       'email': email,
+      'signUpDate': signUpDate,
     };
   }
 
@@ -37,6 +40,7 @@ class UserModel {
       username: data['username'],
       password: data['password'],
       email: data['email'],
+      signUpDate: data['signUpDate'] as Timestamp,
     );
   }
 
@@ -46,6 +50,7 @@ class UserModel {
     String? username,
     String? password,
     String? email,
+    Timestamp? signUpDate,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -53,6 +58,7 @@ class UserModel {
       username: username ?? this.username,
       password: password ?? this.password,
       email: email ?? this.email,
+      signUpDate: signUpDate ?? this.signUpDate,
     );
   }
 }

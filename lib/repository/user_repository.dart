@@ -114,7 +114,6 @@ class UserRepository extends GetxController {
           .doc(userId).set({
         'avatar': userDefault,
         'bio': 'Default bio',
-        'followers': 0,
         'following': 0,
         'posts': 0,
       });

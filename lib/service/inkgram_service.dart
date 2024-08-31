@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../model/notification_model.dart';
+
 class InkgramService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String userId;
@@ -298,8 +300,6 @@ Future<void> uploadPost(String description, File imageFile) async {
         .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
     try {
-      // Upload the file
-      final uploadTask = await storageRef.putFile(imageFile);
 
       // Get the download URL
       final downloadUrl = await storageRef.getDownloadURL();
@@ -360,4 +360,19 @@ Future<void> addComment(String userId, String postId, String value) async {
       .update({
     'comments': FieldValue.increment(1),
   });
+}
+
+class NotificationService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Stream<List<NotificationModel>> getUserNotifications(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((query) =>
+        query.docs.map((doc) => NotificationModel.fromDocument(doc)).toList());
+  }
 }

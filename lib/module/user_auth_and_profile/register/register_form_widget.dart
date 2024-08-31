@@ -2,6 +2,7 @@ import 'package:InklusiveDraw/controller/register_controller.dart';
 import 'package:InklusiveDraw/model/user/user_model.dart';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../service/tts_service.dart';
@@ -260,7 +261,8 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                       name: controller.name.text.trim(),
                       username: controller.username.text.trim(),
                       password: controller.password.text.trim(),
-                      email: controller.email.text.trim()
+                      email: controller.email.text.trim(),
+                      signUpDate: Timestamp.fromDate(DateTime.now()),
                     );
 
                     RegisterController.instance.createUser(user);

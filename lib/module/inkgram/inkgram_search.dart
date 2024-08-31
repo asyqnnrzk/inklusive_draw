@@ -7,6 +7,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../service/inkgram_service.dart';
 import '../../source/colors.dart';
 import '../../source/text_theme.dart';
+import 'inkgram_notifications.dart';
 import 'inkgram_profile.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -87,6 +88,8 @@ class _InkgramSearchState extends State<InkgramSearch> {
     } else if (index == 2) {
       showCreatePostDialog(context);
     } else if (index == 3) {
+      Get.to(() => const InkgramNotifications());
+    } else if (index == 4) {
       Get.to(() => InkgramProfile(userId: FirebaseAuth.instance.currentUser!
           .uid));
     } else {
@@ -212,19 +215,23 @@ class _InkgramSearchState extends State<InkgramSearch> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Search',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
-            label: 'Create',
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: '',
           ),
         ],
         currentIndex: _selectedIndex,
