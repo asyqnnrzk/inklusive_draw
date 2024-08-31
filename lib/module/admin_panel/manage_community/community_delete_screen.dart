@@ -31,7 +31,6 @@ class _CommunityDeleteState extends State<CommunityDelete> {
     super.initState();
     searchController.addListener(_onSearchChanged);
     _fetchCommunities();
-    _loadFavorites();
   }
 
   @override
@@ -84,25 +83,6 @@ class _CommunityDeleteState extends State<CommunityDelete> {
       });
     } catch (e) {
       print('Error fetching communities: $e');
-    }
-  }
-
-  Future<void> _loadFavorites() async {
-    try {
-      final favoritesCollection = FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('favorites');
-      final favoritesSnapshot = await favoritesCollection.get();
-
-      setState(() {
-        favoritedCommunityIds = favoritesSnapshot.docs
-            .where((doc) => doc['type'] == 'community')
-            .map((doc) => doc['community_id'] as String)
-            .toList();
-      });
-    } catch (e) {
-      print('Error loading favorites: $e');
     }
   }
 
@@ -169,6 +149,10 @@ class _CommunityDeleteState extends State<CommunityDelete> {
                             community.id),
                           ),
                         );
+                      },
+                      onDelete: () {
+                        // Refresh the community list after deletion
+                        _fetchCommunities();
                       },
                     );
                   },

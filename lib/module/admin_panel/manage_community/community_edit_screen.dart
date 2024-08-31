@@ -170,6 +170,9 @@ class _CommunityEditState extends State<CommunityEdit> {
                           ),
                         );
                       },
+                      onCommunityEdited: () {
+                        _fetchCommunities();
+                      },
                     );
                   },
                 ),

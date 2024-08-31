@@ -7,11 +7,13 @@ import '../manage_resource_community.dart';
 class CommunityCardEdit extends StatefulWidget {
   final CommunityModel community;
   final VoidCallback onTap;
+  final VoidCallback onCommunityEdited;
 
   const CommunityCardEdit({
     Key? key,
     required this.community,
     required this.onTap,
+    required this.onCommunityEdited,
   }) : super(key: key);
 
   @override
@@ -20,7 +22,7 @@ class CommunityCardEdit extends StatefulWidget {
 
 class _CommunityCardEditState extends State<CommunityCardEdit> {
   void _editCommunity(String communityId) async {
-    editCommunity(context, communityId);
+    editCommunity(context, communityId, widget.onCommunityEdited);
   }
 
   @override

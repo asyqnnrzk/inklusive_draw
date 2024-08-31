@@ -7,11 +7,13 @@ import '../manage_resource_community.dart';
 class CommunityCardDelete extends StatefulWidget {
   final CommunityModel community;
   final VoidCallback onTap;
+  final VoidCallback onDelete;
 
   const CommunityCardDelete({
     Key? key,
     required this.community,
     required this.onTap,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -20,7 +22,7 @@ class CommunityCardDelete extends StatefulWidget {
 
 class _CommunityCardDeleteState extends State<CommunityCardDelete> {
   void _deleteCommunity(String communityId) async {
-    deleteCommunity(context, communityId);
+    deleteCommunity(context, communityId, widget.onDelete);
   }
 
   @override

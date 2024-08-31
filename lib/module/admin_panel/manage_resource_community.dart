@@ -407,11 +407,30 @@ void deleteResource(BuildContext context, String resourceId) async {
   );
 
   if (confirm == true) {
+    final batch = FirebaseFirestore.instance.batch();
+
     try {
-      await FirebaseFirestore.instance
-          .collection('resources')
-          .doc(resourceId)
-          .delete();
+      // Delete the resource
+      final resourceRef = FirebaseFirestore.instance.collection('resources')
+          .doc(resourceId);
+      batch.delete(resourceRef);
+
+      // Fetch all users who have this resource in their favorites
+      final usersSnapshot = await FirebaseFirestore.instance
+          .collection('users').get();
+      for (var userDoc in usersSnapshot.docs) {
+        final favoritesSnapshot = await userDoc.reference
+            .collection('favorites')
+            .where('resource_id', isEqualTo: resourceId)
+            .get();
+
+        for (var favoriteDoc in favoritesSnapshot.docs) {
+          batch.delete(favoriteDoc.reference);
+        }
+      }
+
+      // Commit the batch
+      await batch.commit();
 
       print('Resource deleted successfully');
 
@@ -450,12 +469,13 @@ void deleteResource(BuildContext context, String resourceId) async {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title:  Text(
+            title: Text(
               'Uh oh!',
               style: LightTextTheme.deleteBtn,
             ),
             content: Text(
-              'Failed to delete the resource. Please try again later.',
+              'Failed to delete the resource and corresponding favorites. '
+                  'Please try again later.',
               style: LightTextTheme.reportDetails,
             ),
             actions: [
@@ -476,7 +496,8 @@ void deleteResource(BuildContext context, String resourceId) async {
   }
 }
 
-void deleteCommunity(BuildContext context, String communityId) async {
+void deleteCommunity(BuildContext context, String communityId, VoidCallback
+onSuccess) async {
   bool? confirm = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
@@ -515,14 +536,36 @@ void deleteCommunity(BuildContext context, String communityId) async {
 
   if (confirm == true) {
     try {
-      await FirebaseFirestore.instance
-          .collection('communities')
-          .doc(communityId)
-          .delete();
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
 
-      print('Community deleted successfully');
+      // Delete the community document
+      batch.delete(firestore.collection('communities').doc(communityId));
 
-      // Show resource deleted confirmation dialog
+      // Find and delete the community from all users' favorites
+      final usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .get();
+      for (var userDoc in usersSnapshot.docs) {
+        final favoritesSnapshot = await userDoc.reference
+            .collection('favorites')
+            .where('community_id', isEqualTo: communityId)
+            .get();
+
+        for (var favoriteDoc in favoritesSnapshot.docs) {
+          batch.delete(favoriteDoc.reference);
+        }
+      }
+
+      // Commit the batch
+      await batch.commit();
+
+      print('Community and associated favorites deleted successfully');
+
+      // Call the onSuccess callback to refresh the community list
+      onSuccess();
+
+      // Show community deleted confirmation dialog
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -557,7 +600,7 @@ void deleteCommunity(BuildContext context, String communityId) async {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title:  Text(
+            title: Text(
               'Uh oh!',
               style: LightTextTheme.deleteBtn,
             ),
@@ -679,45 +722,7 @@ void editResource(BuildContext context, String resourceId) async {
           ElevatedButton(
             onPressed: () async {
               if (formKey.currentState?.validate() ?? false) {
-                bool? confirmSave = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(
-                        'Confirm Save',
-                        style: LightTextTheme.reportBtn,
-                      ),
-                      content: Text(
-                        'Save these changes?',
-                        style: LightTextTheme.reportDetails,
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                          child: Text(
-                            'Cancel',
-                            style: LightTextTheme.cancelBtn,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                          child: Text(
-                            'Confirm',
-                            style: LightTextTheme.yesBtn,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-                if (confirmSave == true) {
-                  Navigator.pop(context, true);
-                }
+                Navigator.pop(context, true);
               }
             },
             child: Text(
@@ -732,15 +737,39 @@ void editResource(BuildContext context, String resourceId) async {
 
   if (confirmEdit == true) {
     try {
-      // Update the resource in Firestore
-      await FirebaseFirestore.instance.collection('resources')
-          .doc(resourceId).update({
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+
+      // Update the resource in the resources collection
+      DocumentReference resourceRef = firestore.collection('resources')
+          .doc(resourceId);
+      batch.update(resourceRef, {
         'link': linkController.text.trim(),
         'creator': creatorController.text.trim(),
         'material': materialController.text.trim(),
       });
 
-      print('Resource updated successfully');
+      // Update the resource in all users' favorites
+      final usersSnapshot = await firestore.collection('users').get();
+      for (var userDoc in usersSnapshot.docs) {
+        final favoritesSnapshot = await userDoc.reference
+            .collection('favorites')
+            .where('resource_id', isEqualTo: resourceId)
+            .get();
+
+        for (var favoriteDoc in favoritesSnapshot.docs) {
+          batch.update(favoriteDoc.reference, {
+            'link': linkController.text.trim(),
+            'creator': creatorController.text.trim(),
+            'material': materialController.text.trim(),
+          });
+        }
+      }
+
+      // Commit the batch
+      await batch.commit();
+
+      print('Resource and associated favorites updated successfully');
 
       // Show success confirmation dialog
       showDialog(
@@ -803,7 +832,8 @@ void editResource(BuildContext context, String resourceId) async {
   }
 }
 
-void editCommunity(BuildContext context, String communityId) async {
+void editCommunity(BuildContext context, String communityId, VoidCallback
+onCommunityEdited) async {
   // Fetch current community data
   DocumentSnapshot communitySnapshot = await FirebaseFirestore.instance
       .collection('communities')
@@ -859,8 +889,8 @@ void editCommunity(BuildContext context, String communityId) async {
           ),
           TextButton(
             onPressed: () async {
-              if (nameController.text.isEmpty ||
-                  descriptionController.text.isEmpty) {
+              if (nameController.text.isEmpty || descriptionController
+                  .text.isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -941,14 +971,40 @@ void editCommunity(BuildContext context, String communityId) async {
 
   if (confirmEdit == true) {
     try {
-      // Update the community in Firestore
-      await FirebaseFirestore.instance.collection('communities')
-          .doc(communityId).update({
-        'name': nameController.text,
-        'description': descriptionController.text,
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+
+      // Update the community in the communities collection
+      DocumentReference communityRef = firestore.collection('communities')
+          .doc(communityId);
+      batch.update(communityRef, {
+        'name': nameController.text.trim(),
+        'description': descriptionController.text.trim(),
       });
 
-      print('Community updated successfully');
+      // Update the community in all users' favorites
+      final usersSnapshot = await firestore.collection('users').get();
+      for (var userDoc in usersSnapshot.docs) {
+        final favoritesSnapshot = await userDoc.reference
+            .collection('favorites')
+            .where('community_id', isEqualTo: communityId)
+            .get();
+
+        for (var favoriteDoc in favoritesSnapshot.docs) {
+          batch.update(favoriteDoc.reference, {
+            'name': nameController.text.trim(),
+            'description': descriptionController.text.trim(),
+          });
+        }
+      }
+
+      // Commit the batch
+      await batch.commit();
+
+      print('Community and associated favorites updated successfully');
+
+      // Call the callback to refresh the UI
+      onCommunityEdited();
 
       // Show success confirmation dialog
       showDialog(
