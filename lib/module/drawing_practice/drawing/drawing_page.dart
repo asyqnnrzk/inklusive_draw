@@ -7,6 +7,7 @@ import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
 import 'package:InklusiveDraw/module/drawing_practice/drawing/widgets/'
     'tools_widget.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -137,7 +138,9 @@ class _DrawingPageState extends State<DrawingPage> {
               onPressed: () {
                 final name = nameController.text;
                 if (name.isNotEmpty) {
-                  saveDrawing(name);
+                  final user = FirebaseAuth.instance.currentUser;
+                  final userId = user?.uid ?? '';
+                  saveDrawing(name, userId);
                   Navigator.of(context).pop();
                 }
               },
@@ -149,15 +152,16 @@ class _DrawingPageState extends State<DrawingPage> {
   }
 
   // Function to save the drawing
-  Future<void> saveDrawing(String name) async {
+  Future<void> saveDrawing(String name, String userId) async {
     final directory = await getApplicationDocumentsDirectory();
     final now = DateTime.now();
     final formatter = DateFormat('yyyyMMdd_HHmmss');
-    final fileName = 'drawing_${formatter.format(now)}';
+    final fileName = '${userId}_drawing_${formatter.format(now)}';
 
     // Save JSON Data
     final file = File('${directory.path}/$fileName.json');
     final drawingData = {
+      'userId': userId, // Store userId in the drawing data
       'name': name,
       'dateCreated': now.toIso8601String(),
       'lines': lines.map((line) => line.toJson()).toList(),
@@ -179,24 +183,28 @@ class _DrawingPageState extends State<DrawingPage> {
     }
   }
 
-  Future<List<File>> listSavedDrawings() async {
+  Future<List<File>> listSavedDrawings(String userId) async {
     final directory = await getApplicationDocumentsDirectory();
     final files = directory.listSync().whereType<File>().toList();
-    return files.where((file) => file.path.endsWith('.json')).toList();
+    // Filter files by userId in the file name
+    return files.where((file) =>
+    file.path.endsWith('.json') && file.path.contains('${userId}_')).toList();
   }
 
-  Future<void> loadDrawing() async {
+  Future<void> loadDrawing(String userId, String drawingFileName) async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/drawing.json');
+    final file = File('${directory.path}/$drawingFileName.json');
     if (await file.exists()) {
       final drawingData = jsonDecode(await file.readAsString());
-      final List<CanvasDrawnLine> loadedLines = (drawingData['lines'] as List)
-          .map((lineJson) => CanvasDrawnLine.fromJson(lineJson))
-          .toList();
-      setState(() {
-        lines = loadedLines;
-        backgroundColor = Color(drawingData['backgroundColor']);
-      });
+      if (drawingData['userId'] == userId) {
+        final List<CanvasDrawnLine> loadedLines = (drawingData['lines'] as List)
+            .map((lineJson) => CanvasDrawnLine.fromJson(lineJson))
+            .toList();
+        setState(() {
+          lines = loadedLines;
+          backgroundColor = Color(drawingData['backgroundColor']);
+        });
+      }
     }
   }
 

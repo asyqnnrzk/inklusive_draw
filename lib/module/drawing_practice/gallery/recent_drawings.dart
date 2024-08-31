@@ -9,13 +9,19 @@ class RecentDrawings {
   RecentDrawings({required this.recentDrawings});
 
   // Fetch recent drawings from the gallery
-  static Future<RecentDrawings> fetchRecentDrawings() async {
+  static Future<RecentDrawings> fetchRecentDrawings(String userId) async {
     final directory = await getApplicationDocumentsDirectory();
     final files = directory.listSync().whereType<File>().toList();
-    final jsonFiles = files.where((file) => file.path.endsWith('.json')).toList();
+
+    // Filter files by userId in the file name
+    final jsonFiles = files
+        .where((file) => file.path.endsWith('.json') && file.path
+        .contains('${userId}_'))
+        .toList();
 
     // Sort files by last modified date in descending order
-    jsonFiles.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+    jsonFiles.sort((a, b) => b.lastModifiedSync().compareTo
+      (a.lastModifiedSync()));
 
     // Take the first 3 files (latest ones)
     final recentFiles = jsonFiles.take(3).toList();

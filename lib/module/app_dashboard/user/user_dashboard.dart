@@ -1,5 +1,6 @@
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:InklusiveDraw/source/text_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_appbar.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_banner.dart';
@@ -7,11 +8,20 @@ import 'package:InklusiveDraw/module/app_dashboard/user/user_content.dart';
 import 'package:InklusiveDraw/module/app_dashboard/user/user_header.dart';
 import '../../drawing_practice/gallery/recent_drawings.dart';
 
-class UserDashboard extends StatelessWidget {
+class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
 
   @override
+  State<UserDashboard> createState() => _UserDashboardState();
+}
+
+class _UserDashboardState extends State<UserDashboard> {
+
+  @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid ?? '';
+
     return Scaffold(
       appBar: const UserDashboardAppbar(),
       body: SingleChildScrollView(
@@ -30,19 +40,22 @@ class UserDashboard extends StatelessWidget {
 
               // content
               FutureBuilder<RecentDrawings>(
-                future: RecentDrawings.fetchRecentDrawings(),
+                future: RecentDrawings.fetchRecentDrawings(userId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child:
-                    CircularProgressIndicatorTheme());
+                    return const Center(
+                      child: CircularProgressIndicatorTheme(),
+                    );
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.recentDrawings
-                      .isEmpty) {
-                    return Center(child: Text(
-                      'No recent drawings available',
-                      style: LightTextTheme.dashboardTxtBold,
-                    ));
+                  } else if (!snapshot.hasData || snapshot.data!
+                      .recentDrawings.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No recent drawings available',
+                        style: LightTextTheme.dashboardTxtBold,
+                      ),
+                    );
                   } else {
                     return UserContent(recentDrawings: snapshot.data!
                         .recentDrawings);

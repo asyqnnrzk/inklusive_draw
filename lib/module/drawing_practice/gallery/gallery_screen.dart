@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:InklusiveDraw/source/colors.dart';
 import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -30,7 +31,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
   @override
   void initState() {
     super.initState();
-    savedDrawings = listSavedDrawings();
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid ?? '';
+    savedDrawings = listSavedDrawings(userId);
     _speech = stt.SpeechToText();
   }
 
@@ -55,10 +58,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
     }
   }
 
-  Future<List<File>> listSavedDrawings() async {
+  Future<List<File>> listSavedDrawings(String userId) async {
     final directory = await getApplicationDocumentsDirectory();
     final files = directory.listSync().whereType<File>().toList();
-    return files.where((file) => file.path.endsWith('.json')).toList();
+
+    // Filter files by userId in the file name
+    return files.where((file) =>
+    file.path.endsWith('.json') && file.path.contains('${userId}_')).toList();
   }
 
   void search(String query) async {
@@ -85,9 +91,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
     }
   }
 
-  void refreshGallery() {
+  void refreshGallery(String userId) {
     setState(() {
-      savedDrawings = listSavedDrawings();
+      savedDrawings = listSavedDrawings(userId);
     });
   }
 
@@ -150,7 +156,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       : filteredDrawings;
 
                   return GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const
+                    SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,
                       crossAxisSpacing: 16.0,
                       mainAxisSpacing: 16.0,
@@ -158,12 +165,15 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     itemCount: files.length,
                     itemBuilder: (context, index) {
                       final jsonFile = files[index];
-                      final imageFile = File(jsonFile.path.replaceAll('.json', '.png'));
+                      final imageFile = File(jsonFile.path.replaceAll
+                        ('.json', '.png'));
 
                       try {
-                        final drawingData = jsonDecode(jsonFile.readAsStringSync());
+                        final drawingData = jsonDecode(jsonFile
+                            .readAsStringSync());
                         final name = drawingData['name'] ?? 'Untitled';
-                        final dateCreated = drawingData.containsKey('dateCreated')
+                        final dateCreated = drawingData.containsKey
+                          ('dateCreated')
                             ? DateTime.parse(drawingData['dateCreated'])
                             : DateTime.now();
 
@@ -192,7 +202,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       Text(
                                         name,
@@ -200,7 +211,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                       ),
                                       const SizedBox(height: 4.0),
                                       Text(
-                                        'Created on: ${dateCreated.toLocal().toString().split(' ')[0]}',
+                                        'Created on: ${dateCreated.toLocal()
+                                            .toString().split(' ')[0]}',
                                         style: LightTextTheme.drawingLabel,
                                       ),
                                       Row(
@@ -209,7 +221,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                             style: ElevatedButton.styleFrom(
                                               elevation: 0.0,
                                             ),
-                                            onPressed: () => drawingOps.editDrawing(context, jsonFile),
+                                            onPressed: () => drawingOps
+                                                .editDrawing(context, jsonFile),
                                             child: Text(
                                               'Edit',
                                               style: LightTextTheme.editBtn,
@@ -220,12 +233,16 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: redButton,
                                             ),
-                                            onPressed: () => drawingOps.deleteDrawing(
-                                              context,
-                                              jsonFile,
-                                              imageFile,
-                                              refreshGallery,
-                                            ),
+                                            onPressed: () {
+                                              // Delete the drawing
+                                              drawingOps.deleteDrawing(context,
+                                                  jsonFile, imageFile, () {
+                                                final user = FirebaseAuth
+                                                    .instance.currentUser;
+                                                final userId = user?.uid ?? '';
+                                                refreshGallery(userId);
+                                              });
+                                            },
                                             child: Text(
                                               'Delete',
                                               style: LightTextTheme.deleteBtn,
@@ -241,7 +258,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           ),
                         );
                       } catch (e) {
-                        return const Center(child: Text('Error loading drawing'));
+                        return Center(
+                          child: Text(
+                            'Error loading drawing',
+                            style: LightTextTheme.dashboardTxtBold,
+                          ));
                       }
                     },
                   );
