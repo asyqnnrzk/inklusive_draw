@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import '../../model/notification_model.dart';
 import '../../service/inkgram_service.dart';
 import '../../source/colors.dart';
 
@@ -151,6 +152,10 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
         await postRef.update({
           'likes': FieldValue.increment(1),
         });
+
+        // Create a notification
+        await _createLikeNotification(postId, userId, currentUserName);
+
         print('Liked post');
       }
 
@@ -159,6 +164,25 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
     } catch (e) {
       print('Error toggling like: $e');
     }
+  }
+
+  Future<void> _createLikeNotification(String postId, String userId, String username) async {
+    final notificationsRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .doc();
+
+    final notification = NotificationModel(
+      id: notificationsRef.id,
+      userId: userId,
+      postId: postId,
+      username: username,
+      type: 'like',
+      timestamp: Timestamp.now(),
+    );
+
+    await notificationsRef.set(notification.toMap());
   }
 
   @override

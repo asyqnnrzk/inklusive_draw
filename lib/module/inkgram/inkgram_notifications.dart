@@ -9,7 +9,7 @@ import '../../source/text_theme.dart';
 import 'inkgram_homepage.dart';
 import 'inkgram_profile.dart';
 import 'inkgram_search.dart';
-import 'notofication_item.dart';
+import 'package:intl/intl.dart';
 
 class InkgramNotifications extends StatefulWidget {
   const InkgramNotifications({Key? key}) : super(key: key);
@@ -22,6 +22,14 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
   int _selectedIndex = 3;
   final NotificationService _notificationService = NotificationService();
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+  String _formatTimestamp(DateTime dateTime) {
+    final dateFormat = DateFormat('dd/MM');
+    final timeFormat = DateFormat('h:mm a');
+    final formattedDate = dateFormat.format(dateTime);
+    final formattedTime = timeFormat.format(dateTime);
+    return 'on $formattedDate at $formattedTime';
+  }
 
   void _onItemTapped(int index) {
     if (index == 0) {
@@ -57,35 +65,38 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
         stream: _notificationService.getUserNotifications(currentUserId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error loading notifications',
-                style: LightTextTheme.dashboardTxt,
-              ),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text(
-                'No notifications yet',
-                style: LightTextTheme.dashboardTxt,
-              ),
-            );
-          } else {
-            final notifications = snapshot.data!;
-            return ListView.separated(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return NotificationItem(notification: notification);
-              },
-              separatorBuilder: (context, index) => const Divider(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text(
+                'No notifications',
+                style: LightTextTheme.dashboardTxt,
+              ));
+          }
+
+          final notifications = snapshot.data!;
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final notification = notifications[index];
+              return ListTile(
+                title: Text('${notification.username} liked your post'),
+                titleTextStyle: LightTextTheme.dashboardTxtBold,
+                subtitle: Text(_formatTimestamp(notification.timestamp.toDate())),
+                subtitleTextStyle: LightTextTheme.dashboardTxt,
+                // You can add more details or actions here
+              );
+            },
+            separatorBuilder: (context, index) => const Divider(),
+          );
         },
       ),
       bottomNavigationBar: BottomNavigationBar(

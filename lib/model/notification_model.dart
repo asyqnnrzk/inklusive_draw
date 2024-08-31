@@ -1,17 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class NotificationModel {
   final String id;
-  final String type; // 'like' or 'follow'
-  final String fromUserId;
-  final String? postId;
+  final String userId;
+  final String postId;
+  final String username;
+  final String type; // e.g., 'like'
   final Timestamp timestamp;
 
   NotificationModel({
     required this.id,
+    required this.userId,
+    required this.postId,
+    required this.username,
     required this.type,
-    required this.fromUserId,
-    this.postId,
     required this.timestamp,
   });
 
@@ -19,10 +20,21 @@ class NotificationModel {
     final data = doc.data() as Map<String, dynamic>;
     return NotificationModel(
       id: doc.id,
-      type: data['type'] as String,
-      fromUserId: data['fromUserId'] as String,
-      postId: data['postId'] as String?,
-      timestamp: data['timestamp'] as Timestamp,
+      userId: data['userId'],
+      postId: data['postId'],
+      username: data['username'],
+      type: data['type'],
+      timestamp: data['timestamp'],
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userId': userId,
+      'postId': postId,
+      'username': username,
+      'type': type,
+      'timestamp': timestamp,
+    };
   }
 }
