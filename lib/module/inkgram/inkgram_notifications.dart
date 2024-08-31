@@ -1,7 +1,9 @@
+import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import '../../model/notification_model.dart';
 import '../../service/inkgram_service.dart';
 import '../../source/colors.dart';
@@ -9,7 +11,6 @@ import '../../source/text_theme.dart';
 import 'inkgram_homepage.dart';
 import 'inkgram_profile.dart';
 import 'inkgram_search.dart';
-import 'package:intl/intl.dart';
 
 class InkgramNotifications extends StatefulWidget {
   const InkgramNotifications({Key? key}) : super(key: key);
@@ -39,8 +40,8 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
     } else if (index == 2) {
       showCreatePostDialog(context);
     } else if (index == 4) {
-      Get.to(() => InkgramProfile(userId: FirebaseAuth.instance
-          .currentUser!.uid));
+      Get.to(() => InkgramProfile(userId: FirebaseAuth.instance.currentUser!
+          .uid));
     } else {
       setState(() {
         _selectedIndex = index;
@@ -65,7 +66,7 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
         stream: _notificationService.getUserNotifications(currentUserId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicatorTheme());
           }
 
           if (snapshot.hasError) {
@@ -74,13 +75,16 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text(
-                'No notifications',
-                style: LightTextTheme.dashboardTxt,
-              ));
+                child: Text(
+                  'No notifications',
+                  style: LightTextTheme.dashboardTxt,
+                ));
           }
 
           final notifications = snapshot.data!;
+          for (var notification in notifications) {
+            print('Notification: ${notification.toMap()}');
+          }
 
           return ListView.separated(
             padding: const EdgeInsets.all(16.0),
@@ -90,9 +94,14 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
               return ListTile(
                 title: Text('${notification.username} liked your post'),
                 titleTextStyle: LightTextTheme.dashboardTxtBold,
-                subtitle: Text(_formatTimestamp(notification.timestamp.toDate())),
+                subtitle: Text(_formatTimestamp(notification.timestamp
+                    .toDate())),
                 subtitleTextStyle: LightTextTheme.dashboardTxt,
-                // You can add more details or actions here
+                onTap: () {
+                  print('Navigating to profile with userId: '
+                      '${notification.userId}');
+                  Get.to(() => InkgramProfile(userId: notification.userId));
+                },
               );
             },
             separatorBuilder: (context, index) => const Divider(),

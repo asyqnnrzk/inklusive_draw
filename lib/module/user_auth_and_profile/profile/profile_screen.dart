@@ -1,4 +1,5 @@
 import 'package:InklusiveDraw/module/app_dashboard/dashboard_selector.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_notifications.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
     'profile_menu.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
@@ -162,7 +163,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ProfileMenuWidget(
                         title: 'Notifications',
                         icon: Icons.notifications_none,
-                        onPress: (){}
+                        onPress: (){
+                          Get.to(() => const InkgramNotifications());
+                        }
                     ),
                     ProfileMenuWidget(
                         title: 'Dashboard',

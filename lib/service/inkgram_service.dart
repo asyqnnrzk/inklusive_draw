@@ -371,6 +371,7 @@ class NotificationService {
         .doc(userId)
         .collection('notifications')
         .orderBy('timestamp', descending: true)
+        .limit(30)  // only 30 latest notifications are shown
         .snapshots()
         .map((query) =>
         query.docs.map((doc) => NotificationModel.fromDocument(doc)).toList());

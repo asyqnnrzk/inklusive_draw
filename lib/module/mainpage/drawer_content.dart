@@ -1,4 +1,5 @@
 import 'package:InklusiveDraw/module/app_dashboard/dashboard_selector.dart';
+import 'package:InklusiveDraw/module/inkgram/inkgram_notifications.dart';
 import 'package:InklusiveDraw/module/support_and_resources/resource/'
     'resource_screen.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/profile/'
@@ -156,6 +157,10 @@ class _DrawerContentState extends State<DrawerContent> {
             ),
             onTap: () {
               // go to Notifications page
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const
+                InkgramNotifications()),
+              );
             },
             trailing: Row(
               mainAxisSize: MainAxisSize.min,

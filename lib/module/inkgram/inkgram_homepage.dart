@@ -145,7 +145,7 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
       } else {
         // Like
         await likesRef.set({
-          'userId': likeId,
+          'userId': likeId,  // The user who liked the post
           'username': currentUserName,
           'timestamp': Timestamp.now(),
         });
@@ -153,8 +153,12 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
           'likes': FieldValue.increment(1),
         });
 
-        // Create a notification
-        await _createLikeNotification(postId, userId, currentUserName);
+        // Create a notification for the post owner
+        await _createLikeNotification(
+          postId,
+          userId,
+          currentUserName,
+        );
 
         print('Liked post');
       }
@@ -166,8 +170,9 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
     }
   }
 
-  Future<void> _createLikeNotification(String postId, String userId, String username) async {
-    final notificationsRef = _firestore
+  Future<void> _createLikeNotification(String postId, String userId,
+      String username) async {
+    final notificationsRef = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('notifications')
@@ -175,12 +180,14 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
 
     final notification = NotificationModel(
       id: notificationsRef.id,
-      userId: userId,
+      userId: FirebaseAuth.instance.currentUser!.uid,
       postId: postId,
       username: username,
       type: 'like',
       timestamp: Timestamp.now(),
     );
+
+    print('Creating notification with data: ${notification.toMap()}');
 
     await notificationsRef.set(notification.toMap());
   }
