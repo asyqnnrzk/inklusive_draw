@@ -26,6 +26,7 @@ Future<Map<DateTime, int>> fetchUserGrowthData() async {
   try {
     final usersSnapshot = await FirebaseFirestore.instance
         .collection('users')
+        .where('isDeleted', isEqualTo: false)
         .get();
 
     // Map to store the cumulative number of users per month
@@ -45,11 +46,14 @@ Future<Map<DateTime, int>> fetchUserGrowthData() async {
       }
     }
 
-    // Sort the map by month
-    final sortedMonthlyUserCount = Map.fromEntries(
-      monthlyUserCount.entries.toList()
-        ..sort((e1, e2) => e1.key.compareTo(e2.key)),
-    );
+    // Create an ordered map for all months of the year up to the current month
+    DateTime now = DateTime.now();
+    Map<DateTime, int> sortedMonthlyUserCount = {};
+    for (int month = 1; month <= now.month; month++) {
+      DateTime monthKey = DateTime(now.year, month);
+      sortedMonthlyUserCount[monthKey] =
+          monthlyUserCount[monthKey] ?? 0; // Fill empty months with 0
+    }
 
     // Calculate cumulative growth
     int cumulativeCount = 0;
@@ -68,64 +72,41 @@ Future<Map<DateTime, int>> fetchUserGrowthData() async {
 }
 
 Future<Map<String, dynamic>> fetchTotalUsers() async {
-  try {
-    final now = DateTime.now();
-    final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+  final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .where('isDeleted', isEqualTo: false)
+      .get();
 
-    final usersSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .get();
+  int oldestUsersCount = 0;
+  int latestUsersCount = 0;
+  DateTime? oldestSignUpDate;
+  DateTime? latestSignUpDate;
 
-    final totalUsers = usersSnapshot.size;
+  final DateTime now = DateTime.now();
+  final DateTime latestCutoff = DateTime(now.year, now.month, 1).
+  subtract(const Duration(days: 30));
 
-    // Count users who registered in the last 30 days (latest users)
-    final latestUsersSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('signUpDate', isGreaterThanOrEqualTo: Timestamp
-        .fromDate(thirtyDaysAgo))
-        .get();
+  for (var doc in snapshot.docs) {
+    final Timestamp signUpTimestamp = doc['signUpDate'];
+    final DateTime signUpDate = signUpTimestamp.toDate();
 
-    final latestUsersCount = latestUsersSnapshot.size;
-
-    // Count users who registered before the last 30 days (oldest users)
-    final oldestUsersCount = totalUsers - latestUsersCount;
-
-    // Fetch oldest and latest sign-up dates
-    final oldestUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .orderBy('signUpDate', descending: false)
-        .limit(1)
-        .get();
-
-    final oldestSignUpDate = oldestUserSnapshot.docs.isNotEmpty
-        ? (oldestUserSnapshot.docs.first['signUpDate'] as Timestamp).toDate()
-        : null;
-
-    final latestUserSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .orderBy('signUpDate', descending: true)
-        .limit(1)
-        .get();
-
-    final latestSignUpDate = latestUserSnapshot.docs.isNotEmpty
-        ? (latestUserSnapshot.docs.first['signUpDate'] as Timestamp).toDate()
-        : null;
-
-    return {
-      'totalUsers': totalUsers,
-      'oldestUsersCount': oldestUsersCount,
-      'latestUsersCount': latestUsersCount,
-      'oldestSignUpDate': oldestSignUpDate,
-      'latestSignUpDate': latestSignUpDate,
-    };
-  } catch (e) {
-    print('Error fetching data: $e');
-    return {
-      'totalUsers': 0,
-      'oldestUsersCount': 0,
-      'latestUsersCount': 0,
-      'oldestSignUpDate': null,
-      'latestSignUpDate': null,
-    };
+    if (signUpDate.isBefore(latestCutoff)) {
+      oldestUsersCount++;
+      if (oldestSignUpDate == null || signUpDate.isBefore(oldestSignUpDate)) {
+        oldestSignUpDate = signUpDate;
+      }
+    } else {
+      latestUsersCount++;
+      if (latestSignUpDate == null || signUpDate.isAfter(latestSignUpDate)) {
+        latestSignUpDate = signUpDate;
+      }
+    }
   }
+
+  return {
+    'oldestUsersCount': oldestUsersCount,
+    'latestUsersCount': latestUsersCount,
+    'oldestSignUpDate': oldestSignUpDate,
+    'latestSignUpDate': latestSignUpDate,
+  };
 }

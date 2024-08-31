@@ -9,8 +9,11 @@ import '../../../source/text_theme.dart';
 class UserListScreen extends StatelessWidget {
   const UserListScreen({Key? key}) : super(key: key);
 
-  Future<void> deleteUser(String userId) async {
-    await FirebaseFirestore.instance.collection('users').doc(userId).delete();
+  Future<void> softDeleteUser(String userId) async {
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'isDeleted': true,
+      'deletedAt': Timestamp.now(),
+    });
   }
 
   void sendEmail(String email) async {
@@ -67,18 +70,28 @@ class UserListScreen extends StatelessWidget {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        stream: FirebaseFirestore.instance.collection('users')
+            .where('isDeleted', isEqualTo: false)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicatorTheme());
           }
 
           if (snapshot.hasError) {
-            return const Center(child: Text('Error fetching users.'));
+            return Center(
+              child: Text(
+                'Error fetching users',
+                style: LightTextTheme.dashboardTxt,
+              ));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No users found.'));
+            return Center(
+              child: Text(
+                'No users found',
+                style: LightTextTheme.dashboardTxt,
+              ));
           }
 
           final users = snapshot.data!.docs;
@@ -171,7 +184,7 @@ class UserListScreen extends StatelessWidget {
                                 );
 
                                 if (confirm == true) {
-                                  deleteUser(userId);
+                                  await softDeleteUser(userId);
                                 }
                               },
                             ),
