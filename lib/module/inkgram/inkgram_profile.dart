@@ -376,7 +376,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                           itemCount: snapshot.data!.docs.length,
                           gridDelegate: const
                           SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
+                            crossAxisCount: 2,
                             crossAxisSpacing: 2.0,
                             mainAxisSpacing: 2.0,
                           ),
@@ -384,6 +384,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
                             final post = snapshot.data!.docs[index];
                             final imageUrl = post['picture'];
                             final description = post['description'];
+                            final likeCount = post['likes'];
 
                             return GestureDetector(
                               onTap: () {
@@ -394,12 +395,33 @@ class _InkgramProfileState extends State<InkgramProfile> {
                                   description: description,
                                 ));
                               },
-                              child: Container(
-                                color: Colors.grey[300],
-                                child: Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.cover,
-                                ),
+                              child: Column(
+                                children: [
+                                  Flexible(
+                                    child: AspectRatio(
+                                      aspectRatio: 1.0,
+                                      child: Container(
+                                        color: Colors.grey[300],
+                                        child: Image.network(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.favorite,
+                                            color: Colors.red),
+                                      ),
+                                      Text('$likeCount')
+                                    ],
+                                  ),
+                                ],
                               ),
                             );
                           },

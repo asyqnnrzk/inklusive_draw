@@ -263,6 +263,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                       password: controller.password.text.trim(),
                       email: controller.email.text.trim(),
                       signUpDate: Timestamp.fromDate(DateTime.now()),
+                      isDeleted: false,
                     );
 
                     RegisterController.instance.createUser(user);

@@ -7,6 +7,7 @@ import 'package:InklusiveDraw/module/admin_panel/manage_resource/'
     'resource_delete_screen.dart';
 import 'package:InklusiveDraw/module/admin_panel/manage_resource/'
     'resource_edit_screen.dart';
+import 'package:InklusiveDraw/module/admin_panel/manage_users/review_reports.dart';
 import 'package:InklusiveDraw/module/admin_panel/manage_users/'
     'user_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -226,6 +227,29 @@ class AdminContent extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () => Get.to(() => const ReviewReports()),
+                icon: ClipOval(
+                  child: Image.asset(
+                    'assets/icons/review_reports.png',
+                    width: 60,
+                    height: 60,
+                    color: primaryColor,
+                  ),
+                ),
+              ),
+              Center(
+                child: Text(
+                  'Review \nReports',
+                  style: LightTextTheme.adminAddBtn,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),

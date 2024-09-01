@@ -244,9 +244,8 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                           const SizedBox(width: 8.0),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => InkgramProfile(
-                                  userId: post['userId']
-                              ));
+                              Get.to(() => InkgramProfile
+                                (userId: post['userId']));
                             },
                             child: Text(
                               post['username'] ?? 'Unknown User',
@@ -254,7 +253,10 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                             ),
                           ),
                           const Spacer(),
-                          const ReportButton()
+                          ReportButton(
+                            postId: post['postId'],
+                            userId: post['userId'],
+                          ),
                         ],
                       ),
                     ),
@@ -278,15 +280,16 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                         ),
                         const Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: const EdgeInsets.symmetric
+                            (horizontal: 16.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
                                 tooltip: 'Like the post',
                                 icon: Icon(
-                                  isLiked ? Icons.favorite : Icons.
-                                  favorite_border,
+                                  isLiked ? Icons.favorite : Icons
+                                      .favorite_border,
                                   color: isLiked ? Colors.red : blackColor,
                                 ),
                                 onPressed: () {
@@ -301,8 +304,8 @@ class _InkgramHomepageState extends State<InkgramHomepage> {
                                     context: context,
                                     isScrollControlled: true,
                                     builder: (context) => SizedBox(
-                                      height: MediaQuery.of(context)
-                                          .size.height * 0.5,
+                                      height: MediaQuery.of(context).size
+                                          .height * 0.5,
                                       child: InkgramComment(
                                         postId: post['postId'],
                                         userId: post['userId'],
