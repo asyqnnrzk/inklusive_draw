@@ -52,7 +52,6 @@ dependencies:
   url_launcher: ^6.3.0
   image: ^4.2.0
   image_gallery_saver: ^2.0.3
-  ffmpeg_kit_flutter: ^6.0.3
 
   # Speech recognition dependencies
   speech_to_text: ^6.6.0

@@ -208,15 +208,6 @@ class _DrawingPageState extends State<DrawingPage> {
     }
   }
 
-  Future<void> importDrawing() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
   Future<void> exportDrawing() async {
     try {
       final boundary = key.currentContext?.findRenderObject() as
@@ -324,10 +315,6 @@ class _DrawingPageState extends State<DrawingPage> {
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: promptSaveAsDialog,
-          ),
-          IconButton(
-            icon: const Icon(Icons.file_upload),
-            onPressed: importDrawing,
           ),
           IconButton(
             icon: const Icon(Icons.file_download),

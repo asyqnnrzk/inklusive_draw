@@ -109,7 +109,7 @@ class _RequestAdminAccessScreenState extends State<RequestAdminAccessScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Reason for requesting admin access',
+                    labelText: 'Reason for requesting',
                     labelStyle: LightTextTheme.tfName,
                     errorStyle: LightTextTheme.tfError
                   ),
