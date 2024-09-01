@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/module/inkgram/inkgram_following_list.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_homepage.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_search.dart';
 import 'package:InklusiveDraw/source/colors.dart';
@@ -218,7 +219,10 @@ class _InkgramProfileState extends State<InkgramProfile> {
                 },
                 icon: const Icon(LineAwesomeIcons.angle_left_solid),
               ),
-              title: const Text('Username'),
+              title: Text(
+                'Username',
+                style: LightTextTheme.pageHeadline,
+              ),
             ),
             body: Center(child: Text('Error: ${snapshot.error}')),
           );
@@ -470,9 +474,16 @@ class _InkgramProfileState extends State<InkgramProfile> {
   Column _buildStatColumn(String label, int count) {
     return Column(
       children: [
-        Text(
-          count.toString(),
-          style: LightTextTheme.dashboardTxt
+        GestureDetector(
+          onTap: () {
+            if (label == "Following") {
+              Get.to(() => InkgramFollowingList(userId: widget.userId));
+            }
+          },
+          child: Text(
+            count.toString(),
+            style: LightTextTheme.dashboardTxt,
+          ),
         ),
         const SizedBox(height: 4.0),
         Text(label),

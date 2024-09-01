@@ -10,10 +10,59 @@ class UserListScreen extends StatelessWidget {
   const UserListScreen({Key? key}) : super(key: key);
 
   Future<void> softDeleteUser(String userId) async {
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+
+    // Set user as deleted
+    await userDoc.update({
       'isDeleted': true,
       'deletedAt': Timestamp.now(),
     });
+
+    // Fetch all users
+    final allUsersSnapshot = await FirebaseFirestore.instance
+        .collection('users').get();
+
+    // Iterate through all users
+    for (final userDoc in allUsersSnapshot.docs) {
+      final currentUserId = userDoc.id;
+
+      // Fetch the profile document of the current user
+      final profileDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .collection('profile')
+          .doc(currentUserId)
+          .get();
+
+      if (profileDoc.exists) {
+        final followingRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .collection('profile')
+            .doc(currentUserId)
+            .collection('following')
+            .doc(userId);
+
+        // Check if the current user is following the deleted user
+        final followingSnapshot = await followingRef.get();
+
+        if (followingSnapshot.exists) {
+          try {
+            // Remove the deleted user from the following list
+            await followingRef.delete();
+
+            // Decrease the following count for the current user
+            await profileDoc.reference.update({
+              'following': FieldValue.increment(-1),
+            });
+
+            print('Decreased following count for $currentUserId');
+          } catch (e) {
+            print('Error updating following count for $currentUserId: $e');
+          }
+        }
+      }
+    }
   }
 
   void sendEmail(String email) async {

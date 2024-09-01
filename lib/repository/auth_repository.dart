@@ -5,6 +5,7 @@ import 'package:InklusiveDraw/module/user_auth_and_profile/login/login_screen'
 import 'package:InklusiveDraw/repository/exceptions/sign_up_fail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../source/colors.dart';
@@ -18,6 +19,7 @@ class AuthRepository extends GetxController {
   final _googleSignIn = GoogleSignIn();
   final _firestore = FirebaseFirestore.instance;
   late final Rx<User?> firebaseUser;
+  final _db = FirebaseFirestore.instance;
 
   @override
   void onReady() {
@@ -29,6 +31,29 @@ class AuthRepository extends GetxController {
   _setInitialScreen(User? user) {
     user == null ? Get.offAll(() => const LoginScreen()) : Get.offAll(() =>
     const Homepage());
+  }
+
+  Future<String> getImageUrl(String imagePath) async {
+    final ref = FirebaseStorage.instance.ref().child(imagePath);
+    final url = await ref.getDownloadURL();
+    return url;
+  }
+
+  // Create a profile subcollection for the user
+  Future<void> _createUserProfile(String userId) async {
+    final userDefault = await getImageUrl('images/default_profile.png');
+    try {
+      await _db.collection('users').doc(userId).collection('profile')
+          .doc(userId).set({
+        'avatar': userDefault,
+        'bio': 'Default bio',
+        'following': 0,
+        'posts': 0,
+      });
+    } catch (e) {
+      print('Failed to create profile for user ID: $userId. Error: $e');
+      rethrow;
+    }
   }
 
   Future<void> registerUserWithEmailAndPassword(String email,
@@ -117,24 +142,25 @@ class AuthRepository extends GetxController {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        Get.offAll(() => const LoginScreen());
+        Get.snackbar(
+          'Sign-In Cancelled',
+          'Google Sign-In was cancelled.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser
-          .authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential
-        (credential);
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
       User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users')
-            .doc(firebaseUser.uid).get();
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(firebaseUser.uid).get();
 
         if (userDoc.exists) {
           bool isDeleted = userDoc.get('isDeleted') ?? false;
@@ -166,21 +192,37 @@ class AuthRepository extends GetxController {
 
           Get.offAll(() => const DashboardSelector());
         } else {
+          // If the user document doesn't exist, create a new one
+          await _firestore.collection('users').doc(firebaseUser.uid).set({
+            'username': 'new user',
+            'email': firebaseUser.email,
+            'name': firebaseUser.displayName,
+            'isDeleted': false,
+            'lastLoggedIn': Timestamp.now(),
+            'signUpDate': Timestamp.now(),
+            // Add other default fields as necessary
+          });
+
+          // Create a profile for the new user
+          await _createUserProfile(firebaseUser.uid);
+
           Get.snackbar(
             '',
             '',
             titleText: Text(
-              'Uh oh!',
+              'Success!',
               style: LightTextTheme.snackbarBold,
             ),
             messageText: Text(
-              'Account does not exist, please register',
+              'Your account has been created!',
               style: LightTextTheme.snackbarTxt,
             ),
             snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: redButton,
+            backgroundColor: greenButton,
             colorText: blackColor,
           );
+
+          Get.offAll(() => const DashboardSelector());
         }
       } else {
         Get.offAll(() => const LoginScreen());
