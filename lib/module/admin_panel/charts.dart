@@ -71,6 +71,7 @@ Future<Map<DateTime, int>> fetchUserGrowthData() async {
   }
 }
 
+// not used
 Future<Map<String, dynamic>> fetchTotalUsers() async {
   final QuerySnapshot snapshot = await FirebaseFirestore.instance
       .collection('users')
@@ -108,5 +109,37 @@ Future<Map<String, dynamic>> fetchTotalUsers() async {
     'latestUsersCount': latestUsersCount,
     'oldestSignUpDate': oldestSignUpDate,
     'latestSignUpDate': latestSignUpDate,
+  };
+}
+
+Future<Map<String, dynamic>> fetchActiveInactiveUsers() async {
+  DateTime now = DateTime.now();
+  DateTime thirtyDaysAgo = now.subtract(Duration(days: 30));
+
+  QuerySnapshot usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
+
+  int activeUsersCount = 0;
+  int inactiveUsersCount = 0;
+
+  for (var doc in usersSnapshot.docs) {
+    bool isDeleted = doc.get('isDeleted') ?? false;
+    if (!isDeleted) {
+      Timestamp? lastLoginTimestamp = doc.get('lastLoggedIn');
+      if (lastLoginTimestamp != null) {
+        DateTime lastLoggedIn = lastLoginTimestamp.toDate();
+        if (lastLoggedIn.isAfter(thirtyDaysAgo)) {
+          activeUsersCount++;
+        } else {
+          inactiveUsersCount++;
+        }
+      } else {
+        inactiveUsersCount++; // Consider users with no login date as inactive
+      }
+    }
+  }
+
+  return {
+    'activeUsersCount': activeUsersCount,
+    'inactiveUsersCount': inactiveUsersCount,
   };
 }

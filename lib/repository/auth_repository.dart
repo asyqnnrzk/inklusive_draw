@@ -7,6 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../source/colors.dart';
+import '../source/text_theme.dart';
+import 'package:flutter/material.dart';
 
 class AuthRepository extends GetxController {
   static AuthRepository get instance => Get.find();
@@ -52,10 +55,53 @@ class AuthRepository extends GetxController {
   Future<void> loginUserWithEmailAndPassword(String email, String password)
   async {
     try {
-      UserCredential userCredential = await _auth
-          .signInWithEmailAndPassword(email: email, password: password);
-      print('User logged in: ${userCredential.user?.uid}');
-      Get.offAll(() => const DashboardSelector());
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword
+        (email: email, password: password);
+      User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        DocumentSnapshot userDoc = await _firestore.collection('users')
+            .doc(firebaseUser.uid).get();
+
+        if (userDoc.exists) {
+          bool isDeleted = userDoc.get('isDeleted') ?? false;
+
+          if (isDeleted) {
+            await logout();
+            Get.snackbar(
+              '',
+              '',
+              titleText: Text(
+                'Account Disabled',
+                style: LightTextTheme.snackbarBold,
+              ),
+              messageText: Text(
+                'Your account has been disabled. Please contact support.',
+                style: LightTextTheme.snackbarTxt,
+              ),
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: redButton,
+              colorText: blackColor,
+            );
+            return;
+          }
+
+          // Update lastLoginDate
+          await _firestore.collection('users').doc(firebaseUser.uid).update({
+            'lastLoggedIn': Timestamp.now(),
+          });
+
+          Get.offAll(() => const DashboardSelector());
+        } else {
+          Get.snackbar(
+            'Error',
+            'User document does not exist in Firestore.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+      } else {
+        Get.offAll(() => const LoginScreen());
+      }
     } on FirebaseAuthException catch (e) {
       final ex = SignUpFail.code(e.code);
       print('FIREBASE AUTH EXCEPTION: ${ex.message}');
@@ -69,48 +115,73 @@ class AuthRepository extends GetxController {
 
   Future<void> signInUserWithGoogle() async {
     try {
-      // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        // The user canceled the sign-in
         Get.offAll(() => const LoginScreen());
         return;
       }
 
-      // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth = await googleUser
           .authentication;
-
-      // Create a new credential
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Sign in to Firebase with the Google [UserCredential]
       UserCredential userCredential = await _auth.signInWithCredential
         (credential);
-
-      // Check if the user is signed in
       User? firebaseUser = userCredential.user;
+
       if (firebaseUser != null) {
-        // Check if user data exists in Firestore
         DocumentSnapshot userDoc = await _firestore.collection('users')
             .doc(firebaseUser.uid).get();
 
-        if (!userDoc.exists) {
-          // If no user data exists, create a new user record
-          await _firestore.collection('users').doc(firebaseUser.uid).set({
-            'email': firebaseUser.email,
-            'name': firebaseUser.displayName,
-          });
-          print('New user registered: ${firebaseUser.email}');
-        } else {
-          print('User already exists: ${firebaseUser.email}');
-        }
+        if (userDoc.exists) {
+          bool isDeleted = userDoc.get('isDeleted') ?? false;
 
-        // Navigate to user dashboard
-        Get.offAll(() => const DashboardSelector());
+          if (isDeleted) {
+            await logout();
+            Get.snackbar(
+              '',
+              '',
+              titleText: Text(
+                'Account Disabled',
+                style: LightTextTheme.snackbarBold,
+              ),
+              messageText: Text(
+                'Your account has been disabled. Please contact support.',
+                style: LightTextTheme.snackbarTxt,
+              ),
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: redButton,
+              colorText: blackColor,
+            );
+            return;
+          }
+
+          // Update lastLoginDate
+          await _firestore.collection('users').doc(firebaseUser.uid).update({
+            'lastLoggedIn': Timestamp.now(),
+          });
+
+          Get.offAll(() => const DashboardSelector());
+        } else {
+          Get.snackbar(
+            '',
+            '',
+            titleText: Text(
+              'Uh oh!',
+              style: LightTextTheme.snackbarBold,
+            ),
+            messageText: Text(
+              'Account does not exist, please register',
+              style: LightTextTheme.snackbarTxt,
+            ),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: redButton,
+            colorText: blackColor,
+          );
+        }
       } else {
         Get.offAll(() => const LoginScreen());
       }

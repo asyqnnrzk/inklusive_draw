@@ -8,6 +8,7 @@ class UserModel {
   final String password;
   final String email;
   final Timestamp signUpDate;
+  final Timestamp lastLoggedIn;
   final bool isDeleted;
 
   const UserModel({
@@ -17,6 +18,7 @@ class UserModel {
     required this.password,
     required this.email,
     required this.signUpDate,
+    required this.lastLoggedIn,
     required this.isDeleted,
   });
 
@@ -29,6 +31,7 @@ class UserModel {
       'password': hashedPassword,
       'email': email,
       'signUpDate': signUpDate,
+      'lastLoggedIn': lastLoggedIn,
       'isDeleted': isDeleted,
     };
   }
@@ -44,6 +47,7 @@ class UserModel {
       password: data['password'],
       email: data['email'],
       signUpDate: data['signUpDate'] as Timestamp,
+      lastLoggedIn: data['lastLoggedIn'] as Timestamp,
       isDeleted: data['isDeleted'],
     );
   }
@@ -55,6 +59,7 @@ class UserModel {
     String? password,
     String? email,
     Timestamp? signUpDate,
+    Timestamp? lastLoggedIn,
     bool? isDeleted,
   }) {
     return UserModel(
@@ -64,6 +69,7 @@ class UserModel {
       password: password ?? this.password,
       email: email ?? this.email,
       signUpDate: signUpDate ?? this.signUpDate,
+      lastLoggedIn: lastLoggedIn ?? this.lastLoggedIn,
       isDeleted: isDeleted ?? this.isDeleted,
     );
   }

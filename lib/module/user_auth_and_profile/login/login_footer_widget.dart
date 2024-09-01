@@ -1,6 +1,7 @@
 import 'package:InklusiveDraw/module/user_auth_and_profile/register/'
     'register_screen.dart';
 import 'package:InklusiveDraw/repository/auth_repository.dart';
+import 'package:InklusiveDraw/source/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../source/image_strings.dart';
@@ -14,6 +15,8 @@ class LoginFooterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           'OR',
@@ -44,7 +47,12 @@ class LoginFooterWidget extends StatelessWidget {
             "Don't have account? Register",
             style: LightTextTheme.clickableTxt,
           ),
-        )
+        ),
+        const Divider(),
+        Text(
+          'For support, please contact \nasyiqinn942@gmail.com',
+          style: LightTextTheme.clickableTxt.copyWith(color: blackColor),
+        ),
       ],
     );
   }

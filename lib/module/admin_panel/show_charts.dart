@@ -120,6 +120,8 @@ class ShowCharts extends StatelessWidget {
             }
           },
         ),
+      const Divider(),
+      const SizedBox(height: 6),
       FutureBuilder<Map<DateTime, int>>(
         future: fetchUserGrowthData(),
         builder: (context, snapshot) {
@@ -240,8 +242,10 @@ class ShowCharts extends StatelessWidget {
           }
         },
       ),
+      const Divider(),
+      const SizedBox(height: 6),
       FutureBuilder<Map<String, dynamic>>(
-        future: fetchTotalUsers(),
+        future: fetchActiveInactiveUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -250,12 +254,15 @@ class ShowCharts extends StatelessWidget {
               'Error fetching user data',
               style: LightTextTheme.dashboardTxtBold,
             );
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return Text(
+              'No data available',
+              style: LightTextTheme.dashboardTxtBold,
+            );
           } else {
             final data = snapshot.data!;
-            final oldestUsersCount = data['oldestUsersCount'];
-            final latestUsersCount = data['latestUsersCount'];
-            final oldestSignUpDate = data['oldestSignUpDate'];
-            final latestSignUpDate = data['latestSignUpDate'];
+            final int activeUsersCount = data['activeUsersCount'] ?? 0;
+            final int inactiveUsersCount = data['inactiveUsersCount'] ?? 0;
 
             return Column(
               children: [
@@ -265,17 +272,17 @@ class ShowCharts extends StatelessWidget {
                     PieChartData(
                       sections: [
                         PieChartSectionData(
-                          value: oldestUsersCount.toDouble(),
+                          value: activeUsersCount.toDouble(),
                           color: primaryColor.withOpacity(0.5),
-                          title: 'Oldest Users\n$oldestUsersCount',
+                          title: 'Active Users\n$activeUsersCount',
                           radius: 100,
                           titleStyle: LightTextTheme.dashboardTxt
                               .copyWith(fontSize: 14),
                         ),
                         PieChartSectionData(
-                          value: latestUsersCount.toDouble(),
+                          value: inactiveUsersCount.toDouble(),
                           color: tertiaryColor.withOpacity(0.5),
-                          title: 'Latest Users\n$latestUsersCount',
+                          title: 'Inactive Users\n$inactiveUsersCount',
                           radius: 100,
                           titleStyle: LightTextTheme.dashboardTxt
                               .copyWith(fontSize: 14),
@@ -288,21 +295,83 @@ class ShowCharts extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                Text(
-                  'Oldest Sign-Up: ${oldestSignUpDate != null ?
-                  oldestSignUpDate.toString().split(' ')[0] : 'N/A'}',
-                  style: LightTextTheme.dashboardTxt,
-                ),
-                Text(
-                  'Latest Sign-Up: ${latestSignUpDate != null ?
-                  latestSignUpDate.toString().split(' ')[0] : 'N/A'}',
-                  style: LightTextTheme.dashboardTxt,
+                Container(
+                  color: tertiaryColor.withOpacity(0.5),
+                  child: Text(
+                    'Note: Inactive users are those who not logged in for more '
+                        'than 30 days',
+                    softWrap: true,
+                    style: LightTextTheme.dashboardTxt.copyWith(fontSize: 14),
+                  ),
                 ),
               ],
             );
           }
         },
       ),
+      // FutureBuilder<Map<String, dynamic>>(
+      //   future: fetchTotalUsers(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const CircularProgressIndicator();
+      //     } else if (snapshot.hasError) {
+      //       return Text(
+      //         'Error fetching user data',
+      //         style: LightTextTheme.dashboardTxtBold,
+      //       );
+      //     } else {
+      //       final data = snapshot.data!;
+      //       final oldestUsersCount = data['oldestUsersCount'];
+      //       final latestUsersCount = data['latestUsersCount'];
+      //       final oldestSignUpDate = data['oldestSignUpDate'];
+      //       final latestSignUpDate = data['latestSignUpDate'];
+      //
+      //       return Column(
+      //         children: [
+      //           SizedBox(
+      //             height: 300,
+      //             child: PieChart(
+      //               PieChartData(
+      //                 sections: [
+      //                   PieChartSectionData(
+      //                     value: oldestUsersCount.toDouble(),
+      //                     color: primaryColor.withOpacity(0.5),
+      //                     title: 'Oldest Users\n$oldestUsersCount',
+      //                     radius: 100,
+      //                     titleStyle: LightTextTheme.dashboardTxt
+      //                         .copyWith(fontSize: 14),
+      //                   ),
+      //                   PieChartSectionData(
+      //                     value: latestUsersCount.toDouble(),
+      //                     color: tertiaryColor.withOpacity(0.5),
+      //                     title: 'Latest Users\n$latestUsersCount',
+      //                     radius: 100,
+      //                     titleStyle: LightTextTheme.dashboardTxt
+      //                         .copyWith(fontSize: 14),
+      //                   ),
+      //                 ],
+      //                 sectionsSpace: 2,
+      //                 centerSpaceRadius: 50,
+      //                 borderData: FlBorderData(show: false),
+      //               ),
+      //             ),
+      //           ),
+      //           const SizedBox(height: 16.0),
+      //           Text(
+      //             'Oldest Sign-Up: ${oldestSignUpDate != null ?
+      //             oldestSignUpDate.toString().split(' ')[0] : 'N/A'}',
+      //             style: LightTextTheme.dashboardTxt,
+      //           ),
+      //           Text(
+      //             'Latest Sign-Up: ${latestSignUpDate != null ?
+      //             latestSignUpDate.toString().split(' ')[0] : 'N/A'}',
+      //             style: LightTextTheme.dashboardTxt,
+      //           ),
+      //         ],
+      //       );
+      //     }
+      //   },
+      // ),
       ],
     );
   }

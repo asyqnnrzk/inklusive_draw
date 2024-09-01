@@ -1,4 +1,5 @@
-import 'package:InklusiveDraw/module/admin_panel/request_admin_access_screen.dart';
+import 'package:InklusiveDraw/module/admin_panel/'
+    'request_admin_access_screen.dart';
 import 'package:InklusiveDraw/module/user_auth_and_profile/login/'
     'login_screen.dart';
 import 'package:InklusiveDraw/source/colors.dart';
@@ -47,6 +48,7 @@ class RegisterFooterWidget extends StatelessWidget {
             style: LightTextTheme.clickableTxt,
           ),
         ),
+        const Divider(),
         TextButton(
           onPressed: () {
             Get.to(() => RequestAdminAccessScreen());
