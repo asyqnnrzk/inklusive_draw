@@ -1,4 +1,3 @@
-import 'package:InklusiveDraw/module/inkgram/inkgram_following_list.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_homepage.dart';
 import 'package:InklusiveDraw/module/inkgram/inkgram_search.dart';
 import 'package:InklusiveDraw/source/colors.dart';
@@ -141,7 +140,7 @@ class _InkgramProfileState extends State<InkgramProfile> {
         // Follow
         await followingRef.set({
           'userId': widget.userId,
-          'userName': followingUserName,
+          'username': followingUserName,
           'timestamp': Timestamp.now()
         });
         print('Following added');
@@ -224,7 +223,12 @@ class _InkgramProfileState extends State<InkgramProfile> {
                 style: LightTextTheme.pageHeadline,
               ),
             ),
-            body: Center(child: Text('Error: ${snapshot.error}')),
+            body: Center(
+              child: Text(
+                'This account does not exist anymore',
+                style: LightTextTheme.dashboardTxt,
+              ),
+            ),
           );
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Scaffold(
@@ -237,7 +241,12 @@ class _InkgramProfileState extends State<InkgramProfile> {
               ),
               title: const Text('No Data'),
             ),
-            body: const Center(child: Text('No user data found')),
+            body: Center(
+              child: Text(
+                'User not found',
+                style: LightTextTheme.dashboardTxt,
+              ),
+            ),
           );
         } else {
           var userData = snapshot.data!;
@@ -355,85 +364,89 @@ class _InkgramProfileState extends State<InkgramProfile> {
                   ),
                   const Divider(),
                   // Grid view for posts
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(widget.userId)
-                        .collection('inkgram')
-                        .orderBy('timestamp', descending: true)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicatorTheme();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.docs
-                          .isEmpty) {
-                        return Text(
-                          'Start create new post!',
-                          style: LightTextTheme.inkgramPostDesc,
-                        );
-                      } else {
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: snapshot.data!.docs.length,
-                          gridDelegate: const
-                          SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 2.0,
-                            mainAxisSpacing: 2.0,
-                          ),
-                          itemBuilder: (context, index) {
-                            final post = snapshot.data!.docs[index];
-                            final imageUrl = post['picture'];
-                            final description = post['description'];
-                            final likeCount = post['likes'];
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.userId)
+                    .collection('inkgram')
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    // Check if the current user is viewing their own profile
+                    final isCurrentUser = widget.userId == FirebaseAuth
+                        .instance.currentUser!.uid;
 
-                            return GestureDetector(
-                              onTap: () {
-                                Get.to(() => InkgramPost(
-                                  userId: widget.userId,
-                                  postId: post.id,
-                                  imageUrl: imageUrl,
-                                  description: description,
-                                ));
-                              },
-                              child: Column(
-                                children: [
-                                  Flexible(
-                                    child: AspectRatio(
-                                      aspectRatio: 1.0,
-                                      child: Container(
-                                        color: Colors.grey[300],
-                                        child: Image.network(
-                                          imageUrl,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
+                    return Text(
+                      isCurrentUser ? 'Start create new post!' :
+                      'No posts from this user',
+                      style: LightTextTheme.inkgramPostDesc,
+                    );
+                  } else {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      gridDelegate: const
+                      SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 2.0,
+                        mainAxisSpacing: 2.0,
+                      ),
+                      itemBuilder: (context, index) {
+                        final post = snapshot.data!.docs[index];
+                        final imageUrl = post['picture'];
+                        final description = post['description'];
+                        final likeCount = post['likes'];
+
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(() => InkgramPost(
+                              userId: widget.userId,
+                              postId: post.id,
+                              imageUrl: imageUrl,
+                              description: description,
+                            ));
+                          },
+                          child: Column(
+                            children: [
+                              Flexible(
+                                child: AspectRatio(
+                                  aspectRatio: 1.0,
+                                  child: Container(
+                                    color: Colors.grey[300],
+                                    child: Image.network(
+                                      imageUrl,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.favorite,
-                                            color: Colors.red),
-                                      ),
-                                      Text('$likeCount')
-                                    ],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.favorite, color:
+                                    Colors.red),
                                   ),
+                                  Text('$likeCount')
                                 ],
                               ),
-                            );
-                          },
+                            ],
+                          ),
                         );
-                      }
-                    },
-                  ),
-                ],
+                      },
+                    );
+                  }
+                },
+              ),
+            ],
               ),
             ),
             bottomNavigationBar: BottomNavigationBar(
@@ -474,16 +487,9 @@ class _InkgramProfileState extends State<InkgramProfile> {
   Column _buildStatColumn(String label, int count) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () {
-            if (label == "Following") {
-              Get.to(() => InkgramFollowingList(userId: widget.userId));
-            }
-          },
-          child: Text(
-            count.toString(),
-            style: LightTextTheme.dashboardTxt,
-          ),
+        Text(
+          count.toString(),
+          style: LightTextTheme.dashboardTxt,
         ),
         const SizedBox(height: 4.0),
         Text(label),

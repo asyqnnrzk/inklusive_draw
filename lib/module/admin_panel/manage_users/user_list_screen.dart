@@ -9,7 +9,7 @@ import '../../../source/text_theme.dart';
 class UserListScreen extends StatelessWidget {
   const UserListScreen({Key? key}) : super(key: key);
 
-  Future<void> softDeleteUser(String userId) async {
+  Future<void> deleteUser(String userId) async {
     final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
 
     // Set user as deleted
@@ -233,7 +233,7 @@ class UserListScreen extends StatelessWidget {
                                 );
 
                                 if (confirm == true) {
-                                  await softDeleteUser(userId);
+                                  await deleteUser(userId);
                                 }
                               },
                             ),

@@ -1,3 +1,4 @@
+import 'package:InklusiveDraw/source/progress_indicator_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,7 @@ class InkgramFollowingList extends StatelessWidget {
     return followingDocs.docs
         .map((doc) => {
       'userId': doc.id,
-      'userName': doc['userName'],
+      'username': doc['username'],
     })
         .toList();
   }
@@ -66,7 +67,7 @@ class InkgramFollowingList extends StatelessWidget {
         future: getFollowingUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicatorTheme());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -83,7 +84,7 @@ class InkgramFollowingList extends StatelessWidget {
                 final user = followingUsers[index];
                 return ListTile(
                   title: Text(
-                    user['userName'] ?? 'Unknown User',
+                    user['username'] ?? 'Unknown User',
                     style: LightTextTheme.dashboardTxt,
                   ),
                   onTap: () {

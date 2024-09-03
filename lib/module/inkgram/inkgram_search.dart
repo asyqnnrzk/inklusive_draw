@@ -65,6 +65,7 @@ class _InkgramSearchState extends State<InkgramSearch> {
     try {
       QuerySnapshot userResult = await FirebaseFirestore.instance
           .collection('users')
+          .where('isDeleted', isEqualTo: false)
           .get();
 
       List<DocumentSnapshot> filteredResults = userResult.docs.where((doc) {

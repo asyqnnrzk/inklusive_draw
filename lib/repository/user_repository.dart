@@ -113,7 +113,7 @@ class UserRepository extends GetxController {
       await _db.collection('users').doc(userId).collection('profile')
           .doc(userId).set({
         'avatar': userDefault,
-        'bio': 'Default bio',
+        'bio': 'New InklusiveDraw User!',
         'following': 0,
         'posts': 0,
       });

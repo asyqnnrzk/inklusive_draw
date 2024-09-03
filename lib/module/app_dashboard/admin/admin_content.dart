@@ -209,10 +209,10 @@ class AdminContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: () => Get.to(() => const AdminRequestsScreen()),
+                    onPressed: () => Get.to(() => const ReviewReports()),
                     icon: ClipOval(
                       child: Image.asset(
-                        'assets/icons/admin_requests.png',
+                        'assets/icons/reported_post.png',
                         width: 60,
                         height: 60,
                         color: primaryColor,
@@ -221,7 +221,7 @@ class AdminContent extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      'Admin \nRequests',
+                      'Reported \nPosts',
                       style: LightTextTheme.adminAddBtn,
                       textAlign: TextAlign.center,
                     ),
@@ -234,10 +234,10 @@ class AdminContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: () => Get.to(() => const ReviewReports()),
+                onPressed: () => Get.to(() => const AdminRequestsScreen()),
                 icon: ClipOval(
                   child: Image.asset(
-                    'assets/icons/review_reports.png',
+                    'assets/icons/admin_requests.png',
                     width: 60,
                     height: 60,
                     color: primaryColor,
@@ -246,7 +246,7 @@ class AdminContent extends StatelessWidget {
               ),
               Center(
                 child: Text(
-                  'Review \nReports',
+                  'Admin \nRequests',
                   style: LightTextTheme.adminAddBtn,
                   textAlign: TextAlign.center,
                 ),

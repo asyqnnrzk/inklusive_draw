@@ -143,24 +143,37 @@ class AuthRepository extends GetxController {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         Get.snackbar(
-          'Sign-In Cancelled',
-          'Google Sign-In was cancelled.',
+          '',
+          '',
+          titleText: Text(
+            'Sign-In Cancelled',
+            style: LightTextTheme.snackbarBold,
+          ),
+          messageText: Text(
+            'Google Sign-In was cancelled',
+            style: LightTextTheme.snackbarTxt,
+          ),
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: redButton,
+          colorText: blackColor,
         );
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser
+          .authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential = await _auth.signInWithCredential
+        (credential);
       User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(firebaseUser.uid).get();
+        DocumentSnapshot userDoc = await _firestore.collection('users')
+            .doc(firebaseUser.uid).get();
 
         if (userDoc.exists) {
           bool isDeleted = userDoc.get('isDeleted') ?? false;

@@ -70,13 +70,17 @@ class _InkgramNotificationsState extends State<InkgramNotifications> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'This account does not exist anymore',
+                style: LightTextTheme.dashboardTxt,
+              ));
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
                 child: Text(
-                  'No notifications',
+                  'No new notifications',
                   style: LightTextTheme.dashboardTxt,
                 ));
           }

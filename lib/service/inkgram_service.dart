@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:InklusiveDraw/source/text_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -250,7 +251,10 @@ Future<void> showCreatePostDialog(BuildContext context) async {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Create New Post'),
+          title: Text(
+            'Create New Post',
+            style: LightTextTheme.dashboardTxt,
+          ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -258,21 +262,29 @@ Future<void> showCreatePostDialog(BuildContext context) async {
                   onChanged: (value) {
                     description = value;
                   },
-                  decoration: const InputDecoration(hintText: 'Enter '
-                      'description'),
+                  decoration: InputDecoration(
+                    hintText: 'Enter description',
+                    hintStyle: LightTextTheme.tfName
+                  ),
                 ),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: LightTextTheme.cancelBtn,
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Upload'),
+              child: Text(
+                'Upload',
+                style: LightTextTheme.yesBtn,
+              ),
               onPressed: () async {
                 Navigator.of(context).pop();
                 await uploadPost(description, selectedImage!);
@@ -300,8 +312,10 @@ Future<void> uploadPost(String description, File imageFile) async {
         .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
     try {
+      // Upload the image file to Firebase Storage
+      await storageRef.putFile(imageFile);
 
-      // Get the download URL
+      // Get the download URL of the uploaded image
       final downloadUrl = await storageRef.getDownloadURL();
 
       // Add the post details to Firestore

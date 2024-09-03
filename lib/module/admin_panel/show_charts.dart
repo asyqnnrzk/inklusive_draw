@@ -95,13 +95,23 @@ class ShowCharts extends StatelessWidget {
                             axisNameSize: 30,
                             sideTitles: SideTitles(
                               showTitles: true,
-                              interval: 1,
                               getTitlesWidget: (value, meta) {
-                                return Text(
-                                    value.toInt().toString(),
-                                    style: LightTextTheme.dashboardTxt
+                                return SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  child: SizedBox(
+                                    width: 30,
+                                    child: Center(
+                                      child: Text(
+                                        value.toInt().toString(),
+                                        style: LightTextTheme.dashboardTxt,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                    ),
+                                  ),
                                 );
                               },
+                              reservedSize: 40,
                             ),
                           ),
                           topTitles: const AxisTitles(
